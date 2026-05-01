@@ -333,6 +333,33 @@ const configDefault = {
     uploadSuccessMessage: '',
     uploadFailureMessage: 'Document upload failed',
     uploadRequireLogin: true,
+
+    // Maggi-style pre-chat form (show before the message list; optional)
+    showOnboardingForm: false,
+    onboardingWelcomeTitle: 'Welcome!',
+    onboardingWelcomeSubtitle: 'Please fill out information below!',
+    onboardingFirstNameLabel: 'First Name (Required)',
+    onboardingLastNameLabel: 'Last Name (Required)',
+    onboardingEmailLabel: 'Email (Optional)',
+    onboardingTermsUrl: 'https://aws.amazon.com/service-terms/',
+    onboardingTermsLinkText: 'Terms and services',
+    onboardingTermsBeforeLink: 'I have read and agree to the ',
+    onboardingTermsAfterLink: ' in regards to the use of personal information in this chat bot.',
+    onboardingStartButtonText: 'Start Chatting',
+    onboardingAgentAvatarUrl: '',
+    onboardingPrimaryColor: '#1e3a5f',
+    onboardingRememberCompletion: false,
+
+    // Optional: pill-style default quick replies (UI only; each sends "value" to Lex as text)
+    defaultQuickReplies: [],
+
+    // Maggi-style toolbar: "Online" line + optional default avatar (when no toolbarLogo)
+    showToolbarStatus: false,
+    toolbarStatusText: 'Online',
+    toolbarShowDefaultAvatar: true,
+    toolbarAvatarColor: '#1e3a5f',
+    // Icon for embedded close/min control (e.g. "close" or "arrow_drop_down")
+    toolbarMinimizeButtonIcon: 'arrow_drop_down',
   },
 
   /* Configuration to enable voice and to pass options to the recorder

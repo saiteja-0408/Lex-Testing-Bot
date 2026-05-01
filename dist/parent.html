@@ -155,7 +155,7 @@
         // enable receiving chatbot UI config from event
         // the event is used as an alternative to passing the chatbot
         // UI via JSON file or via the parameter in the load() function
-        shouldLoadConfigFromEvent: true,
+        shouldLoadConfigFromEvent: false,
 
         // Controls if it should load minimized production dependecies
         // defaults to true for production builds and false in development
@@ -166,40 +166,23 @@
       // Instantiate the loader and pass the loader options
       var iframeLoader = new ChatBotUiLoader.IframeLoader(loaderOpts);
 
-      // You can override the chatbot UI config by passing a parameter
-      var chatbotUiconfig = {
-      // if the iframe page is hosted on a different site,
-      // you should configure the parentOrigin and iframeOrigin
-      /*
-        ui: {
-          // origin of the parent site where you are including the chatbot UI
-          parentOrigin: 'https://mysite.example.org'
-        },
-        iframe: {
-          // origin hosting the HTML file that will be embedded in the iframe
-          iframeOrigin: 'https://iframe-host.example.org'
-        },
-        lex: {
-            sessionAttributes: {
-              userAgent: navigator.userAgent,
-              QNAClientFilter: ''
-            }
-          }
-        */
-      };
-
-      // load the iframe
-      iframeLoader.load(chatbotUiconfig)
+      var origin = window.location.origin;
+      fetch(origin + '/lex-web-ui-loader-config.json')
+        .then(function (response) { return response.json(); })
+        .then(function (cfg) {
+          cfg.ui = cfg.ui || {};
+          cfg.iframe = cfg.iframe || {};
+          cfg.lex = cfg.lex || {};
+          cfg.lex.sessionAttributes = cfg.lex.sessionAttributes || {};
+          cfg.lex.sessionAttributes.userAgent = navigator.userAgent;
+          cfg.ui.parentOrigin = origin;
+          cfg.iframe.iframeOrigin = origin;
+          cfg.iframe.shouldLoadIframeMinimized = false;
+          return iframeLoader.load(cfg);
+        })
         .then(function () {
-           // at this point the API is available
-           // so I can send a ping to the iframe
-           iframeLoader.api.ping();
-
-          // perform actions on the parent dependent on the chatbot
-          // loading. For example, enable the send button once the
-          // chatbot UI is loaded
+          iframeLoader.api.ping();
           $('#send-intent').prop('disabled', false);
-
         })
         .catch(function (error) {
           console.error('chatbot UI failed to load', error);

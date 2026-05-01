@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-lex-web-ui#readme",
   "scripts": {
+    "start": "node server.js",                  
     "serve": "cd lex-web-ui && npm run serve",
     "build": "cd lex-web-ui && npm run build",
     "build:dev": "cd lex-web-ui && npm run build:dev",

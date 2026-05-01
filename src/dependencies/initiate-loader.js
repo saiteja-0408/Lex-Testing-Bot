@@ -13,11 +13,9 @@ var Loader = ChatBotUiLoader.FullPageLoader;
 // In this case, we are just passing one option (which doesn't changethe
 // default) for illustration purposes.
 var loaderOpts = {
-  // The following option controls if the local config should be ignored
-  // when running this page embedded in an iframe.
-  // If set to true, only passes the parentOrigin field when run as an
-  // iframe and delegates the config to the parent
-  shouldIgnoreConfigWhenEmbedded: true,
+  // false: iframe (lexWebUiEmbed=true) still loads full lex-web-ui-loader-config.json
+  // so Cognito pool + Lex bot work inside the right-panel widget. true would strip them.
+  shouldIgnoreConfigWhenEmbedded: false,
 
   // Controls if it should load minimized production dependecies
   // defaults to true for production builds and false in development

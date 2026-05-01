@@ -1,0 +1,129 @@
+version: '3.8'
+
+services:
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # API Server - Backend API Gateway
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      target: development
+    container_name: lex-api-dev
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - LOG_LEVEL=debug
+      - COGNITO_POOL_ID=${COGNITO_POOL_ID}
+      - COGNITO_CLIENT_ID=${COGNITO_CLIENT_ID}
+      - LEX_BOT_ID=${LEX_BOT_ID}
+      - LEX_BOT_ALIAS_ID=${LEX_BOT_ALIAS_ID}
+      - LEX_BOT_LOCALE_ID=${LEX_BOT_LOCALE_ID}
+      - DB_HOST=postgres
+      - AWS_REGION=${AWS_REGION}
+    volumes:
+      - ./src/server:/app/src
+      - /app/node_modules
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - lex-network
+    restart: unless-stopped
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Web App - Vue.js Frontend
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      target: development
+    container_name: lex-web-dev
+    ports:
+      - '3001:3001'
+    environment:
+      - NODE_ENV=development
+      - WEB_PORT=3001
+      - VITE_API_URL=http://api:3000
+      - PARENT_ORIGIN=http://localhost:3001
+      - IFRAME_ORIGIN=http://localhost:3001
+    volumes:
+      - ./src/web:/app/src
+      - /app/node_modules
+    depends_on:
+      - api
+    networks:
+      - lex-network
+    restart: unless-stopped
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # PostgreSQL Database
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  postgres:
+    image: postgres:16-alpine
+    container_name: lex-postgres-dev
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=lex_user
+      - POSTGRES_PASSWORD=lex_password
+      - POSTGRES_DB=lex_db
+      - POSTGRES_INITDB_ARGS=--encoding=UTF8
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - lex-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U lex_user']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Redis Cache
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  redis:
+    image: redis:7-alpine
+    container_name: lex-redis-dev
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - lex-network
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Nginx Reverse Proxy
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  nginx:
+    image: nginx:alpine
+    container_name: lex-nginx-dev
+    ports:
+      - '8080:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
+      - web
+    networks:
+      - lex-network
+    restart: unless-stopped
+
+networks:
+  lex-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:

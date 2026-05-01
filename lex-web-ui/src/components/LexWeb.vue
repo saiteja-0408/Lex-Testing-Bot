@@ -1,14 +1,21 @@
 <template>
-  <v-app id="lex-web"
+  <v-app
+    id="lex-web"
     v-bind:ui-minimized="isUiMinimized"
+    :class="{ 'lex-with-quick': hasDefaultQuickReplies }"
   >
     <min-button
       :toolbar-color="toolbarColor"
       :is-ui-minimized="isUiMinimized"
       @toggleMinimizeUi="toggleMinimizeUi"
     />
+    <onboarding-form
+      v-if="showOnboarding"
+      @complete="onOnboardingComplete"
+      @close="toggleMinimizeUi"
+    />
     <toolbar-container
-      v-if="!isUiMinimized"
+      v-if="!isUiMinimized && !showOnboarding"
       :userName="userNameValue"
       :toolbar-title="toolbarTitle"
       :toolbar-color="toolbarColor"
@@ -27,21 +34,24 @@
     />
 
     <v-main
-      v-if="!isUiMinimized"
+      v-if="!isUiMinimized && !showOnboarding"
     >
       <v-container
         class="message-list-container"
         :class="`toolbar-height-${toolbarHeightClassSuffix}`"
         fluid pa-0
       >
-        <message-list v-if="!isUiMinimized"
+        <message-list v-if="!isUiMinimized && !showOnboarding"
         ></message-list>
       </v-container>
     </v-main>
 
+    <default-quick-replies
+      v-if="!isUiMinimized && !showOnboarding && hasDefaultQuickReplies"
+    />
     <input-container
       ref="InputContainer"
-      v-if="!isUiMinimized && !hasButtons"
+      v-if="!isUiMinimized && !hasButtons && !showOnboarding"
       :text-input-placeholder="textInputPlaceholder"
       :initial-speech-instruction="initialSpeechInstruction"
     ></input-container>
@@ -70,6 +80,8 @@ License for the specific language governing permissions and limitations under th
 /* eslint no-console: ["error", { allow: ["warn", "error", "info"] }] */
 
 import MinButton from '@/components/MinButton.vue';
+import OnboardingForm from '@/components/OnboardingForm.vue';
+import DefaultQuickReplies from '@/components/DefaultQuickReplies.vue';
 import ToolbarContainer from '@/components/ToolbarContainer.vue';
 import MessageList from '@/components/MessageList.vue';
 import InputContainer from '@/components/InputContainer.vue';
@@ -83,10 +95,13 @@ export default {
     return {
       userNameValue: '',
       toolbarHeightClassSuffix: 'md',
+      onboardingComplete: false,
     };
   },
   components: {
     MinButton,
+    OnboardingForm,
+    DefaultQuickReplies,
     ToolbarContainer,
     MessageList,
     InputContainer,
@@ -139,6 +154,23 @@ export default {
         (window.screen.height < mobileResolution ||
           window.screen.width < mobileResolution)
       );
+    },
+    showOnboarding() {
+      const ui = this.$store.state.config.ui;
+      if (!ui.showOnboardingForm) {
+        return false;
+      }
+      if (this.onboardingComplete) {
+        return false;
+      }
+      if (this.isUiMinimized) {
+        return false;
+      }
+      return true;
+    },
+    hasDefaultQuickReplies() {
+      const q = this.$store.state.config.ui.defaultQuickReplies;
+      return Array.isArray(q) && q.length > 0;
     },
   },
   watch: {
@@ -246,8 +278,11 @@ export default {
         // after slight delay, send in initial utterance if it is defined.
         // waiting for credentials to settle down a bit.
         if (!this.$store.state.config.iframe.shouldLoadIframeMinimized) {
-          setTimeout(() => this.$store.dispatch('sendInitialUtterance'), 500);
-          this.$store.commit('setInitialUtteranceSent', true);
+          const skipForOnboarding = this.$store.state.config.ui.showOnboardingForm;
+          if (!skipForOnboarding) {
+            setTimeout(() => this.$store.dispatch('sendInitialUtterance'), 500);
+            this.$store.commit('setInitialUtteranceSent', true);
+          }
         }
       })
       .catch((error) => {
@@ -260,6 +295,20 @@ export default {
     }
   },
   mounted() {
+    const ui = this.$store.state.config.ui;
+    if (ui.showOnboardingForm && ui.onboardingRememberCompletion) {
+      try {
+        if (sessionStorage.getItem('lexWebUiOnboardingDone') === '1') {
+          this.onboardingComplete = true;
+          this.$nextTick(() => {
+            this.$store.dispatch('sendInitialUtterance');
+            this.$store.commit('setInitialUtteranceSent', true);
+          });
+        }
+      } catch (e) {
+        console.warn('sessionStorage unavailable for onboarding', e);
+      }
+    }
     if (!this.$store.state.isRunningEmbedded) {
       this.$store.dispatch(
         'sendMessageToParentWindow',
@@ -531,9 +580,35 @@ export default {
         });
     },
     setFocusIfEnabled() {
-      if (this.$store.state.config.ui.directFocusToBotInput) {
+      if (this.$store.state.config.ui.directFocusToBotInput && this.$refs.InputContainer) {
         this.$refs.InputContainer.setInputTextFieldFocus();
       }
+    },
+    onOnboardingComplete({ firstName, lastName, email, termsAccepted }) {
+      this.$store.commit('setLexSessionAttributes', {
+        ...this.$store.state.lex.sessionAttributes,
+        onboardingFirstName: firstName,
+        onboardingLastName: lastName,
+        onboardingEmail: email || '',
+        onboardingTermsAccepted: termsAccepted ? 'true' : 'false',
+      });
+      this.onboardingComplete = true;
+      if (this.$store.state.config.ui.onboardingRememberCompletion) {
+        try {
+          sessionStorage.setItem('lexWebUiOnboardingDone', '1');
+        } catch (e) {
+          console.warn('sessionStorage unavailable', e);
+        }
+      }
+      this.$nextTick(() => {
+        this.$store.dispatch('sendInitialUtterance');
+        this.$store.commit('setInitialUtteranceSent', true);
+        this.setFocusIfEnabled();
+        this.onResize();
+        // After onboarding/PII completion, collapse to launcher icon.
+        // This keeps the bot available in bottom-right until user re-opens it.
+        this.$store.dispatch('toggleIsUiMinimized');
+      });
     },
   },
 };
@@ -569,6 +644,17 @@ NOTE: not using var() for different heights due to IE11 compatibility
 .message-list-container.toolbar-height-lg {
   top: 64px;
   height: calc(100% - 2 * 64px);
+}
+
+/* Reserve space for default quick-reply strip above the input */
+#lex-web.lex-with-quick .message-list-container.toolbar-height-sm {
+  height: calc(100% - 56px - 48px - 100px) !important;
+}
+#lex-web.lex-with-quick .message-list-container.toolbar-height-md {
+  height: calc(100% - 48px - 48px - 100px) !important;
+}
+#lex-web.lex-with-quick .message-list-container.toolbar-height-lg {
+  height: calc(100% - 64px - 48px - 100px) !important;
 }
 
 #lex-web[ui-minimized] {

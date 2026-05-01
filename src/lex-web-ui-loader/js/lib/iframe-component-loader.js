@@ -723,10 +723,13 @@ export class IframeComponentLoader {
   toggleMinimizeUiClass() {
     try {
       this.containerElement.classList.toggle(`${this.containerClass}--minimize`);
-      if (this.containerElement.classList.contains(`${this.containerClass}--minimize`)) {
-        localStorage.setItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`, 'true');
-      } else {
-        localStorage.setItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`, 'false');
+      const clientId = this.config.cognito && this.config.cognito.appUserPoolClientId;
+      if (clientId) {
+        if (this.containerElement.classList.contains(`${this.containerClass}--minimize`)) {
+          localStorage.setItem(`${clientId}lastUiIsMinimized`, 'true');
+        } else {
+          localStorage.setItem(`${clientId}lastUiIsMinimized`, 'false');
+        }
       }
       return Promise.resolve();
     } catch (err) {
@@ -738,15 +741,16 @@ export class IframeComponentLoader {
    * Shows the iframe
    */
   showIframe() {
+    const clientId = this.config.cognito && this.config.cognito.appUserPoolClientId;
+    const minKey = clientId ? `${clientId}lastUiIsMinimized` : null;
     return Promise.resolve()
       .then(() => {
-        // check for last state and resume with this configuration
         if (this.config.iframe.shouldLoadIframeMinimized) {
           this.api.toggleMinimizeUi();
-          localStorage.setItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`, 'true');
-        } else if (localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) && localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) === 'true') {
+          if (minKey) localStorage.setItem(minKey, 'true');
+        } else if (minKey && localStorage.getItem(minKey) === 'true') {
           this.api.toggleMinimizeUi();
-        } else if (localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) && localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) === 'false') {
+        } else if (minKey && localStorage.getItem(minKey) === 'false') {
           this.api.ping();
         }
       })

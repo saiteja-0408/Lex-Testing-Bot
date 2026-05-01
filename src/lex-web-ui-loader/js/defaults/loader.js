@@ -34,10 +34,10 @@ export const options = {
   // uses baseUrl if set as a relative URL (not starting with http)
   configUrl: './lex-web-ui-loader-config.json',
 
-  // controls whether the local config should be ignored when running
-  // embedded (e.g. iframe) in which case the parent page will pass the config
-  // Only the parentOrigin config field is kept when set to true
-  shouldIgnoreConfigWhenEmbedded: true,
+  // false allows same-origin iframe (right panel) to use full JSON config
+  // (Cognito, Lex) from lex-web-ui-loader-config.json. Set true only if the
+  // parent passes all credentials via postMessage.
+  shouldIgnoreConfigWhenEmbedded: false,
 
   // controls whether the config should be obtained using events
   shouldLoadConfigFromEvent: false,

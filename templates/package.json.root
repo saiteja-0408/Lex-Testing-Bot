@@ -1,0 +1,75 @@
+{
+  "name": "lex-web-ui-right-panel",
+  "version": "1.0.0",
+  "description": "Enterprise-grade AWS Lex Web UI with right-panel integration and microservices architecture",
+  "private": true,
+  "author": "Your Team Name",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "workspaces": [
+    "src/web",
+    "src/server",
+    "src/loader"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm install -w src/web && npm install -w src/server",
+    "setup": "bash ./scripts/setup.sh",
+    "dev": "concurrently 'npm run dev -w src/web' 'npm run dev -w src/server'",
+    "dev:web": "npm run dev -w src/web",
+    "dev:server": "npm run dev -w src/server",
+    "build": "npm run build -w src/web && npm run build -w src/server",
+    "build:web": "npm run build -w src/web",
+    "build:server": "npm run build -w src/server",
+    "test": "npm run test -w src/web && npm run test -w src/server",
+    "test:web": "npm run test -w src/web",
+    "test:server": "npm run test -w src/server",
+    "test:coverage": "npm run test:coverage -w src/web && npm run test:coverage -w src/server",
+    "lint": "npm run lint -w src/web && npm run lint -w src/server",
+    "lint:fix": "npm run lint:fix -w src/web && npm run lint:fix -w src/server",
+    "format": "prettier --write 'src/**/*.{js,vue,json,css}'",
+    "format:check": "prettier --check 'src/**/*.{js,vue,json,css}'",
+    "start": "npm run dev:server",
+    "serve": "npm run dev",
+    "clean": "rm -rf src/*/dist src/*/node_modules build logs",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "deploy:staging": "bash ./scripts/deploy-staging.sh",
+    "deploy:prod": "bash ./scripts/deploy-prod.sh",
+    "docs:build": "npm run docs:build -w docs || echo 'Docs build skipped'",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:major": "standard-version --release-as major"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.18.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.1.0",
+    "standard-version": "^9.5.0"
+  },
+  "lint-staged": {
+    "src/**/*.{js,vue}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "src/**/*.json": [
+      "prettier --write"
+    ]
+  },
+  "keywords": [
+    "lex",
+    "chatbot",
+    "aws",
+    "vue",
+    "right-panel",
+    "conversational-ai",
+    "microservices"
+  ]
+}

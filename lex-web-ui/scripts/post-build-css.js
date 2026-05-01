@@ -17,6 +17,7 @@ const isProd = process.env.NODE_ENV?.trim() === 'production';
 const bundleDir = path.join(__dirname, '..', 'dist', 'bundle');
 const cssFileName = isProd ? 'lex-web-ui.min.css' : 'lex-web-ui.css';
 const sourceCssFile = path.join(bundleDir, cssFileName);
+const prodFallbackCssFile = path.join(bundleDir, 'lex-web-ui.css');
 
 // Only run for library builds
 if (process.env.BUILD_TARGET?.trim() !== 'lib') {
@@ -24,10 +25,19 @@ if (process.env.BUILD_TARGET?.trim() !== 'lib') {
   process.exit(0);
 }
 
-// Check if source CSS file exists
-if (!fs.existsSync(sourceCssFile)) {
-  console.error('Source CSS file not found:', sourceCssFile);
-  process.exit(1);
+let resolvedCssFile = sourceCssFile;
+
+// In production Vite may still emit lex-web-ui.css; support that and create alias.
+if (!fs.existsSync(resolvedCssFile)) {
+  if (isProd && fs.existsSync(prodFallbackCssFile)) {
+    resolvedCssFile = prodFallbackCssFile;
+    fs.copyFileSync(prodFallbackCssFile, sourceCssFile);
+    resolvedCssFile = sourceCssFile;
+    console.log('✓ Created lex-web-ui.min.css from lex-web-ui.css');
+  } else {
+    console.error('Source CSS file not found:', sourceCssFile);
+    process.exit(1);
+  }
 }
 
 /**
@@ -70,6 +80,6 @@ function addBannerToCssFile(filePath) {
 }
 
 // Add banner to the CSS file
-addBannerToCssFile(sourceCssFile);
+addBannerToCssFile(resolvedCssFile);
 
-console.log(`✓ CSS file processed: ${path.basename(sourceCssFile)}`);
+console.log(`✓ CSS file processed: ${path.basename(resolvedCssFile)}`);

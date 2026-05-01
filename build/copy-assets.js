@@ -63,7 +63,7 @@ console.log('[INFO] Copying website files...')
 
 // Copy website files (HTML, CSS)
 if (fs.existsSync(websiteDir)) {
-  const websiteFiles = ['custom-chatbot-style.css']
+  const websiteFiles = ['custom-chatbot-style.css', 'right-panel.html']
   websiteFiles.forEach(file => {
     const srcPath = path.join(websiteDir, file)
     const destPath = path.join(distDir, file)

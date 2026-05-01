@@ -16,6 +16,14 @@
       alt="logo"
       aria-hidden="true"
     />
+    <v-avatar
+      v-else-if="showBrandedToolbarAvatar"
+      class="toolbar-image toolbar-image-avatar"
+      :size="40"
+      :color="toolbarAvatarColor"
+    >
+      <v-icon color="white" size="24">local_florist</v-icon>
+    </v-avatar>
 
     <v-menu v-if="showToolbarMenu">
       <template v-slot:activator="{ props }">
@@ -118,11 +126,20 @@
     </div>
 
     <v-toolbar-title
-      class="hidden-xs-and-down toolbar-title"
+      class="hidden-xs-and-down toolbar-title toolbar-maggi-title"
       @click.stop="toggleMinimize"
       v-show="!isUiMinimized"
     >
-      <h2>{{ toolbarTitle }} {{ userName }}</h2>
+      <div class="toolbar-maggi-block">
+        <h2 class="toolbar-maggi-heading">{{ toolbarTitle }} {{ userName }}</h2>
+        <div
+          v-if="showToolbarStatus"
+          class="toolbar-maggi-status"
+        >
+          <span class="toolbar-maggi-status-dot" aria-hidden="true"></span>
+          <span class="toolbar-maggi-status-text">{{ toolbarStatusText }}</span>
+        </div>
+      </div>
     </v-toolbar-title>
 
     <!-- tooltip should be before btn to avoid right margin issue in mobile -->
@@ -191,7 +208,7 @@
       v-bind:aria-label="isUiMinimized ? 'chat' : 'minimize chat window toggle'"
     >
       <v-icon>
-        {{ isUiMinimized ? "chat" : "arrow_drop_down" }}
+        {{ isUiMinimized ? "chat" : toolbarMinimizeButtonIcon }}
       </v-icon>
     </v-btn>
   </v-toolbar>
@@ -285,6 +302,23 @@ export default {
     },
     toolTipMinimize() {
       return this.isUiMinimized ? 'maximize' : 'minimize';
+    },
+    showBrandedToolbarAvatar() {
+      return !this.toolbarLogo
+        && this.$store.state.config.ui.showToolbarStatus
+        && this.$store.state.config.ui.toolbarShowDefaultAvatar;
+    },
+    showToolbarStatus() {
+      return !!this.$store.state.config.ui.showToolbarStatus;
+    },
+    toolbarStatusText() {
+      return this.$store.state.config.ui.toolbarStatusText || 'Online';
+    },
+    toolbarAvatarColor() {
+      return this.$store.state.config.ui.toolbarAvatarColor || '#1e3a5f';
+    },
+    toolbarMinimizeButtonIcon() {
+      return this.$store.state.config.ui.toolbarMinimizeButtonIcon || 'arrow_drop_down';
     },
     isEnableLogin() {
       return this.$store.state.config.ui.enableLogin;
@@ -593,6 +627,47 @@ export default {
 
 .menu-item:focus {
   box-shadow: 0 1.25px 3.75px rgba(0,0,0,0.25), 0 1.25px 2.5px rgba(0,0,0,0.22) !important;
+}
+
+.toolbar-maggi-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1.2;
+  padding: 0.2rem 0;
+}
+.toolbar-maggi-heading {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #1e3a5f;
+  margin: 0;
+}
+.toolbar-maggi-status {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.1rem;
+}
+.toolbar-maggi-status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2e7d32;
+  flex-shrink: 0;
+}
+.toolbar-maggi-status-text {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #78909c;
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+.toolbar-maggi-title {
+  flex-grow: 1;
+}
+.toolbar-image-avatar {
+  margin-right: 0.5rem;
 }
 
 </style>

@@ -27,18 +27,19 @@
     "textInputPlaceholder": "Message...",
     "toolbarColor": "#1e3a5f",
     "toolbarTitle": "Testing BOT",
-    "toolbarLogo": "",
+    "toolbarLogo": "/bot-config/bot-icon.png",
     "showOnboardingForm": true,
     "showToolbarStatus": true,
     "toolbarStatusText": "Online",
     "toolbarMinimizeButtonIcon": "close",
-    "toolbarShowDefaultAvatar": true,
+    "toolbarShowDefaultAvatar": false,
     "toolbarAvatarColor": "#2c5282",
     "defaultQuickReplies": [
       { "text": "Account locked", "value": "Account locked" },
       { "text": "Appeal status", "value": "Appeal status" },
       { "text": "Payment status", "value": "Payment status" },
       { "text": "Forgot password", "value": "Forgot password" },
+      { "text": "Overpayment balance", "value": "Overpayment balance" },
       { "text": "Frequently asked questions", "value": "Frequently asked questions" }
     ],
     "onboardingWelcomeTitle": "Welcome!",
@@ -62,7 +63,7 @@
     "negativeFeedbackIntent": "Thumbs down",
     "helpIntent": "Help",
     "minButtonContent": "",
-    "avatarImageUrl": "",
+    "avatarImageUrl": "/bot-config/bot-icon.png",
     "backButton": false,
     "messageMenu": false,
     "hideButtonMessageBubble": false,
@@ -84,6 +85,6 @@
   "iframe": {
     "iframeOrigin": "http://localhost:8000",
     "shouldLoadIframeMinimized": true,
-    "iframeSrcPath": "/index.html#/?lexWebUiEmbed=true"
+    "iframeSrcPath": "/web-lex-standalone/index.html#/?lexWebUiEmbed=true"
   }
 }

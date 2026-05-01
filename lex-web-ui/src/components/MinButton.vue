@@ -6,6 +6,7 @@
           <v-btn
             rounded="xl" 
             size="x-large"
+            elevation="0"
             v-if="minButtonContent"
             v-show="isUiMinimized"
             v-bind:color="toolbarColor"
@@ -22,6 +23,7 @@
             v-else
             icon="chat"
             size="x-large"
+            elevation="0"
             v-show="isUiMinimized"
             v-bind:color="toolbarColor"
             v-on:click.stop="toggleMinimize"
@@ -92,5 +94,15 @@ export default {
 <style>
   .min-button-content {
     border-radius: 60px;
+  }
+  .min-button-container,
+  .min-button-container .v-row,
+  .min-button-container .v-col {
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .min-button {
+    box-shadow: none !important;
   }
 </style>
