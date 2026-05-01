@@ -613,8 +613,15 @@ export default {
 }
 
 .toolbar-image {
-  margin-left: 0px !important;
-  max-height: 100%;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin: 0 9px 0 4px !important;
+  align-self: center;
+  flex-shrink: 0;
 }
 
 .toolbar-title {
@@ -633,11 +640,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.2;
-  padding: 0.2rem 0;
+  justify-content: center;
+  line-height: 1.1;
+  padding: 0.1rem 0;
 }
 .toolbar-maggi-heading {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #1e3a5f;
   margin: 0;
@@ -646,7 +654,8 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
+  padding-left: 1px;
 }
 .toolbar-maggi-status-dot {
   display: inline-block;
@@ -665,6 +674,8 @@ export default {
 }
 .toolbar-maggi-title {
   flex-grow: 1;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 .toolbar-image-avatar {
   margin-right: 0.5rem;
