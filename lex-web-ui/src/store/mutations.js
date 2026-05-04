@@ -239,6 +239,18 @@ export default {
     state.lex.isProcessing = bool;
   },
   /**
+  * set Lex connection status: offline | connecting | online
+  */
+  setLexConnectionStatus(state, status) {
+    if (typeof status !== 'string' ||
+      !['offline', 'connecting', 'online'].includes(status)
+    ) {
+      console.error('setLexConnectionStatus invalid status', status);
+      return;
+    }
+    state.lex.connectionStatus = status;
+  },
+  /**
    * remove appContext from Lex session attributes
    */
   removeAppContext(state) {
