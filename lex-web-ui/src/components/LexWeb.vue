@@ -605,9 +605,6 @@ export default {
         this.$store.commit('setInitialUtteranceSent', true);
         this.setFocusIfEnabled();
         this.onResize();
-        // After onboarding/PII completion, collapse to launcher icon.
-        // This keeps the bot available in bottom-right until user re-opens it.
-        this.$store.dispatch('toggleIsUiMinimized');
       });
     },
   },

@@ -614,9 +614,12 @@ export default {
 
 .toolbar-image {
   width: 32px;
-  height: 32px;
+  height: 45px;
   min-width: 32px;
   min-height: 32px;
+  lex:RecognizeText;
+  top: 6px;
+  left: 6px;
   object-fit: contain;
   border-radius: 50%;
   margin: 0 9px 0 4px !important;
