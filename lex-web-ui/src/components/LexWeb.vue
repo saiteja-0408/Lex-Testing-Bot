@@ -601,6 +601,7 @@ export default {
         }
       }
       this.$nextTick(() => {
+        this.$store.dispatch('testLexConnection');
         this.$store.dispatch('sendInitialUtterance');
         this.$store.commit('setInitialUtteranceSent', true);
         this.setFocusIfEnabled();

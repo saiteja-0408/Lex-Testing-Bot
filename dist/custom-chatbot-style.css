@@ -25,8 +25,13 @@
   color: rgba(255, 255, 255, 0.85) !important;
 }
 #lex-web .toolbar-maggi-status-dot {
-  background: #48bb78 !important;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connected {
+  background: #48bb78 !important;
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--disconnected {
+  background: #e53935 !important;
 }
 #lex-web .v-toolbar .v-toolbar__content {
   color: #fff;

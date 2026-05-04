@@ -136,8 +136,12 @@
           v-if="showToolbarStatus"
           class="toolbar-maggi-status"
         >
-          <span class="toolbar-maggi-status-dot" aria-hidden="true"></span>
-          <span class="toolbar-maggi-status-text">{{ toolbarStatusText }}</span>
+          <span
+            class="toolbar-maggi-status-dot"
+            :class="connectionDotClass"
+            aria-hidden="true"
+          ></span>
+          <span class="toolbar-maggi-status-text">{{ displayToolbarStatusText }}</span>
         </div>
       </div>
     </v-toolbar-title>
@@ -319,6 +323,29 @@ export default {
     },
     toolbarMinimizeButtonIcon() {
       return this.$store.state.config.ui.toolbarMinimizeButtonIcon || 'arrow_drop_down';
+    },
+    lexConnectionStatus() {
+      return (this.$store.state.lex && this.$store.state.lex.connectionStatus)
+        ? this.$store.state.lex.connectionStatus
+        : 'offline';
+    },
+    connectionDotClass() {
+      if (this.lexConnectionStatus === 'online') {
+        return 'toolbar-maggi-status-dot--connected';
+      }
+      if (this.lexConnectionStatus === 'connecting') {
+        return 'toolbar-maggi-status-dot--connecting';
+      }
+      return 'toolbar-maggi-status-dot--disconnected';
+    },
+    displayToolbarStatusText() {
+      if (this.lexConnectionStatus === 'connecting') {
+        return 'Connecting...';
+      }
+      if (this.lexConnectionStatus === 'online') {
+        return this.toolbarStatusText;
+      }
+      return 'Offline';
     },
     isEnableLogin() {
       return this.$store.state.config.ui.enableLogin;
@@ -665,8 +692,16 @@ export default {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2e7d32;
   flex-shrink: 0;
+}
+.toolbar-maggi-status-dot--connected {
+  background: #2e7d32;
+}
+.toolbar-maggi-status-dot--connecting {
+  background: #f9a825;
+}
+.toolbar-maggi-status-dot--disconnected {
+  background: #d32f2f;
 }
 .toolbar-maggi-status-text {
   font-size: 0.75rem;

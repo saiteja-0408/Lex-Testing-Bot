@@ -701,21 +701,38 @@ export default {
   },
   startNewSession(context) {
     context.commit('setIsLexProcessing', true);
+    context.commit('setLexConnectionStatus', 'connecting');
     return context.dispatch('checkCredentialsForRefresh')
       .then(() => context.dispatch('getCredentials', context.state.config))
       .then(() => lexClient.startNewSession())
       .then((data) => {
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'online');
         return context.dispatch('updateLexState', data)
           .then(() => Promise.resolve(data));
       })
       .catch((error) => {
         console.error(error);
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'offline');
+      });
+  },
+  testLexConnection(context) {
+    context.commit('setLexConnectionStatus', 'connecting');
+    return context.dispatch('checkCredentialsForRefresh')
+      .then(() => context.dispatch('getCredentials', context.state.config))
+      .then(() => lexClient.deleteSession())
+      .then(() => {
+        context.commit('setLexConnectionStatus', 'online');
+      })
+      .catch((error) => {
+        console.error('testLexConnection failed', error);
+        context.commit('setLexConnectionStatus', 'offline');
       });
   },
   lexPostText(context, text) {
     context.commit('setIsLexProcessing', true);
+    context.commit('setLexConnectionStatus', 'connecting');
     context.commit('reapplyTokensToSessionAttributes');
     const session = context.state.lex.sessionAttributes;
     context.commit('removeAppContext');
@@ -747,6 +764,7 @@ export default {
         //TODO: Waiting for all wsMessages typing on the chat bubbles
         context.commit('setIsStartingTypingWsMessages', false);
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'online');
         return context.dispatch('updateLexState', data)
           .then(() => {
             // Initiate TalkDesk interaction if the session attribute exists and is not a previous session ID
@@ -762,11 +780,13 @@ export default {
         //TODO: Need to handle if the error occurred
         context.commit('setIsStartingTypingWsMessages', false);
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'offline');
         throw error;
       });
   },
   lexPostContent(context, audioBlob, offset = 0) {
     context.commit('setIsLexProcessing', true);
+    context.commit('setLexConnectionStatus', 'connecting');
     context.commit('reapplyTokensToSessionAttributes');
     const session = context.state.lex.sessionAttributes;
     delete session.appContext;
@@ -795,6 +815,7 @@ export default {
           ((timeEnd - timeStart) / 1000).toFixed(2),
         );
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'online');
         return context.dispatch('updateLexState', lexResponse)
           .then(() => (
             context.dispatch('processLexContentResponse', lexResponse)
@@ -803,6 +824,7 @@ export default {
       })
       .catch((error) => {
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'offline');
         throw error;
       });
   },
