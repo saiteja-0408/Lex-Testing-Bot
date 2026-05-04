@@ -4,6 +4,8 @@ This guide is written for someone new to the codebase. It explains—in plain la
 
 For a shorter companion doc about the toolbar **Offline / Connecting… / Online** indicator, see [online-status-indicator.md](./online-status-indicator.md).
 
+For a **step-by-step playbook** to port `right-panel.html` and its wiring onto a **fresh upstream fork** (prerequisites, `dist/` copy, server, CSS and loader nuances, verification), see [right-panel-implementation-playbook.md](./right-panel-implementation-playbook.md).
+
 ---
 
 ## Table of contents

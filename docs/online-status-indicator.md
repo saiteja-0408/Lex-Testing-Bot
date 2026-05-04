@@ -4,6 +4,8 @@ This document describes the **offline / connecting / online** indicator in the c
 
 For a broader knowledge-transfer guide (host page, iframe “box”, config flow, and file map vs upstream), see [FORK-KNOWLEDGE-TRANSFER.md](./FORK-KNOWLEDGE-TRANSFER.md).
 
+To implement the **`right-panel.html`** host page on a fresh [aws-samples/aws-lex-web-ui](https://github.com/aws-samples/aws-lex-web-ui) clone (Tier A shell vs optional Tier B UX), see [right-panel-implementation-playbook.md](./right-panel-implementation-playbook.md).
+
 ## What it represents
 
 Amazon Lex V2 in this UI is reached through **HTTP requests** (for example `RecognizeText` and session APIs), not a persistent browser “socket connection.” The indicator therefore reflects **whether a Lex call is in flight** and **whether the last relevant call succeeded**, not a literal TCP/WebSocket session.
