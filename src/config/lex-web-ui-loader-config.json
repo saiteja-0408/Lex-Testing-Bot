@@ -35,7 +35,7 @@
     "toolbarShowDefaultAvatar": false,
     "toolbarAvatarColor": "#2c5282",
     "defaultQuickReplies": [
-      { "text": "Account locked", "value": "Need to order flowers" },
+      { "text": "Order flowers", "value": "Need to order flowers" },
       { "text": "Appeal status", "value": "red roses" },
       { "text": "Payment status", "value": "today" },
       { "text": "Forgot password", "value": "6 PM delivery" },
