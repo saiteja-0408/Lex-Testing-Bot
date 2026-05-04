@@ -35,10 +35,10 @@
     "toolbarShowDefaultAvatar": false,
     "toolbarAvatarColor": "#2c5282",
     "defaultQuickReplies": [
-      { "text": "Account locked", "value": "Account locked" },
-      { "text": "Appeal status", "value": "Appeal status" },
-      { "text": "Payment status", "value": "Payment status" },
-      { "text": "Forgot password", "value": "Forgot password" },
+      { "text": "Account locked", "value": "Need to order flowers" },
+      { "text": "Appeal status", "value": "red roses" },
+      { "text": "Payment status", "value": "today" },
+      { "text": "Forgot password", "value": "6 PM delivery" },
       { "text": "Frequently asked questions", "value": "Frequently asked questions" }
     ],
     "onboardingWelcomeTitle": "Welcome!",
