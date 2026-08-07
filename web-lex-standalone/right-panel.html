@@ -3,32 +3,69 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sample site — Maggi-style Lex panel (right)</title>
+  <title>Employment services portal (demo page)</title>
+
+  <!--
+    lex-web-ui-loader.min.css
+    ─────────────────────────
+    Provided by the loader library (dist/lex-web-ui-loader.min.js).
+    Defines .lex-web-ui-iframe (position: fixed, right-side panel) and
+    the .lex-web-ui-iframe--minimize (round floating button) states.
+    We override both below with our own sizing / animation rules.
+  -->
   <link href="./lex-web-ui-loader.min.css" rel="stylesheet" />
+
   <style>
-    * { box-sizing: border-box; }
-    html, body { margin: 0; min-height: 100%; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-    /* Page behind the widget (resembles a service portal) */
+    /* ── Reset ─────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #1a202c;
+    }
+
+    /* ── Page shell (your site content goes here) ───────────────── */
     .page-shell {
       min-height: 100vh;
       background: linear-gradient(180deg, #e3eef8 0%, #f5f7fb 40%, #fff 100%);
     }
+
+    /*
+      Right-side padding leaves room for the chat panel on desktop.
+      clamp(320px, 36vw, 460px) mirrors the panel width below.
+    */
     .page-content {
-      padding: 2.5rem 28rem 2.5rem 2rem;
       max-width: 52rem;
+      padding: 2.5rem 2rem 2.5rem 2rem;
+      padding-right: clamp(340px, 38vw, 480px);
     }
     @media (max-width: 900px) {
-      .page-content { padding: 1.5rem 1rem 1.5rem 1rem; }
+      /* On tablet/mobile the panel is narrower or full-screen — reduce padding */
+      .page-content { padding-right: 2rem; }
     }
+
     .page-content h1 {
       font-size: 1.75rem;
+      font-weight: 700;
       color: #1a365c;
       margin: 0 0 0.75rem 0;
-      font-weight: 700;
     }
-    .page-content p { color: #4a5568; line-height: 1.6; margin: 0 0 1rem 0; }
-    .page-cards { display: grid; gap: 1rem; margin-top: 1.5rem; }
-    @media (min-width: 600px) { .page-cards { grid-template-columns: 1fr 1fr; } }
+    .page-content p {
+      color: #4a5568;
+      margin: 0 0 1rem 0;
+    }
+    .page-cards {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    @media (min-width: 600px) {
+      .page-cards { grid-template-columns: 1fr 1fr; }
+    }
     .page-card {
       background: #fff;
       border: 1px solid #cbd5e0;
@@ -37,122 +74,127 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
     .page-card h2 { font-size: 0.95rem; color: #2d3748; margin: 0 0 0.5rem 0; }
-    .page-card p { font-size: 0.875rem; margin: 0; }
-    .page-hint {
-      font-size: 0.8rem;
-      color: #718096;
-      margin-top: 2rem;
-    }
-    /* Responsive floating iframe container (whole iframe, not only inner chat panel) */
+    .page-card p  { font-size: 0.875rem; margin: 0; color: #4a5568; }
+
+    /* ── Chat panel: iframe container overrides ─────────────────── */
+    /*
+      The loader injects a <div class="lex-web-ui-iframe"> into the DOM.
+      lex-web-ui-loader.min.css gives it `position: fixed` and some
+      default sizing. We override all size/position values here so the
+      panel floats on the right edge of the viewport.
+
+      Class lifecycle (managed by IframeComponentLoader):
+        .lex-web-ui-iframe              → always present after load()
+        .lex-web-ui-iframe--show        → added after ready handshake
+        .lex-web-ui-iframe--minimize    → toggled when user clicks close/open
+    */
+
+    /* ── Desktop: fixed right panel ─────────────────────────────── */
+    /*
+      MS chatWindowMS.css reference: width 390px, height 95%,
+      anchored bottom 15px / right 10px, 12px radius.
+    */
     .lex-web-ui-iframe {
-      min-width: 320px !important;
-      max-width: 460px !important;
-      width: clamp(320px, 36vw, 460px) !important;
-      height: calc(100dvh - 24px) !important;
-      max-height: none !important;
-      top: 12px !important;
-      bottom: 12px !important;
-      right: 12px !important;
+      min-width:  390px !important;
+      max-width:  390px !important;
+      width:      390px !important;
+      height:     calc(100dvh - 48px) !important;   /* MDES: top 33 + bottom 15 */
+      max-height: calc(100dvh - 48px) !important;
+      min-height: 200px !important;
+      top:    auto !important;
+      bottom: 15px !important;
+      right:  10px !important;
+      left:   auto !important;
       margin: 0 !important;
-      border-radius: 12px;
+
+      /* Rounded card panel — MDES frame shadow */
+      border-radius: 12px !important;
       overflow: hidden;
-      box-shadow: 0 12px 40px rgba(15, 30, 60, 0.18) !important;
-      /* enable transitions while loader may still set display:none — we use flex + pre-show hidden */
+      box-shadow: 0 0 15px 0 rgb(121, 121, 121) !important;
+
+      /* Start hidden + shifted right, animate in on --show */
       display: flex !important;
       align-items: stretch;
       justify-content: stretch;
       opacity: 0;
       transform: translate3d(16px, 0, 0) scale(0.98);
       pointer-events: none;
-      filter: blur(0);
+
       transition:
-        opacity 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-        box-shadow 0.4s ease,
+        opacity     0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        transform   0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow  0.4s ease,
         border-radius 0.4s ease,
-        max-width 0.45s ease,
-        max-height 0.45s ease,
-        min-width 0.45s ease;
+        max-width   0.45s ease,
+        min-width   0.45s ease;
     }
+
+    /* Panel is visible and interactive */
     .lex-web-ui-iframe.lex-web-ui-iframe--show {
       opacity: 1;
       transform: translate3d(0, 0, 0) scale(1);
       pointer-events: auto;
     }
-    .lex-web-ui-iframe--minimize {
-      position: fixed !important;
-      top: auto !important;
-      bottom: 18px !important;
-      right: 18px !important;
-      left: auto !important;
-      width: 68px !important;
-      height: 68px !important;
-      min-width: 68px !important;
-      max-width: 68px !important;
-      min-height: 68px !important;
-      max-height: 68px !important;
-      border-radius: 999px !important;
-      box-shadow: 0 12px 28px rgba(15, 30, 60, 0.24) !important;
+
+    /* inner <iframe> gets the same border-radius as the container */
+    .lex-web-ui-iframe iframe {
+      border-radius: 12px !important;
+      width: 100% !important;
+      height: 100% !important;
+      border: none;
     }
 
-    /* Tablet: slightly narrower panel and tighter offsets */
+    /* ── Tablet: keep MS 390px width ────────────────────────────── */
     @media (max-width: 1024px) {
       .lex-web-ui-iframe {
-        width: min(46vw, 420px) !important;
-        min-width: 300px !important;
-        height: calc(100dvh - 16px) !important;
-        top: 8px !important;
-        right: 8px !important;
+        width:     390px !important;
+        min-width: 390px !important;
+        max-width: 390px !important;
+        height:    95vh !important;
+        max-height: calc(100dvh - 16px) !important;
+        top:    auto !important;
+        right:  8px !important;
         bottom: 8px !important;
       }
     }
 
-    /* Mobile: full-screen iframe overlay for best usability */
+    /* ── Mobile: full-screen overlay ────────────────────────────── */
     @media (max-width: 768px) {
       .lex-web-ui-iframe {
-        width: 100vw !important;
+        width:     100vw !important;
         min-width: 100vw !important;
         max-width: 100vw !important;
-        height: 100dvh !important;
+        height:    100dvh !important;
         max-height: 100dvh !important;
-        top: 0 !important;
-        right: 0 !important;
+        top:    0 !important;
+        right:  0 !important;
         bottom: 0 !important;
-        left: 0 !important;
+        left:   0 !important;
         border-radius: 0 !important;
         margin: 0 !important;
       }
       .lex-web-ui-iframe iframe {
         border-radius: 0 !important;
       }
-      .lex-web-ui-iframe--minimize {
-        top: auto !important;
-        left: auto !important;
-        width: 56px !important;
-        height: 56px !important;
-        min-width: 56px !important;
-        max-width: 56px !important;
-        min-height: 56px !important;
-        max-height: 56px !important;
-        right: 12px !important;
-        bottom: 12px !important;
-        border-radius: 999px !important;
-      }
-      .lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
-        border-radius: 999px !important;
-      }
     }
-    /* Keep minimized launcher pinned to bottom-right on all breakpoints */
+
+    /* ── Minimized state: floating round launcher button ─────────── */
+    /*
+      When user clicks the toolbar close/minimize button, the loader adds
+      --minimize to the container, which makes it a small circle pinned
+      bottom-right. The MinButton.vue inside the iframe renders the
+      chat icon inside this circle.
+    */
     .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
-      position: fixed !important;
-      top: auto !important;
-      left: auto !important;
-      right: 12px !important;
-      bottom: 12px !important;
-      width: 56px !important;
-      height: 56px !important;
-      min-width: 56px !important;
-      max-width: 56px !important;
+      position:   fixed !important;
+      top:        auto !important;
+      left:       auto !important;
+      right:      12px !important;
+      bottom:     12px !important;
+      width:      56px !important;
+      height:     56px !important;
+      min-width:  56px !important;
+      max-width:  56px !important;
       min-height: 56px !important;
       max-height: 56px !important;
       border-radius: 999px !important;
@@ -160,85 +202,172 @@
       transform: none !important;
       box-shadow: none !important;
       background: transparent !important;
+      overflow: visible;
     }
+
+    /* Desktop: match the MDES 56px gold FAB launcher */
     @media (min-width: 769px) {
       .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
-        right: 18px !important;
-        bottom: 18px !important;
-        width: 68px !important;
-        height: 68px !important;
-        min-width: 68px !important;
-        max-width: 68px !important;
-        min-height: 68px !important;
-        max-height: 68px !important;
+        right:      16px !important;
+        bottom:     16px !important;
+        width:      56px !important;
+        height:     56px !important;
+        min-width:  56px !important;
+        max-width:  56px !important;
+        min-height: 56px !important;
+        max-height: 56px !important;
       }
     }
-    .lex-web-ui-iframe iframe {
-      border-radius: 12px !important;
-    }
+
+    /* Minimized iframe itself gets round clip */
     .lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
-      border-radius: 85px !important;
+      border-radius: 999px !important;
       background: transparent !important;
     }
+
+    /* ── Respect reduced-motion preference ──────────────────────── */
     @media (prefers-reduced-motion: reduce) {
-      .lex-web-ui-iframe,
-      .lex-web-ui-iframe--minimize {
+      .lex-web-ui-iframe {
         transition: none !important;
       }
     }
   </style>
 </head>
+
 <body>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       YOUR SITE CONTENT — replace everything inside .page-content
+       with your real application markup. The chat panel floats on
+       the right independently; it does not affect this layout.
+  ══════════════════════════════════════════════════════════════ -->
   <div class="page-shell">
     <div class="page-content">
       <h1>Employment services portal (demo page)</h1>
-      <!--<p>
-        The chat assistant is fixed on the <strong>right</strong>, like the Maggi
-        pattern: your real site content stays on the left; the Lex Web UI runs only
-        inside the panel. This is a <strong>local</strong> preview — use the same
-        script + config pattern when you host on CloudFront/S3.
-      </p>
-      <div class="page-cards">
-        <div class="page-card">
-          <h2>Account &amp; sign-in</h2>
-          <p>Sample card — replace with your app.</p>
-        </div>
-        <div class="page-card">
-          <h2>Help &amp; support</h2>
-          <p>Use the assistant on the right for claims questions.</p>
-        </div>
-      </div>
-      <p class="page-hint">
-        Open: <code>/right-panel.html</code> (panel mode) or <code>/index.html</code> (full page).
-      </p>-->
     </div>
   </div>
 
+  <!-- ══════════════════════════════════════════════════════════════
+       LOADER LIBRARY
+       Exposes window.ChatBotUiLoader = { IframeLoader, FullPageLoader }
+       Served from the same origin by server.js (/dist → /web-lex-standalone)
+  ══════════════════════════════════════════════════════════════ -->
   <script src="./lex-web-ui-loader.min.js"></script>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       BOOTSTRAP SCRIPT
+       ─────────────────────────────────────────────────────────────
+       Step-by-step flow:
+         1. Derive origin from window.location so this file works
+            unchanged on localhost, CloudFront, or any other host.
+         2. Create IframeLoader with shouldLoadConfigFromJsonFile: false
+            so the loader itself does NOT fetch the config — we do it
+            manually below to guarantee correct key placement.
+         3. fetch() the config JSON from the same origin.
+         4. Patch origin-dependent fields (parentOrigin, iframeOrigin)
+            so they always match the actual host.
+         5. Force shouldLoadIframeMinimized = false so the panel opens
+            immediately (not as a minimized bubble).
+         6. Call iframeLoader.load(cfg) which:
+              a. Creates <div class="lex-web-ui-iframe"> in the DOM
+              b. Injects <iframe src="/index.html#/?lexWebUiEmbed=true">
+              c. Waits for Vue app inside iframe to post "ready"
+              d. Exchanges config via postMessage (initIframeConfig)
+              e. Calls showIframe() → adds --show class → CSS animates in
+         7. On success, "right-panel: Lex iframe ready" logs to console.
+
+       Config key nesting rules (from prior debugging):
+         - "recorder"  must be TOP-LEVEL (not inside "ui")
+         - "ui"        must be TOP-LEVEL
+         - "lex"       must be TOP-LEVEL
+         - "cognito"   must be TOP-LEVEL
+         - "iframe"    must be TOP-LEVEL
+  ══════════════════════════════════════════════════════════════ -->
   <script>
     (function () {
+      'use strict';
+
       var origin = window.location.origin;
+
+      /*
+        shouldLoadConfigFromJsonFile: false
+          We fetch the config ourselves (see fetch() below) so we can
+          guarantee the correct structure before passing to load().
+          If set to true the loader would also fetch it internally,
+          potentially creating a race or double-merge.
+
+        shouldLoadConfigFromEvent: false
+          No dynamic event-based config injection needed.
+
+        shouldLoadMinDeps: true
+          Use minified production bundles (lex-web-ui.min.js etc.).
+
+        shouldIgnoreConfigWhenEmbedded: false  (loader default)
+          The iframe (index.html?lexWebUiEmbed=true) must receive the
+          full config including Cognito pool ID and Lex bot IDs.
+          Setting this to true would strip those fields, breaking auth.
+      */
       var loaderOpts = {
         baseUrl: origin + '/',
         shouldLoadConfigFromEvent: false,
         shouldLoadConfigFromJsonFile: false,
         shouldLoadMinDeps: true,
       };
+
       var IframeLoader = window.ChatBotUiLoader.IframeLoader;
       var iframeLoader = new IframeLoader(loaderOpts);
+
+      /*
+        Fetch the single config file served by Express at:
+          GET /lex-web-ui-loader-config.json
+          → maps to src/config/lex-web-ui-loader-config.json on disk
+
+        After fetch we patch two fields that must match the actual host:
+          cfg.ui.parentOrigin   — origin the iframe trusts for postMessage
+          cfg.iframe.iframeOrigin — origin prepended to iframeSrcPath
+
+        We also force shouldLoadIframeMinimized = false so the panel
+        is always visible on page load (not collapsed to a dot).
+      */
       fetch(origin + '/lex-web-ui-loader-config.json')
-        .then(function (r) { return r.json(); })
+        .then(function (response) {
+          if (!response.ok) {
+            throw new Error(
+              'Failed to load config: ' + response.status + ' ' + response.statusText
+            );
+          }
+          return response.json();
+        })
         .then(function (cfg) {
-          cfg.ui = cfg.ui || {};
+          /* Guarantee required top-level keys exist */
+          cfg.ui     = cfg.ui     || {};
           cfg.iframe = cfg.iframe || {};
-          cfg.ui.parentOrigin = origin;
-          cfg.iframe.iframeOrigin = origin;
+
+          /* Patch origin-dependent fields */
+          cfg.ui.parentOrigin        = origin;
+          cfg.iframe.iframeOrigin    = origin;
+
+          /* Always open expanded, not as a minimized bubble */
           cfg.iframe.shouldLoadIframeMinimized = false;
+
+          /*
+            NOTE: cfg.recorder = { "enable": false } must already be
+            present at the TOP LEVEL of the JSON file (not inside cfg.ui).
+            If it is inside cfg.ui the store's state.js line:
+              isRecorderEnabled: (config.recorder) ? !!config.recorder.enable : true
+            will not see it and the mic button will still appear.
+          */
+
           return iframeLoader.load(cfg);
         })
-        .then(function () { console.log('right-panel: Lex iframe ready'); })
-        .catch(function (e) { console.error(e); });
-    })();
+        .then(function () {
+          console.log('right-panel: Lex iframe ready');
+        })
+        .catch(function (err) {
+          console.error('right-panel: failed to load Lex chat widget', err);
+        });
+    }());
   </script>
+
 </body>
 </html>

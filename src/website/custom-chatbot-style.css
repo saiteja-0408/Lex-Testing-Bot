@@ -1,50 +1,99 @@
-/* Maggi-style: navy header, light chat area, dark blue bot bubbles, pill quick actions */
+/* ============================================================
+   Mississippi (MS / MDES "Sippi") theme for aws-lex-web-ui
+   Ported from the Kore.ai chatWindowMS.css reference so the Lex
+   chat window matches the original MS look.
 
+   Reference tokens
+   (web-kore-standalone/UI/chatWindowMS.css + custom/customTemplate.css):
+     user bubble gradient : linear-gradient(90deg, #3a78a0, #295687)   (MDES alt: #005487 -> #002B45)
+     bot bubble           : #1a3b4c
+     chat body background : rgb(234, 238, 243)  == #eaeef3
+     header accent blue   : #1c3e64
+     launcher / minimized : #FECA5D (yellow)
+     fonts                : "freight-sans-pro", "Open Sans"
+     bubble geometry      : radius 12px, speech tail 2px
+                            (bot: bottom-left, user: bottom-right)
+   ============================================================ */
+
+/* Open Sans. freight-sans-pro is an Adobe Typekit (paid) font, listed
+   first so it is used when a Typekit is present, otherwise Open Sans.
+   Remove this @import for a fully offline / no-external-request build. */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+
+/* ---- App font ---- */
 #lex-web,
+#lex-web .message-text,
+#lex-web .message-bubble,
+#lex-web .v-toolbar,
+#lex-web input,
+#lex-web .lex-quick-reply-btn {
+  font-family: "freight-sans-pro", "Open Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+/* ---- Chat body background (MS light blue-grey) ----
+   Paint only the chat viewport, NOT the #lex-web app root. Painting the
+   root leaves a grey square behind the round minimized launcher. */
 #lex-web .v-main,
 .message-list-container {
-  background-color: #e8eef5 !important;
+  background-color: #eaeef3 !important;   /* rgb(234,238,243) */
+}
+/* App root stays transparent so the minimized launcher is a clean circle */
+#lex-web {
+  background-color: transparent !important;
 }
 
-/* ---- Navy toolbar, white text (reference header) ---- */
+/* ---- White MDES header: blue title, grey controls, status dot ----
+   Matches the live MDES chat header: white bg, #1c3e64 title, avatar left,
+   status dot + grey text, dark-grey controls, 12px top radius, flat w/ border. */
 #lex-web .v-toolbar {
-  background-color: #1e3a5f !important;
-  color: #fff !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
-}
-#lex-web .v-toolbar .v-btn {
-  color: #fff !important;
-}
-#lex-web .v-toolbar .v-icon {
-  color: #fff !important;
+  background-color: #ffffff !important;
+  color: #1c3e64 !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  box-shadow: none !important;   /* MDES header is flat */
 }
 #lex-web .toolbar-maggi-heading {
-  color: #fff !important;
+  color: #1c3e64 !important;
+  font-weight: 600 !important;
+}
+#lex-web .v-toolbar .v-btn,
+#lex-web .v-toolbar .v-icon {
+  color: #5a6b7a !important;     /* MDES grey control icons */
 }
 #lex-web .toolbar-maggi-status-text {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-#lex-web .toolbar-maggi-status-dot {
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
-}
-#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connected {
-  background: #48bb78 !important;
-}
-#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--disconnected {
-  background: #e53935 !important;
+  color: #8a959f !important;     /* grey status text */
 }
 #lex-web .v-toolbar .v-toolbar__content {
-  color: #fff;
+  color: #1c3e64;
 }
 
-/* Bot messages: dark blue bubble, white text */
+/* ---- 3-state connection status dot (offline / connecting / online) ---- */
+#lex-web .toolbar-maggi-status-dot {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);   /* subtle ring on white header */
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connected {
+  background: #48bb78 !important;   /* online  */
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connecting {
+  background: #f6c343 !important;   /* connecting */
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--disconnected {
+  background: #e53935 !important;   /* offline */
+}
+
+/* ============================================================
+   MESSAGE BUBBLES  (the core MS look)
+   ============================================================ */
+
+/* Bot bubble: dark navy, white text, speech tail bottom-left */
 .message-bot .message-bubble,
 .message-type-bot .message-bubble {
-  background-color: #1e3a5f !important;
+  background: #1a3b4c !important;
   color: #fff !important;
   border-radius: 12px !important;
+  border-bottom-left-radius: 2px !important;
 }
-
 .message-bot .message-text,
 .message-type-bot .message-text,
 .message-bot .message-bubble p,
@@ -52,10 +101,20 @@
   color: #fff !important;
 }
 
-/* User messages */
+/* User bubble: MS blue gradient, white text, speech tail bottom-right */
 .message-human .message-bubble {
-  background-color: #e3f2fd !important;
-  color: #0d47a1 !important;
+  background: linear-gradient(90deg, #3a78a0, #295687) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+  border-bottom-right-radius: 2px !important;
+}
+.message-human .message-text,
+.message-human .message-bubble p {
+  color: #fff !important;
+}
+.message-human .message-bubble a {
+  color: #fff !important;
+  text-decoration: underline;
 }
 
 .message-bubble p {
@@ -65,7 +124,9 @@
   margin-bottom: 0;
 }
 
-/* Lex response card / inline buttons: pill, outlined */
+/* ============================================================
+   RESPONSE CARD BUTTONS + QUICK REPLIES  (white pill, blue outline)
+   ============================================================ */
 .v-card-actions .v-btn,
 .button-row .v-btn,
 .message-bubble .v-btn {
@@ -74,7 +135,6 @@
   color: #1565c0 !important;
   background: #fff !important;
 }
-
 .v-card {
   box-shadow: none !important;
   background-color: transparent !important;
@@ -82,7 +142,7 @@
 
 /* Default quick-reply strip (above input) */
 .lex-default-quick-replies {
-  background: #e8eef5 !important;
+  background: #eaeef3 !important;
   border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
 .lex-default-quick-replies .lex-quick-reply-btn {
@@ -91,7 +151,9 @@
   background: #fff !important;
 }
 
-/* White input bar, gray placeholder */
+/* ============================================================
+   INPUT BAR  (white, gray placeholder)
+   ============================================================ */
 #lex-web .input-container,
 #lex-web .v-toolbar.input-container,
 #lex-web .toolbar-content {
@@ -110,3 +172,47 @@
 #lex-web .v-toolbar .icon-color .v-icon {
   color: #78909c !important;
 }
+
+/* ============================================================
+   SIZING & SPACING  (match MS chatWindowMS.css geometry)
+     header 40px · list padding 20px · bubble 14px / padding 12px 15px
+     · bubble max-width 95% · line-height 1.5
+   ============================================================ */
+
+/* Compact header (MS header height: 40px) */
+#lex-web .v-toolbar,
+#lex-web .v-toolbar .v-toolbar__content {
+  min-height: 44px !important;
+  height: 44px !important;
+}
+
+/* Message list padding (MS .chat-container: 20px) */
+#lex-web .message-list-container {
+  padding: 20px !important;
+}
+
+/* Message text: 14px / line-height 1.5 (MS) */
+#lex-web .message-text,
+#lex-web .message-bubble,
+#lex-web .message-bubble p {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* Bubble geometry: padding 12px 15px, wider max-width (MS: 95%) */
+#lex-web .message-bubble {
+  padding: 12px 15px !important;
+  max-width: 90% !important;
+}
+
+/* ============================================================
+   MINIMIZED LAUNCHER  (MS yellow circle)
+   The parent page applies .lex-web-ui-iframe--minimize; the bot
+   avatar/icon renders inside. Uncomment to use the MS yellow launcher.
+   ============================================================ */
+/*
+.lex-web-ui-iframe.lex-web-ui-iframe--minimize .min-button,
+.lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
+  background: #FECA5D !important;
+}
+*/
