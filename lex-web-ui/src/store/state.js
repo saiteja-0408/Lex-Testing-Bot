@@ -38,6 +38,7 @@ export default {
   chatMode: chatMode.BOT,
   lex: {
     acceptFormat: 'audio/ogg',
+    connectionStatus: 'offline',
     dialogState: '',
     isInterrupting: false,
     isProcessing: false,

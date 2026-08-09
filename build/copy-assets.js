@@ -17,10 +17,38 @@ const distDir = path.join(rootDir, 'dist')
 const depsDir = path.join(rootDir, 'src', 'dependencies')
 const bundleDir = path.join(rootDir, 'lex-web-ui', 'dist', 'bundle')
 const websiteDir = path.join(rootDir, 'src', 'website')
+const stylesDir = path.join(websiteDir, 'styles')
+const standaloneDir = path.join(rootDir, 'web-lex-standalone')
 
 // Ensure dist directory exists
 if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true })
+}
+
+console.log('[INFO] Building theme CSS from partials...')
+
+// Build custom-chatbot-style.css by concatenating src/website/styles/*.css
+// in filename order (00-fonts first — CSS @import must precede all rules).
+// The generated file is the ONLY copy anyone should serve; edit the partials.
+if (fs.existsSync(stylesDir)) {
+  const partials = fs
+    .readdirSync(stylesDir)
+    .filter((f) => f.endsWith('.css'))
+    .sort()
+  const banner =
+    '/* GENERATED FILE — DO NOT EDIT.\n' +
+    '   Source partials: src/website/styles/*.css\n' +
+    '   Rebuild with:    node build/copy-assets.js  (or npm run sync-assets)\n' +
+    `   Built from: ${partials.join(', ')} */\n\n`
+  const css =
+    banner +
+    partials
+      .map((f) => fs.readFileSync(path.join(stylesDir, f), 'utf8').trim())
+      .join('\n\n')
+  fs.writeFileSync(path.join(websiteDir, 'custom-chatbot-style.css'), `${css}\n`)
+  console.log(`  ✓ Built custom-chatbot-style.css from ${partials.length} partials`)
+} else {
+  console.log('  ⚠ styles/ directory not found — using existing custom-chatbot-style.css')
 }
 
 console.log('[INFO] Copying dependencies...')
@@ -72,6 +100,18 @@ if (fs.existsSync(websiteDir)) {
       console.log(`  ✓ Copied: ${file}`)
     }
   })
+}
+
+console.log('[INFO] Syncing standalone folder...')
+
+// web-lex-standalone/ is the self-contained deployable — keep its theme CSS
+// in sync automatically (this used to be a manual `cp`, which drifted).
+if (fs.existsSync(standaloneDir)) {
+  const themeSrc = path.join(websiteDir, 'custom-chatbot-style.css')
+  if (fs.existsSync(themeSrc)) {
+    fs.copyFileSync(themeSrc, path.join(standaloneDir, 'custom-chatbot-style.css'))
+    console.log('  ✓ Synced: web-lex-standalone/custom-chatbot-style.css')
+  }
 }
 
 console.log('[INFO] Asset copying complete!')

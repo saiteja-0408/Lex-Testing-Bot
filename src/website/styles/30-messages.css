@@ -1,0 +1,57 @@
+/* ============================================================
+   30 — MESSAGE BUBBLES  (the core MS look)
+   ============================================================ */
+
+/* Bot bubble: dark navy, white text, speech tail bottom-left */
+.message-bot .message-bubble,
+.message-type-bot .message-bubble {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+}
+.message-bot .message-text,
+.message-type-bot .message-text,
+.message-bot .message-bubble p,
+.message-type-bot .message-bubble p {
+  color: #fff !important;
+}
+
+/* User bubble: MS blue gradient, white text, speech tail bottom-right */
+.message-human .message-bubble {
+  background: var(--ms-user-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-right-radius: var(--ms-bubble-tail) !important;
+}
+.message-human .message-text,
+.message-human .message-bubble p {
+  color: #fff !important;
+}
+.message-human .message-bubble a {
+  color: #fff !important;
+  text-decoration: underline;
+}
+/* Bot-bubble links: MDES chat link blue */
+.message-bot .message-bubble a,
+.message-type-bot .message-bubble a {
+  color: var(--ms-link-blue) !important;
+}
+
+/* Kore bubbles have NO border/shadow — remove Vuetify's subtle bubble shadow
+   (it reads as an extra border on both sent and response messages). */
+#lex-web .message-bubble,
+#lex-web .message-bubble:hover,
+#lex-web .message-bubble:focus,
+#lex-web .message-bubble.focusable:focus {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.message-bubble p {
+  margin-bottom: 8px;
+}
+.message-bubble p:last-child {
+  margin-bottom: 0;
+}
