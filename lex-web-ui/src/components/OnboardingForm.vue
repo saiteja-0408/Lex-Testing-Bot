@@ -18,36 +18,15 @@
         @click="$emit('close')"
       >&times;</button>
 
-      <!-- Terms "page navigate": MDES Disclaimer view (gradient header + bordered message) -->
-      <div v-if="showTermsViewer" class="disclaimer-view">
-        <div class="disclaimer-header">
-          <!-- Back button: "‹ botName" — returns to the onboarding form -->
-          <button
-            type="button"
-            class="disclaimer-back"
-            aria-label="Back to form"
-            @click="closeTermsViewer"
-          >
-            <svg class="disclaimer-back-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-            <span>{{ botName }}</span>
-          </button>
-          <!-- Close: closes the whole chat widget -->
-          <button
-            type="button"
-            class="disclaimer-close"
-            aria-label="Close"
-            @click="$emit('close')"
-          >&times;</button>
-          <h2 class="disclaimer-title">{{ termsTitle }}</h2>
-        </div>
-        <div class="disclaimer-body">
-          <div class="disclaimer-message">
-            <p>{{ disclaimerFullText }}</p>
-          </div>
-        </div>
-      </div>
+      <!-- Terms "page navigate": extracted MDES Disclaimer component -->
+      <onboarding-disclaimer
+        v-if="showTermsViewer"
+        :bot-name="botName"
+        :title="termsTitle"
+        :message="disclaimerFullText"
+        @back="closeTermsViewer"
+        @close="$emit('close')"
+      />
 
       <div v-else class="onboarding-content">
           <!-- MS banner: magnolia logo + cornflowerblue welcome + bold subtitle -->
@@ -136,8 +115,22 @@
 </template>
 
 <script>
+/**
+ * MDES onboarding ("collect user details") form.
+ *
+ * What it does:      renders the MS welcome form (magnolia banner, fields,
+ *                    agreement, submit) and hosts the disclaimer sub-view.
+ * What it does NOT:  talk to Lex or persist anything — it emits 'complete'
+ *                    with the collected fields and lets LexWeb.vue decide.
+ * Called by:         LexWeb.vue. Calls: OnboardingDisclaimer.vue,
+ *                    config/onboardingDefaults.js (fallback copy/colors).
+ */
+import OnboardingDisclaimer from './OnboardingDisclaimer.vue';
+import { onboardingValue } from '../config/onboardingDefaults';
+
 export default {
   name: 'onboarding-form',
+  components: { OnboardingDisclaimer },
   emits: ['close', 'complete'],
   data() {
     return {
@@ -154,69 +147,38 @@ export default {
     c() {
       return this.$store.state.config.ui;
     },
-    welcomeTitle() {
-      return this.c.onboardingWelcomeTitle || 'Welcome!';
-    },
-    welcomeSubtitle() {
-      return this.c.onboardingWelcomeSubtitle || 'Please fill out information below!';
-    },
-    firstNameLabel() {
-      return this.c.onboardingFirstNameLabel || 'First Name';
-    },
-    lastNameLabel() {
-      return this.c.onboardingLastNameLabel || 'Last Name';
-    },
-    emailLabel() {
-      return this.c.onboardingEmailLabel || 'Email (Optional)';
-    },
-    termsUrl() {
-      return this.c.onboardingTermsUrl || '#';
-    },
-    termsLinkText() {
-      return this.c.onboardingTermsLinkText || 'Terms and services';
-    },
-    termsBeforeLink() {
-      return this.c.onboardingTermsBeforeLink
-        || 'I have read and agree to the ';
-    },
-    termsAfterLink() {
-      return this.c.onboardingTermsAfterLink
-        || ' in regards to the use of personal information in this chat bot.';
-    },
-    startButtonText() {
-      return this.c.onboardingStartButtonText || 'Start Chatting';
-    },
-    // MS submit button colour (#09538b); config-overridable.
-    ctaColor() {
-      return this.c.onboardingButtonColor || '#09538b';
-    },
+    // All fallback copy/colors live in config/onboardingDefaults.js —
+    // change defaults there, not here.
+    welcomeTitle() { return this.cfg('onboardingWelcomeTitle'); },
+    welcomeSubtitle() { return this.cfg('onboardingWelcomeSubtitle'); },
+    firstNameLabel() { return this.cfg('onboardingFirstNameLabel'); },
+    lastNameLabel() { return this.cfg('onboardingLastNameLabel'); },
+    emailLabel() { return this.cfg('onboardingEmailLabel'); },
+    termsUrl() { return this.cfg('onboardingTermsUrl'); },
+    termsLinkText() { return this.cfg('onboardingTermsLinkText'); },
+    termsBeforeLink() { return this.cfg('onboardingTermsBeforeLink'); },
+    termsAfterLink() { return this.cfg('onboardingTermsAfterLink'); },
+    startButtonText() { return this.cfg('onboardingStartButtonText'); },
+    ctaColor() { return this.cfg('onboardingButtonColor'); },
     // MS magnolia logo, e.g. onboardingAgentAvatarUrl: "/bot-config/AvatarIcon.png"
-    avatarUrl() {
-      return this.c.onboardingAgentAvatarUrl || '';
-    },
-    // Disclaimer ("page navigate") content — matches the MDES disclaimer view.
+    avatarUrl() { return this.cfg('onboardingAgentAvatarUrl'); },
+    // Disclaimer ("page navigate") content — rendered by OnboardingDisclaimer.vue
     botName() {
       return this.c.toolbarTitle || this.c.pageTitle || '';
     },
-    termsTitle() {
-      return this.c.onboardingTermsTitle || 'Disclaimer';
-    },
-    disclaimerHeading() {
-      return this.c.onboardingDisclaimerHeading || 'Important message';
-    },
-    disclaimerMessage() {
-      return this.c.onboardingDisclaimerMessage
-        || 'This virtual assistant may ask for identifying information needed to '
-         + 'answer your question(s). We follow strict security guidelines to protect '
-         + 'your sensitive information. To further protect your information you should '
-         + 'close the chat window and browser when you are finished.';
-    },
+    termsTitle() { return this.cfg('onboardingTermsTitle'); },
+    disclaimerHeading() { return this.cfg('onboardingDisclaimerHeading'); },
+    disclaimerMessage() { return this.cfg('onboardingDisclaimerMessage'); },
     // MDES renders heading + body as one light paragraph (heading, blank line, body).
     disclaimerFullText() {
       return `${this.disclaimerHeading}\n\n${this.disclaimerMessage}`;
     },
   },
   methods: {
+    /** Config value with fallback from ONBOARDING_DEFAULTS (pure helper). */
+    cfg(key) {
+      return onboardingValue(this.c, key);
+    },
     openTermsViewer() {
       this.showTermsViewer = true;
     },
@@ -268,28 +230,40 @@ export default {
      form card : white, curved bottom over grey body
      submit    : full width #09538b, radius 4px, 15px 700
    ============================================================ */
+/* Colors reference the shared theme tokens (custom-chatbot-style.css)
+   with identical literal fallbacks, so the component still renders
+   correctly when the theme stylesheet is absent (e.g. dev server). */
 .onboarding-wrap {
   position: fixed;
   z-index: 2000;
   inset: 0;
   display: flex;
-  align-items: flex-start;
-  justify-content: stretch;
-  background: #eaeef3;
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--ms-body-bg, #eaeef3);
   padding: 0;
   box-sizing: border-box;
-  font-family: "freight-sans-pro", "Open Sans", "Segoe UI", system-ui, sans-serif;
+  overflow-y: auto;          /* scroll the whole card as one unit, so the curve
+                                is always visible at the content's end (any height) */
+  font-family: var(--ms-font-stack, "freight-sans-pro", "Open Sans", "Segoe UI", system-ui, sans-serif);
 }
 .onboarding-card {
   position: relative;
   width: 100%;
   height: auto;
-  max-height: 100%;
-  overflow-y: auto;
+  flex: 0 0 auto;
+  /* Fill the panel minus a fixed grey band, so the curve + grey below it look
+     the SAME at any screen height (band no longer swells on tall screens). */
+  min-height: calc(100% - 64px);
+  max-height: none;
+  overflow: visible;
   background: #fff !important;
-  border-bottom-left-radius: 120px 55px !important;
-  border-bottom-right-radius: 120px 55px !important;
-  box-shadow: 0 8px 18px rgba(15, 30, 60, 0.10);
+  /* Kore .form-container curve. Horizontal radius is proportional (31% ≈ Kore's
+     120px at 390px) so the curve shape stays consistent at any panel width.
+     No shadow (the shadow read as an extra bottom border). */
+  border-bottom-left-radius: 31% 65px !important;
+  border-bottom-right-radius: 31% 65px !important;
+  box-shadow: none !important;
 }
 .onboarding-content {
   height: auto;
@@ -359,14 +333,14 @@ export default {
 }
 .ms-label {
   display: block;
-  color: #737373;
+  color: var(--ms-label-grey, #737373);
   font-size: 16px;
   margin-bottom: 6px;
 }
 .ms-input {
   width: 100%;
   box-sizing: border-box;
-  border: 1px solid #cccccc;
+  border: 1px solid var(--ms-input-border, #cccccc);
   border-radius: 4px;
   height: 36px;
   padding: 6px 10px;
@@ -377,7 +351,7 @@ export default {
 }
 .ms-input:focus {
   outline: none;
-  border-color: #09538b;
+  border-color: var(--ms-cta-blue, #09538b);
 }
 
 /* Agreement */
@@ -401,7 +375,7 @@ export default {
 }
 /* Terms "readmore" link: MDES bright blue, no underline */
 .onboarding-terms-link {
-  color: #0192ff;
+  color: var(--ms-terms-link, #0192ff);
   text-decoration: none;
   cursor: pointer;
   font-weight: 500;
@@ -428,109 +402,9 @@ export default {
   cursor: default;
 }
 .ms-error {
-  color: #e53935;
+  color: var(--ms-error-red, #e53935);
   font-size: 12px;
   margin-top: 4px;
 }
-
-/* ============================================================
-   Disclaimer "page navigate" — matches the MDES disclaimer view:
-     header  : linear-gradient(162deg, #09538b 60%, #f1f1e8), white 700 title
-     message : bordered box (1px groove #6e6e6e, radius 8px, drop shadow), #737373 Open Sans
-   ============================================================ */
-.disclaimer-view {
-  position: fixed;      /* fill the whole panel (card height is auto) */
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  text-align: left;
-  z-index: 3;
-}
-.disclaimer-header {
-  position: relative;
-  flex: 0 0 auto;
-  height: 30%;               /* MDES: header is 30% of the panel (~226px) */
-  min-height: 30%;
-  padding: 50px 18px 0 18px;
-  color: #fff;
-  background-image: linear-gradient(162deg, #09538b 60%, #f1f1e8);
-}
-/* Back button: "‹ botName", top-left, white 600 (MDES go-back-button) */
-.disclaimer-back {
-  position: absolute;
-  top: 14px;
-  left: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: none;
-  background: none;
-  color: #fff;
-  font-family: inherit;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-}
-.disclaimer-back-icon {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: #fff;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.disclaimer-title {
-  margin: 0;
-  color: #fff;
-  font-weight: 700;
-  font-size: clamp(40px, 13vw, 50px);   /* MDES: 50px */
-  line-height: 1.05;
-  text-shadow: 0 0 1px rgba(0, 0, 0, 0.6);
-}
-/* Close: lightgray x, top-right (MDES close-form-button) */
-.disclaimer-close {
-  position: absolute;
-  top: 4px;
-  right: 16px;
-  border: none;
-  background: none;
-  color: #d3d3d3;
-  font-size: 55px;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 4px;
-}
-.disclaimer-close:hover {
-  color: #eee;
-}
-/* Body: pulled up so the message card overlaps the gradient tail (MDES) */
-.disclaimer-body {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  padding: 0 18px 18px;
-  margin-top: -58px;
-  position: relative;
-  z-index: 1;
-  background: transparent;
-}
-.disclaimer-message {
-  border: 1px groove #6e6e6e;
-  border-radius: 8px;
-  box-shadow: 5px 5px 5px grey;
-  padding: 6px;
-  color: #737373;
-  font-family: "Open Sans", sans-serif;
-  font-size: 22px;
-  font-weight: 300;          /* MDES light (~200/300) */
-  line-height: normal;
-  background: #fff;
-}
-.disclaimer-message p {
-  margin: 0;
-  white-space: pre-line;   /* render \n\n paragraph breaks from config */
-}
+/* Disclaimer styles live in OnboardingDisclaimer.vue */
 </style>

@@ -84,9 +84,11 @@ export default {
       const n = this.$store.state.config.ui.minButtonContent.length;
       return (n > 1) ? this.$store.state.config.ui.minButtonContent : false;
     },
-    // MDES gold launcher colour (#FDC245); config-overridable via ui.minButtonColor.
+    // MDES gold launcher colour. Priority: config ui.minButtonColor →
+    // theme token --ms-launcher-gold → literal fallback (#FDC245).
     minButtonColor() {
-      return this.$store.state.config.ui.minButtonColor || '#FDC245';
+      return this.$store.state.config.ui.minButtonColor
+        || 'var(--ms-launcher-gold, #FDC245)';
     },
   },
   methods: {

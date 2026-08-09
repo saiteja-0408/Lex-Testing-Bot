@@ -1,7 +1,7 @@
 {
   "region": "us-east-1",
   "cognito": {
-    "poolId": "us-east-1:741bcd07-21f5-4c9f-8a86-1b214c1110ae",
+    "poolId": "us-east-1:cf5a2408-0073-4261-925a-8f3af807c534",
     "appUserPoolClientId": "49gjda3bnvucta83lvuuag7i8h",
     "appUserPoolName": "us-east-1_TxjN7tKj5",
     "appDomainName": "lexkwebkuikidentitypoolconfigkbmjzuukdgvlja723929011672.auth.us-east-1.amazoncognito.com",
@@ -9,8 +9,8 @@
     "region": "us-east-1"
   },
   "lex": {
-    "v2BotId": "JMDNTNTUCV",
-    "v2BotAliasId": "KLDLVK5BXC",
+    "v2BotId": "RH156CWFXG",
+    "v2BotAliasId": "TSTALIASID",
     "v2BotLocaleId": "en_US",
     "initialText": "Welcome! I am Testing BOT. How can I help you today?",
     "initialSpeechInstruction": "Ask a question or choose a quick action below.",

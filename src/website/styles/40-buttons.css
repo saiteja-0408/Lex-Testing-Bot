@@ -1,0 +1,26 @@
+/* ============================================================
+   40 — RESPONSE CARD BUTTONS + QUICK REPLIES  (white pill, blue outline)
+   ============================================================ */
+.v-card-actions .v-btn,
+.button-row .v-btn,
+.message-bubble .v-btn {
+  text-transform: none !important;
+  border: 1px solid var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+}
+.v-card {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Default quick-reply strip (above input) */
+.lex-default-quick-replies {
+  background: var(--ms-body-bg) !important;
+  border-top: var(--ms-header-border) !important;
+}
+.lex-default-quick-replies .lex-quick-reply-btn {
+  border-color: var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+}

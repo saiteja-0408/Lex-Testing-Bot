@@ -1,0 +1,61 @@
+/* ============================================================
+   05 — DESIGN TOKENS  (single source of truth)
+
+   Mississippi (MS / MDES "Sippi") theme for aws-lex-web-ui.
+   Ported from the Kore.ai reference:
+     web-kore-standalone/UI/chatWindowMS.css
+     web-kore-standalone/UI/custom/customTemplate.css
+   and verified against the live widget on
+   https://reemployms.mdes.ms.gov/cp/landing
+
+   Change a color/size HERE — every partial references these vars.
+   NOTE: this stylesheet loads inside the chat iframe document
+   (dist/index.html), so :root is the iframe's <html>.
+   ============================================================ */
+:root {
+  /* ---- Brand colors ---- */
+  --ms-header-accent:      #1c3e64;   /* header title blue */
+  --ms-bot-bubble-bg:      #1a3b4c;   /* bot bubble dark navy */
+  --ms-user-bubble-bg:     linear-gradient(90deg, #3a78a0, #295687); /* user gradient (MDES alt: #005487 -> #002B45) */
+  --ms-body-bg:            #eaeef3;   /* chat body rgb(234,238,243) */
+  --ms-launcher-gold:      #FDC245;   /* live MDES FAB (ion-fab-button) */
+  --ms-launcher-yellow:    #FECA5D;   /* Kore reference launcher / minimized bubble */
+  --ms-link-blue:          #2894f1;   /* links in bot bubbles (Kore a color) */
+  --ms-btn-outline:        #64b5f6;   /* quick-reply / response-card pill outline */
+  --ms-btn-text:           #1565c0;   /* quick-reply / response-card pill text */
+  --ms-control-grey:       #5a6b7a;   /* header control icons */
+  --ms-status-grey:        #8a959f;   /* status text (Kore secondary font color) */
+  --ms-placeholder-grey:   #9e9e9e;   /* input placeholder */
+  --ms-input-icon-grey:    #78909c;   /* input bar icons (send/mic) */
+
+  /* ---- Onboarding / disclaimer (consumed by components via
+          var(--ms-x, fallback) — see ARCHITECTURE.md token bridge) ---- */
+  --ms-cta-blue:           #09538b;   /* submit button / disclaimer gradient start */
+  --ms-terms-link:         #0192ff;   /* "Terms and services" readmore link */
+  --ms-label-grey:         #737373;   /* field labels / disclaimer text */
+  --ms-input-border:       #cccccc;
+  --ms-error-red:          #e53935;
+  --ms-disclaimer-gradient: linear-gradient(162deg, #09538b 60%, #f1f1e8);
+
+  /* ---- Status dot (3-state connection indicator) ---- */
+  --ms-status-online:      #48bb78;
+  --ms-status-connecting:  #f6c343;
+  --ms-status-offline:     #e53935;
+
+  /* ---- Effects ---- */
+  --ms-footer-shadow:      0 0 20px 0 #cccccc;         /* Kore .kore-chat-footer */
+  --ms-header-border:      1px solid rgba(0, 0, 0, 0.08);
+
+  /* ---- Typography ---- */
+  --ms-font-stack: "freight-sans-pro", "Open Sans", "Segoe UI", system-ui, sans-serif;
+  --ms-bubble-font-size:   14px;      /* Kore .messageBubble */
+  --ms-bubble-line-height: 1.5;
+
+  /* ---- Geometry (Kore chatWindowMS.css) ---- */
+  --ms-bubble-radius:      12px;
+  --ms-bubble-tail:        2px;       /* speech-tail corner (bot: bottom-left, user: bottom-right) */
+  --ms-bubble-padding:     12px 15px;
+  --ms-bubble-max-width:   90%;       /* Kore: 95% */
+  --ms-header-height:      44px;      /* Kore: 40px; 44 fits our 2-line title+status */
+  --ms-list-padding:       20px;      /* Kore ul.chat-container */
+}
