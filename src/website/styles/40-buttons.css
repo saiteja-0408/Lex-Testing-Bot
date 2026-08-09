@@ -1,5 +1,9 @@
 /* ============================================================
-   40 — RESPONSE CARD BUTTONS + QUICK REPLIES  (white pill, blue outline)
+   40 — RESPONSE CARD BUTTONS + QUICK REPLIES
+   Live MDES pill (measured on reemployms.mdes.ms.gov chat):
+     white bg · #539FF2 text AND 1px #539FF2 border · radius 12px
+     · font 14px · compact (~25px tall) · wraps inline next to
+     its siblings, left-aligned with the bot bubble.
    ============================================================ */
 .v-card-actions .v-btn,
 .button-row .v-btn,
@@ -8,13 +12,27 @@
   border: 1px solid var(--ms-btn-outline) !important;
   color: var(--ms-btn-text) !important;
   background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+  letter-spacing: normal !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 1px 10px !important;
+  box-shadow: none !important;
 }
 .v-card {
   box-shadow: none !important;
   background-color: transparent !important;
 }
+/* Left-align the pill rows under the bot bubble (live MDES) */
+.v-card-actions,
+.button-row {
+  justify-content: flex-start !important;
+  flex-wrap: wrap !important;
+  gap: 4px 6px;
+}
 
-/* Default quick-reply strip (above input) */
+/* Default quick-reply strip (above input) — same pill look */
 .lex-default-quick-replies {
   background: var(--ms-body-bg) !important;
   border-top: var(--ms-header-border) !important;
@@ -23,4 +41,6 @@
   border-color: var(--ms-btn-outline) !important;
   color: var(--ms-btn-text) !important;
   background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
 }

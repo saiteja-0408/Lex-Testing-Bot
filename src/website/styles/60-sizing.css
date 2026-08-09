@@ -29,3 +29,11 @@
   padding: var(--ms-bubble-padding) !important;
   max-width: var(--ms-bubble-max-width) !important;
 }
+
+/* Upstream .message-text adds 0.8em inner padding ON TOP of the bubble
+   padding (double padding; live MDES has none — its bubble height is
+   exactly lines*21 + 24). It also shrinks the usable text column, which
+   wrapped short user messages onto two lines. */
+#lex-web .message-text {
+  padding: 0 !important;
+}
