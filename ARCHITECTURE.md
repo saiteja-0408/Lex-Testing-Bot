@@ -105,6 +105,25 @@ fallbacks**: `color: var(--ms-label-grey, #737373)`. Rules:
 - Config still has the last word where a knob exists
   (e.g. `ui.minButtonColor` → token → literal, in that order).
 
+## Message normalizer & template registry (custom payloads)
+
+```
+Lex response ─▶ lib/message-normalizer/        ALL payload conversions (pure fns)
+                    │ canonical: { text, template?, alts? }
+                    ▼
+             Message.vue ─▶ components/message-templates/registry.js
+                            templateType → component (TplButtons, …)
+```
+
+- Bot authoring contract: **docs/BOT-RESPONSES.md** (4 response shapes).
+- Kore payloads (`{"type":"template","payload":{"template_type":"button",…}}`)
+  are accepted verbatim; unknown/malformed payloads degrade to
+  markdown/text — never throw.
+- Adding a template type: 1 component + 1 registry line (+ normalizer case
+  & fixture test if it needs parsing). Message.vue/actions.js untouched.
+- Tests: `npm run test:messages` (node --test, fixtures in
+  lex-web-ui/test/unit/fixtures/).
+
 ## Gotchas (learned the hard way)
 
 1. **Never edit `custom-chatbot-style.css` directly** — it is generated;

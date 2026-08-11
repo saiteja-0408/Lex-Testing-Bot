@@ -326,6 +326,15 @@
   gap: 4px 6px;
 }
 
+/* Custom-payload template pills (message-templates registry): one wrapping
+   row under the bot bubble, left-aligned with the bubble (Kore .with-icon
+   indents content 44px past the avatar). */
+#lex-web .message-template-row {
+  margin: 2px 0 0 0 !important;
+  padding-left: 44px;
+  padding-right: 12px;
+}
+
 /* Default quick-reply strip (above input) — same pill look */
 .lex-default-quick-replies {
   background: var(--ms-body-bg) !important;
@@ -400,6 +409,9 @@
    wrapped short user messages onto two lines. */
 #lex-web .message-text {
   padding: 0 !important;
+  /* Render \n from Lex (PlainText or template text) as real line breaks;
+     Kore payloads use \n\n between paragraphs. */
+  white-space: pre-line;
 }
 
 /* ============================================================

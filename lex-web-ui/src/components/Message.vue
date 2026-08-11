@@ -210,6 +210,14 @@
           </v-col>
         </v-col>
       </v-row>
+      <!-- Custom-payload template (Kore-style buttons etc.) — rendered via
+           the message-templates registry; pills sit below the bubble -->
+      <v-row v-if="message.template" class="message-template-row" d-flex>
+        <message-template
+          :template="message.template"
+          v-on:send="onTemplateSend"
+        />
+      </v-row>
       <v-row v-if="shouldDisplayResponseCard" class="response-card" d-flex mt-2 mr-2 ml-3>
         <response-card
           v-for="(card, index) in message.responseCard.genericAttachments"
@@ -258,6 +266,7 @@ License for the specific language governing permissions and limitations under th
 */
 import MessageText from './MessageText.vue';
 import ResponseCard from './ResponseCard.vue';
+import MessageTemplate from './message-templates/MessageTemplate.vue';
 
 export default {
   name: 'message',
@@ -265,6 +274,7 @@ export default {
   components: {
     MessageText,
     ResponseCard,
+    MessageTemplate,
   },
   data() {
     return {
@@ -450,6 +460,11 @@ export default {
         text: messageText,
       };
       this.$store.dispatch('postTextMessage', message);
+    },
+    // Template pill clicked (message-templates registry) → post as user text
+    onTemplateSend({ text }) {
+      if (!text) return;
+      this.resendMessage(text);
     },
     sendDateTime(dateTime) {
       const message = {

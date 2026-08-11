@@ -30,6 +30,7 @@ import silentMp3 from '@/assets/silent.mp3';
 import { signRequest, signUrl } from '@/store/sigv4-handlers';
 
 import LexClient from '@/lib/lex/client';
+import { normalizeCustomPayload } from '@/lib/message-normalizer';
 
 import { jwtDecode } from "jwt-decode";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
@@ -589,11 +590,14 @@ export default {
               if (tmsg && Array.isArray(tmsg.messages)) {
                 tmsg.messages.forEach((mes, index) => {
                   let alts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
+                  let messageText = mes.value ? mes.value : mes.content ? mes.content : "";
+                  let messageTemplate;
                   if (mes.type === 'CustomPayload' || mes.contentType === 'CustomPayload') {
-                    if (alts === undefined) {
-                      alts = {};
-                    }
-                    alts.markdown = mes.value ? mes.value : mes.content;
+                    // ALL payload conversion lives in lib/message-normalizer
+                    const norm = normalizeCustomPayload(messageText, alts);
+                    messageText = norm.text;
+                    messageTemplate = norm.template;
+                    alts = norm.alts;
                   }
                   // Note that Lex V1 only supported a single responseCard. V2 supports multiple response cards.
                   // This code still supports the V1 mechanism. The code below will check for
@@ -607,7 +611,8 @@ export default {
                   context.dispatch(
                     'pushMessage',
                     {
-                      text: mes.value ? mes.value : mes.content ? mes.content : "",
+                      text: messageText,
+                      template: messageTemplate,
                       isLastMessageInGroup: mes.isLastMessageInGroup ? mes.isLastMessageInGroup : "true",
                       type: 'bot',
                       dialogState: context.state.lex.dialogState,
@@ -623,11 +628,14 @@ export default {
           } else {
             let alts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
             let responseCardObject = JSON.parse(response.sessionAttributes.appContext || '{}').responseCard;
+            let messageText = response.message;
+            let messageTemplate;
             if (response.messageFormat === 'CustomPayload') {
-              if (alts === undefined) {
-                alts = {};
-              }
-              alts.markdown = response.message;
+              // ALL payload conversion lives in lib/message-normalizer
+              const norm = normalizeCustomPayload(response.message, alts);
+              messageText = norm.text;
+              messageTemplate = norm.template;
+              alts = norm.alts;
             }
             if (responseCardObject === undefined) {
               responseCardObject = context.state.lex.responseCard;
@@ -635,7 +643,8 @@ export default {
             context.dispatch(
               'pushMessage',
               {
-                text: response.message,
+                text: messageText,
+                template: messageTemplate,
                 type: 'bot',
                 dialogState: context.state.lex.dialogState,
                 responseCard: responseCardObject, // prefering appcontext over lex.responsecard

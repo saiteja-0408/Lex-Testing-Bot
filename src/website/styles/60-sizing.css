@@ -36,4 +36,7 @@
    wrapped short user messages onto two lines. */
 #lex-web .message-text {
   padding: 0 !important;
+  /* Render \n from Lex (PlainText or template text) as real line breaks;
+     Kore payloads use \n\n between paragraphs. */
+  white-space: pre-line;
 }
