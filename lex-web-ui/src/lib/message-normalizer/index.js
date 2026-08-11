@@ -69,3 +69,31 @@ export function normalizeCustomPayload(raw, alts) {
   nextAlts.markdown = raw;
   return { text: raw, template: undefined, alts: nextAlts };
 }
+
+/**
+ * Normalize ONE Lex message of ANY content type (the single dispatch
+ * point for mixed multi-message responses). Message shape is the client's
+ * v1-format: { type|contentType, value|content, isLastMessageInGroup? }.
+ *
+ *   CustomPayload → template or markdown (above)
+ *   PlainText     → text as-is (\n honored by the theme; URLs auto-link)
+ *   anything else → text as-is (forward-compatible fallback, never throws)
+ *
+ * ImageResponseCards never reach here — the lex client extracts them into
+ * responseCardLexV2 before messages are enumerated.
+ *
+ * @param {object} mes   - one message from the response's messages array
+ * @param {object} alts  - existing alt-messages object (may be undefined)
+ * @returns {{ text, template, alts }} canonical fields for pushMessage
+ */
+export function normalizeLexMessage(mes, alts) {
+  if (!mes) return { text: '', template: undefined, alts };
+  const contentType = mes.type || mes.contentType;
+  const raw = (mes.value !== undefined && mes.value !== null)
+    ? mes.value
+    : (mes.content !== undefined && mes.content !== null) ? mes.content : '';
+  if (contentType === 'CustomPayload') {
+    return normalizeCustomPayload(raw, alts);
+  }
+  return { text: raw, template: undefined, alts };
+}

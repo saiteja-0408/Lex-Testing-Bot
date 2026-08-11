@@ -326,6 +326,31 @@
   gap: 4px 6px;
 }
 
+/* Response-card TITLE — upstream hardcodes an alert-style banner
+   (bg-red-lighten-5 + text-h5, single-line ellipsis). Restyle it to look
+   exactly like a bot message bubble so card responses match the chat. */
+#lex-web .response-card .v-card-title {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+  padding: var(--ms-bubble-padding) !important;
+  display: block !important;
+  white-space: normal !important;      /* wrap — no "…" truncation */
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: 90%;
+  margin-bottom: 6px;
+}
+#lex-web .response-card .v-card-title .text-h5 {
+  font-size: var(--ms-bubble-font-size) !important;
+  font-weight: 400 !important;
+  line-height: var(--ms-bubble-line-height) !important;
+  letter-spacing: normal !important;
+  font-family: var(--ms-font-stack) !important;
+  color: #fff !important;
+}
+
 /* Custom-payload template pills (message-templates registry): one wrapping
    row under the bot bubble, left-aligned with the bubble (Kore .with-icon
    indents content 44px past the avatar). */

@@ -15,6 +15,7 @@ import path from 'node:path';
 import {
   parseMessageTemplate,
   normalizeCustomPayload,
+  normalizeLexMessage,
 } from '../../src/lib/message-normalizer/index.js';
 
 const fixturesDir = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures');
@@ -96,4 +97,48 @@ test('unknown template types still parse (registry decides rendering)', () => {
   const tpl = parseMessageTemplate('{"template_type":"carousel_v9","cards":[]}');
   assert.ok(tpl, 'parser accepts unknown types — UI falls back if unregistered');
   assert.equal(tpl.templateType, 'carousel_v9');
+});
+
+/* ── normalizeLexMessage: MIXED multi-message response ─────────── */
+/* One Lex response carrying PlainText + markdown + button template +
+   the empty card-carrier placeholder — each message must normalize
+   independently (loose coupling). Fixture mirrors client.js v1-format. */
+
+test('mixed response: every message type normalizes independently', () => {
+  const { messages } = JSON.parse(fixture('mixed-response.json'));
+  const out = messages.map((m) => normalizeLexMessage(m, undefined));
+
+  // 1. PlainText — \n preserved, no template, no markdown alt
+  assert.match(out[0].text, /\n\n/);
+  assert.equal(out[0].template, undefined);
+  assert.equal(out[0].alts, undefined);
+
+  // 2. CustomPayload markdown — named link preserved for marked
+  assert.equal(out[1].alts.markdown, '**Status:** approved. [Details](https://mdes.ms.gov/details)');
+  assert.equal(out[1].template, undefined);
+
+  // 3. CustomPayload button template — text + ALL 4 buttons, no markdown
+  assert.equal(out[2].template.templateType, 'button');
+  assert.equal(out[2].template.payload.buttons.length, 4);
+  assert.equal(out[2].text, 'Pick one');
+  assert.equal(out[2].alts, undefined);
+
+  // 4. Card-carrier placeholder — empty text (UI hides the bubble)
+  assert.equal(out[3].text, '');
+  assert.equal(out[3].template, undefined);
+
+  // Only the true last message may display V2 cards
+  assert.equal(messages[3].isLastMessageInGroup, 'true');
+  assert.ok(messages.slice(0, 3).every((m) => m.isLastMessageInGroup === 'false'));
+});
+
+test('normalizeLexMessage: unknown content types fall back to text', () => {
+  const out = normalizeLexMessage({ type: 'SSML', value: '<speak>hi</speak>' }, undefined);
+  assert.equal(out.text, '<speak>hi</speak>');
+  assert.equal(out.template, undefined);
+});
+
+test('normalizeLexMessage: null/absent message never throws', () => {
+  assert.equal(normalizeLexMessage(null, undefined).text, '');
+  assert.equal(normalizeLexMessage({}, undefined).text, '');
 });

@@ -19,6 +19,7 @@
               >
               </div>
               <div
+                v-if="shouldRenderBubble"
                 tabindex="0"
                 @focus="onMessageFocus"
                 @blur="onMessageBlur"
@@ -357,6 +358,16 @@ export default {
         'genericAttachments' in this.message.responseCard &&
         this.message.responseCard.genericAttachments instanceof Array
       );
+    },
+    // Card-only responses arrive with an empty placeholder text message
+    // (client.js appends it to carry the card) — don't render an empty
+    // navy bubble for those; the card/template rows still show.
+    // No navy bubble for text-less bot messages (e.g. the empty placeholder
+    // the lex client appends to card-only responses) — the card/template
+    // rows below the bubble still render.
+    shouldRenderBubble() {
+      if (this.message.type !== 'bot' && this.message.type !== 'agent') return true;
+      return !!(this.message.text && String(this.message.text).trim().length);
     },
     shouldDisplayResponseCardV2() {
       return (

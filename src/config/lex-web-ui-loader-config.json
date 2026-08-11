@@ -75,7 +75,7 @@
     "forceLogin": false,
     "enableUpload": false,
     "uploadS3BucketName": "",
-    "AllowSuperDangerousHTMLInMessage": false,
+    "AllowSuperDangerousHTMLInMessage": true,
     "shouldDisplayResponseCardTitle": false,
     "saveHistory": false,
     "helpContent": {},
