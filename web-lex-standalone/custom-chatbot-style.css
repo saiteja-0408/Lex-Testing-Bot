@@ -360,6 +360,20 @@
   padding-right: 12px;
 }
 
+/* Response-card button rows (ImageResponseCard pills) get the SAME
+   alignment as template pills: start at the bubble's left edge, not at
+   the panel edge under the avatar. */
+#lex-web .response-card {
+  justify-content: flex-start !important;
+  margin: 2px 0 0 0 !important;
+  padding-left: 44px;
+  padding-right: 12px;
+}
+#lex-web .response-card .v-card-actions {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
 /* Default quick-reply strip (above input) — same pill look */
 .lex-default-quick-replies {
   background: var(--ms-body-bg) !important;
