@@ -619,6 +619,307 @@ For issues or questions:
 
 ---
 
-**Last Updated:** April 28, 2026  
-**Version:** 1.0  
+## 10. README parity: implementation checklist (fresh fork)
+
+The following checklist matches [README_RIGHT_PANEL_CUSTOMIZATION.md](README_RIGHT_PANEL_CUSTOMIZATION.md) and groups every area you must touch to reach **full parity** with this fork. Use it as a migration order; details and copy/paste snippets are in **§18** below.
+
+1. **Page + runtime config** — [src/website/right-panel.html](src/website/right-panel.html), [src/config/lex-web-ui-loader-config.json](src/config/lex-web-ui-loader-config.json), [src/website/custom-chatbot-style.css](src/website/custom-chatbot-style.css)
+2. **Onboarding + chat UI behavior (PII flow)** — [lex-web-ui/src/components/LexWeb.vue](lex-web-ui/src/components/LexWeb.vue), [lex-web-ui/src/components/OnboardingForm.vue](lex-web-ui/src/components/OnboardingForm.vue), [lex-web-ui/src/components/DefaultQuickReplies.vue](lex-web-ui/src/components/DefaultQuickReplies.vue), [lex-web-ui/src/components/ToolbarContainer.vue](lex-web-ui/src/components/ToolbarContainer.vue), [lex-web-ui/src/config/index.js](lex-web-ui/src/config/index.js)
+3. **Loader / iframe behavior fixes** — [src/dependencies/initiate-loader.js](src/dependencies/initiate-loader.js), [src/lex-web-ui-loader/js/defaults/loader.js](src/lex-web-ui-loader/js/defaults/loader.js), [src/lex-web-ui-loader/js/lib/iframe-component-loader.js](src/lex-web-ui-loader/js/lib/iframe-component-loader.js)
+4. **Build + serve pipeline** — [build/copy-assets.js](build/copy-assets.js), [lex-web-ui/scripts/post-build-css.js](lex-web-ui/scripts/post-build-css.js), [server.js](server.js), root [package.json](package.json), [lex-web-ui/package.json](lex-web-ui/package.json) (if the fork is missing the same deps)
+5. **Optional parent debug page** — [src/website/parent.html](src/website/parent.html)
+
+**Also read:** [docs/right-panel-implementation-playbook.md](docs/right-panel-implementation-playbook.md) (upstream fork porting), [docs/FORK-KNOWLEDGE-TRANSFER.md](docs/FORK-KNOWLEDGE-TRANSFER.md) (architecture), [docs/online-status-indicator.md](docs/online-status-indicator.md) (toolbar 3-state status).
+
+---
+
+## 11. High-level recap (README alignment)
+
+Compared to stock `aws-samples/aws-lex-web-ui`, this fork behaves like a **productized right assistant**:
+
+- Bot opens as a **polished right-side floating panel** (responsive: `clamp` / `dvh`, full-screen on small viewports — see live CSS in [right-panel.html](src/website/right-panel.html), not only the older 380–420px figures called out earlier in §1).
+- **Pre-chat onboarding** (PII + terms) when `ui.showOnboardingForm` is true.
+- **Quick replies** as chips; **toolbar** branding and **connection status** (Offline / Connecting… / Online) when implemented per [docs/online-status-indicator.md](docs/online-status-indicator.md).
+- **Build + server** tuned to serve custom pages from `dist/` and optional `/bot-config` assets.
+
+---
+
+## 12. File-by-file change map (README §2)
+
+### A. Page entry / host pages
+
+| File | Changes | Impact |
+|------|---------|--------|
+| [src/website/right-panel.html](src/website/right-panel.html) | Full page shell, right floating iframe CSS, fetch-based config, same-origin `parentOrigin` / `iframeOrigin`, default expanded | Defines host look and startup |
+| [src/website/parent.html](src/website/parent.html) | Can stay as debug page or be aligned with right-panel | Diagnostics vs production-like shell |
+| [src/website/custom-chatbot-style.css](src/website/custom-chatbot-style.css) | Toolbar, messages, quick replies, input theming | Branding inside the iframe app |
+
+### B. Runtime config
+
+| File | Changes | Impact |
+|------|---------|--------|
+| [src/config/lex-web-ui-loader-config.json](src/config/lex-web-ui-loader-config.json) | Cognito, Lex V2 IDs, UI, iframe, onboarding strings, quick replies | Main switchboard; wrong values break startup or Lex |
+
+### C. Lex UI components (inside iframe)
+
+| File | Changes | Impact |
+|------|---------|--------|
+| [lex-web-ui/src/components/OnboardingForm.vue](lex-web-ui/src/components/OnboardingForm.vue) | PII fields, terms, validation, `complete` / `close` | Pre-chat UX |
+| [lex-web-ui/src/components/LexWeb.vue](lex-web-ui/src/components/LexWeb.vue) | Onboarding gate, session attributes on complete, layout for quick replies, **no auto-minimize** after onboarding (this fork) | Orchestrates onboarding → chat |
+| [lex-web-ui/src/components/DefaultQuickReplies.vue](lex-web-ui/src/components/DefaultQuickReplies.vue) | Chip strip, bounded height / scroll | Avoids overlap with input |
+| [lex-web-ui/src/components/ToolbarContainer.vue](lex-web-ui/src/components/ToolbarContainer.vue) | Branded toolbar, status line, **3-state dot** when Vuex `connectionStatus` is wired | Header UX |
+| [lex-web-ui/src/config/index.js](lex-web-ui/src/config/index.js) | Defaults for optional UI keys | Avoids undefined config |
+
+### D. Loader and embed behavior
+
+| File | Changes | Impact |
+|------|---------|--------|
+| [src/dependencies/initiate-loader.js](src/dependencies/initiate-loader.js) | Align with embedded config expectations | Startup |
+| [src/lex-web-ui-loader/js/defaults/loader.js](src/lex-web-ui-loader/js/defaults/loader.js) | e.g. `shouldIgnoreConfigWhenEmbedded: false` so iframe keeps full config | Prevents config loss in embed mode |
+| [src/lex-web-ui-loader/js/lib/iframe-component-loader.js](src/lex-web-ui-loader/js/lib/iframe-component-loader.js) | Null-safe localStorage keys for minimize state | Fewer edge-case crashes |
+
+### E. Build + serve
+
+| File | Changes | Impact |
+|------|---------|--------|
+| [build/copy-assets.js](build/copy-assets.js) | Copy `right-panel.html`, `custom-chatbot-style.css` → `dist/` | Without this, `dist/` misses custom pages |
+| [lex-web-ui/scripts/post-build-css.js](lex-web-ui/scripts/post-build-css.js) | CSS post-processing robustness | Reliable CSS after Vite build |
+| [server.js](server.js) | ESM static server: `dist/`, `src/config/`, optional `/bot-config`, `/web-lex-standalone` | Local URL for right-panel |
+| [package.json](package.json), [lex-web-ui/package.json](lex-web-ui/package.json) | Scripts / deps for the workflow | Reproducible install |
+
+---
+
+## 13. Required files to copy into a fresh fork (README §3)
+
+Copy from **this** repository (sources, not hand-edited `dist/`):
+
+- `src/website/right-panel.html`
+- `src/website/custom-chatbot-style.css`
+- `src/config/lex-web-ui-loader-config.json` (replace placeholders for your account)
+- `lex-web-ui/src/components/OnboardingForm.vue`
+- `lex-web-ui/src/components/DefaultQuickReplies.vue`
+- `lex-web-ui/src/components/LexWeb.vue`
+- `lex-web-ui/src/components/ToolbarContainer.vue`
+- `lex-web-ui/src/config/index.js`
+- `src/dependencies/initiate-loader.js`
+- `src/lex-web-ui-loader/js/defaults/loader.js`
+- `src/lex-web-ui-loader/js/lib/iframe-component-loader.js`
+- `build/copy-assets.js`
+- `lex-web-ui/scripts/post-build-css.js`
+- `server.js`
+- `package.json`
+- `lex-web-ui/package.json`
+
+---
+
+## 14. Local run commands (README §4)
+
+From repo root:
+
+```bash
+cd lex-web-ui
+npm install
+npm run build-dist
+cd ..
+npm install
+node build/copy-assets.js
+npm start
+```
+
+Open: `http://localhost:8000/right-panel.html`  
+Optional: `http://localhost:8000/parent.html`
+
+---
+
+## 15. Common issues and fixes (README §5)
+
+Use together with **§7 Troubleshooting** above.
+
+| Symptom | Likely cause | Fix |
+|---------|----------------|-----|
+| White / blank page | Missing or stale `dist/` bundles | Re-run `npm run build-dist`, `node build/copy-assets.js`, restart server |
+| `missing cognito poolId config` | Invalid / empty Cognito in JSON | Fix [lex-web-ui-loader-config.json](src/config/lex-web-ui-loader-config.json) |
+| Bot loads but “unable to process your message” | Lex IAM, alias, locale, or bot ID mismatch | Verify `v2BotId`, `v2BotAliasId`, `v2BotLocaleId` vs Lex console; check Cognito unauth role for Lex runtime |
+| Quick-reply chips overlap input | Reserved height too small | Align [LexWeb.vue](lex-web-ui/src/components/LexWeb.vue) toolbar height calcs and [DefaultQuickReplies.vue](lex-web-ui/src/components/DefaultQuickReplies.vue) `max-height` / `bottom` (see **§18** snippets) |
+
+---
+
+## 16. Notes on behavior (README §6)
+
+- Onboarding shows when `ui.showOnboardingForm` is `true`.
+- Terms behavior is implemented in `OnboardingForm.vue`; closing may map to minimize in `LexWeb.vue` depending on your branch.
+- Quick replies send the configured **`value`** string to Lex as the user message (labels are display-only).
+
+---
+
+## 17. Summary (README §7)
+
+This customization spans **host page**, **runtime JSON**, **Vue components**, **loader**, and **build/serve**. All layers are required for **full parity** when cloning a fresh upstream fork; for **iframe shell only**, see the smaller scope in [docs/right-panel-implementation-playbook.md](docs/right-panel-implementation-playbook.md) (Tier A vs Tier B).
+
+---
+
+## 18. Exact replacements — copy/paste guide (README §8)
+
+This is the “do this exactly” section: what to ensure exists in key files. **Why this helps** lines mirror the README style.
+
+### A) `src/website/right-panel.html` (or aligned `parent.html`)
+
+**Loader options** must include:
+
+```js
+var loaderOpts = {
+  baseUrl: origin + '/',
+  shouldLoadConfigFromEvent: false,
+  shouldLoadConfigFromJsonFile: false,
+  shouldLoadMinDeps: true,
+};
+```
+
+**Load logic** (fetch, patch origins, force expanded). You may add `cfg.iframe.iframeSrcPath` here for redundancy; this fork also sets it in JSON:
+
+```js
+fetch(origin + '/lex-web-ui-loader-config.json')
+  .then(function (r) { return r.json(); })
+  .then(function (cfg) {
+    cfg.ui = cfg.ui || {};
+    cfg.iframe = cfg.iframe || {};
+    cfg.ui.parentOrigin = origin;
+    cfg.iframe.iframeOrigin = origin;
+    // Optional if already in JSON:
+    // cfg.iframe.iframeSrcPath = '/index.html#/?lexWebUiEmbed=true';
+    cfg.iframe.shouldLoadIframeMinimized = false;
+    return iframeLoader.load(cfg);
+  });
+```
+
+**Why this helps:** avoids brittle event-only config handoff and guarantees same-origin + expanded startup.
+
+### B) `src/config/lex-web-ui-loader-config.json`
+
+Ensure required keys exist (replace placeholders for your environment):
+
+```json
+{
+  "region": "us-east-1",
+  "cognito": {
+    "poolId": "us-east-1:REPLACE_ME",
+    "appUserPoolClientId": "REPLACE_ME"
+  },
+  "lex": {
+    "v2BotId": "REPLACE_ME",
+    "v2BotAliasId": "REPLACE_ME",
+    "v2BotLocaleId": "en_US",
+    "region": "us-east-1"
+  },
+  "ui": {
+    "showOnboardingForm": true,
+    "showToolbarStatus": true,
+    "toolbarStatusText": "Online",
+    "toolbarMinimizeButtonIcon": "close"
+  },
+  "iframe": {
+    "iframeOrigin": "http://localhost:8000",
+    "iframeSrcPath": "/index.html#/?lexWebUiEmbed=true"
+  }
+}
+```
+
+**Why this helps:** drives onboarding, toolbar, iframe URL, and Lex connectivity.
+
+### C) `lex-web-ui/src/components/LexWeb.vue`
+
+- Mount onboarding and gate chat with `!showOnboarding` (see README for `v-if` pattern).
+- **Quick-reply overlap:** in the style section, reserve enough vertical space (e.g. adjust `calc(... - 140px)` vs `- 100px`) for `.toolbar-height-sm` / `-md` / `-lg` so chips do not cover the input.
+
+**Why this helps:** chat stays hidden until onboarding completes; layout matches quick-reply strip height.
+
+### D) `lex-web-ui/src/components/DefaultQuickReplies.vue`
+
+Keep the strip bounded and scrollable, for example:
+
+```css
+.lex-default-quick-replies {
+  bottom: 56px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+```
+
+**Why this helps:** aligns with reserved space in `LexWeb.vue`.
+
+### E) `lex-web-ui/src/components/ToolbarContainer.vue`
+
+**Minimum** (config-driven “Online” label from README):
+
+```vue
+<div v-if="showToolbarStatus" class="toolbar-maggi-status">
+  <span class="toolbar-maggi-status-dot" aria-hidden="true"></span>
+  <span class="toolbar-maggi-status-text">{{ toolbarStatusText }}</span>
+</div>
+```
+
+**This fork’s extension:** dynamic dot + **Offline / Connecting… / Online** via `:class="connectionDotClass"` and `displayToolbarStatusText` — see [docs/online-status-indicator.md](docs/online-status-indicator.md) and Vuex `lex.connectionStatus` in `state.js` / `mutations.js` / `actions.js`.
+
+**Why this helps:** branding and optional live connection feedback from the Lex call lifecycle.
+
+### F) `src/dependencies/initiate-loader.js` and `src/lex-web-ui-loader/js/defaults/loader.js`
+
+Set:
+
+```js
+shouldIgnoreConfigWhenEmbedded: false
+```
+
+**Why this helps:** embedded iframe mode keeps Cognito / Lex / UI fields from the merged config.
+
+### G) `src/lex-web-ui-loader/js/lib/iframe-component-loader.js`
+
+Guard `this.config.cognito && this.config.cognito.appUserPoolClientId` before building localStorage keys; read/write only when the key exists.
+
+**Why this helps:** avoids crashes when client ID is absent.
+
+### H) `build/copy-assets.js`
+
+Website copy list must include:
+
+```js
+const websiteFiles = ['custom-chatbot-style.css', 'right-panel.html'];
+```
+
+**Why this helps:** `npm start` serves `dist/right-panel.html` after each copy.
+
+### I) `server.js`
+
+Serve at least `dist/` and `src/config/` (same-origin assets). Add `/bot-config` if JSON references `/bot-config/...` for logos.
+
+**Why this helps:** avoids 404s for config and optional static icons.
+
+---
+
+## 19. Build, copy, run after replacements (README §9)
+
+```bash
+cd lex-web-ui
+npm run build-dist
+cd ..
+node build/copy-assets.js
+npm start
+```
+
+Hard-refresh the browser (`Cmd+Shift+R` on macOS) after changes. Source edits under `src/website` or `lex-web-ui/src` do not affect the running site until the bundle is rebuilt and website files are copied into `dist/`.
+
+---
+
+## 20. Document map
+
+| Doc | Role |
+|-----|------|
+| [README_RIGHT_PANEL_CUSTOMIZATION.md](README_RIGHT_PANEL_CUSTOMIZATION.md) | Short README-style overview + exact §8 snippets |
+| This guide (`RIGHT_PANEL_CUSTOMIZATION_GUIDE.md`) | Deep flow, stakeholder section, FAQ, troubleshooting, **and README §10–20 extensions** |
+| [docs/right-panel-implementation-playbook.md](docs/right-panel-implementation-playbook.md) | Porting `right-panel.html` onto a **vanilla upstream** clone (Tier A / B) |
+
+---
+
+**Last Updated:** May 4, 2026  
+**Version:** 1.1  
 **Status:** Production Ready

@@ -1,0 +1,94 @@
+/* ============================================================
+   40 — RESPONSE CARD BUTTONS + QUICK REPLIES
+   Live MDES pill (measured on reemployms.mdes.ms.gov chat):
+     white bg · #539FF2 text AND 1px #539FF2 border · radius 12px
+     · font 14px · compact (~25px tall) · wraps inline next to
+     its siblings, left-aligned with the bot bubble.
+   ============================================================ */
+.v-card-actions .v-btn,
+.button-row .v-btn,
+.message-bubble .v-btn {
+  text-transform: none !important;
+  border: 1px solid var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+  letter-spacing: normal !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  padding: 1px 10px !important;
+  box-shadow: none !important;
+}
+.v-card {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+/* Left-align the pill rows under the bot bubble (live MDES) */
+.v-card-actions,
+.button-row {
+  justify-content: flex-start !important;
+  flex-wrap: wrap !important;
+  gap: 4px 6px;
+}
+
+/* Response-card TITLE — upstream hardcodes an alert-style banner
+   (bg-red-lighten-5 + text-h5, single-line ellipsis). Restyle it to look
+   exactly like a bot message bubble so card responses match the chat. */
+#lex-web .response-card .v-card-title {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+  padding: var(--ms-bubble-padding) !important;
+  display: block !important;
+  white-space: normal !important;      /* wrap — no "…" truncation */
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: 90%;
+  margin-bottom: 6px;
+}
+#lex-web .response-card .v-card-title .text-h5 {
+  font-size: var(--ms-bubble-font-size) !important;
+  font-weight: 400 !important;
+  line-height: var(--ms-bubble-line-height) !important;
+  letter-spacing: normal !important;
+  font-family: var(--ms-font-stack) !important;
+  color: #fff !important;
+}
+
+/* Custom-payload template pills (message-templates registry): one wrapping
+   row under the bot bubble, left-aligned with the bubble (Kore .with-icon
+   indents content 44px past the avatar). */
+#lex-web .message-template-row {
+  margin: 2px 0 0 0 !important;
+  padding-left: 44px;
+  padding-right: 12px;
+}
+
+/* Response-card button rows (ImageResponseCard pills) get the SAME
+   alignment as template pills: start at the bubble's left edge, not at
+   the panel edge under the avatar. */
+#lex-web .response-card {
+  justify-content: flex-start !important;
+  margin: 2px 0 0 0 !important;
+  padding-left: 44px;
+  padding-right: 12px;
+}
+#lex-web .response-card .v-card-actions {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Default quick-reply strip (above input) — same pill look */
+.lex-default-quick-replies {
+  background: var(--ms-body-bg) !important;
+  border-top: var(--ms-header-border) !important;
+}
+.lex-default-quick-replies .lex-quick-reply-btn {
+  border-color: var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+}

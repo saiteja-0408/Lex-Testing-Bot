@@ -30,6 +30,7 @@ import silentMp3 from '@/assets/silent.mp3';
 import { signRequest, signUrl } from '@/store/sigv4-handlers';
 
 import LexClient from '@/lib/lex/client';
+import { normalizeLexMessage } from '@/lib/message-normalizer';
 
 import { jwtDecode } from "jwt-decode";
 import { fromCognitoIdentityPool } from '@aws-sdk/credential-providers';
@@ -588,13 +589,10 @@ export default {
               const tmsg = JSON.parse(response.message);
               if (tmsg && Array.isArray(tmsg.messages)) {
                 tmsg.messages.forEach((mes, index) => {
-                  let alts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
-                  if (mes.type === 'CustomPayload' || mes.contentType === 'CustomPayload') {
-                    if (alts === undefined) {
-                      alts = {};
-                    }
-                    alts.markdown = mes.value ? mes.value : mes.content;
-                  }
+                  const appContextAlts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
+                  // ALL payload conversion (any content type) lives in
+                  // lib/message-normalizer — this loop stays dumb.
+                  const norm = normalizeLexMessage(mes, appContextAlts);
                   // Note that Lex V1 only supported a single responseCard. V2 supports multiple response cards.
                   // This code still supports the V1 mechanism. The code below will check for
                   // the existence of a single V1 responseCard added to sessionAttributes.appContext by bots
@@ -607,13 +605,14 @@ export default {
                   context.dispatch(
                     'pushMessage',
                     {
-                      text: mes.value ? mes.value : mes.content ? mes.content : "",
+                      text: norm.text,
+                      template: norm.template,
                       isLastMessageInGroup: mes.isLastMessageInGroup ? mes.isLastMessageInGroup : "true",
                       type: 'bot',
                       dialogState: context.state.lex.dialogState,
                       responseCard: tmsg.messages.length - 1 === index // attach response card only
                         ? responseCardObject : undefined, // for last response message
-                      alts,
+                      alts: norm.alts,
                       responseCardsLexV2: response.responseCardLexV2
                     },
                   );
@@ -621,25 +620,25 @@ export default {
               }
             }
           } else {
-            let alts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
+            const appContextAlts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
             let responseCardObject = JSON.parse(response.sessionAttributes.appContext || '{}').responseCard;
-            if (response.messageFormat === 'CustomPayload') {
-              if (alts === undefined) {
-                alts = {};
-              }
-              alts.markdown = response.message;
-            }
+            // ALL payload conversion (any content type) lives in lib/message-normalizer
+            const norm = normalizeLexMessage(
+              { type: response.messageFormat, value: response.message },
+              appContextAlts,
+            );
             if (responseCardObject === undefined) {
               responseCardObject = context.state.lex.responseCard;
             }
             context.dispatch(
               'pushMessage',
               {
-                text: response.message,
+                text: norm.text,
+                template: norm.template,
                 type: 'bot',
                 dialogState: context.state.lex.dialogState,
                 responseCard: responseCardObject, // prefering appcontext over lex.responsecard
-                alts,
+                alts: norm.alts,
               },
             );
           }
@@ -701,21 +700,38 @@ export default {
   },
   startNewSession(context) {
     context.commit('setIsLexProcessing', true);
+    context.commit('setLexConnectionStatus', 'connecting');
     return context.dispatch('checkCredentialsForRefresh')
       .then(() => context.dispatch('getCredentials', context.state.config))
       .then(() => lexClient.startNewSession())
       .then((data) => {
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'online');
         return context.dispatch('updateLexState', data)
           .then(() => Promise.resolve(data));
       })
       .catch((error) => {
         console.error(error);
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'offline');
+      });
+  },
+  testLexConnection(context) {
+    context.commit('setLexConnectionStatus', 'connecting');
+    return context.dispatch('checkCredentialsForRefresh')
+      .then(() => context.dispatch('getCredentials', context.state.config))
+      .then(() => lexClient.deleteSession())
+      .then(() => {
+        context.commit('setLexConnectionStatus', 'online');
+      })
+      .catch((error) => {
+        console.error('testLexConnection failed', error);
+        context.commit('setLexConnectionStatus', 'offline');
       });
   },
   lexPostText(context, text) {
     context.commit('setIsLexProcessing', true);
+    context.commit('setLexConnectionStatus', 'connecting');
     context.commit('reapplyTokensToSessionAttributes');
     const session = context.state.lex.sessionAttributes;
     context.commit('removeAppContext');
@@ -747,6 +763,7 @@ export default {
         //TODO: Waiting for all wsMessages typing on the chat bubbles
         context.commit('setIsStartingTypingWsMessages', false);
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'online');
         return context.dispatch('updateLexState', data)
           .then(() => {
             // Initiate TalkDesk interaction if the session attribute exists and is not a previous session ID
@@ -762,11 +779,13 @@ export default {
         //TODO: Need to handle if the error occurred
         context.commit('setIsStartingTypingWsMessages', false);
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'offline');
         throw error;
       });
   },
   lexPostContent(context, audioBlob, offset = 0) {
     context.commit('setIsLexProcessing', true);
+    context.commit('setLexConnectionStatus', 'connecting');
     context.commit('reapplyTokensToSessionAttributes');
     const session = context.state.lex.sessionAttributes;
     delete session.appContext;
@@ -795,6 +814,7 @@ export default {
           ((timeEnd - timeStart) / 1000).toFixed(2),
         );
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'online');
         return context.dispatch('updateLexState', lexResponse)
           .then(() => (
             context.dispatch('processLexContentResponse', lexResponse)
@@ -803,6 +823,7 @@ export default {
       })
       .catch((error) => {
         context.commit('setIsLexProcessing', false);
+        context.commit('setLexConnectionStatus', 'offline');
         throw error;
       });
   },

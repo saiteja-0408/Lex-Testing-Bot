@@ -136,8 +136,12 @@
           v-if="showToolbarStatus"
           class="toolbar-maggi-status"
         >
-          <span class="toolbar-maggi-status-dot" aria-hidden="true"></span>
-          <span class="toolbar-maggi-status-text">{{ toolbarStatusText }}</span>
+          <span
+            class="toolbar-maggi-status-dot"
+            :class="connectionDotClass"
+            aria-hidden="true"
+          ></span>
+          <span class="toolbar-maggi-status-text">{{ displayToolbarStatusText }}</span>
         </div>
       </div>
     </v-toolbar-title>
@@ -319,6 +323,29 @@ export default {
     },
     toolbarMinimizeButtonIcon() {
       return this.$store.state.config.ui.toolbarMinimizeButtonIcon || 'arrow_drop_down';
+    },
+    lexConnectionStatus() {
+      return (this.$store.state.lex && this.$store.state.lex.connectionStatus)
+        ? this.$store.state.lex.connectionStatus
+        : 'offline';
+    },
+    connectionDotClass() {
+      if (this.lexConnectionStatus === 'online') {
+        return 'toolbar-maggi-status-dot--connected';
+      }
+      if (this.lexConnectionStatus === 'connecting') {
+        return 'toolbar-maggi-status-dot--connecting';
+      }
+      return 'toolbar-maggi-status-dot--disconnected';
+    },
+    displayToolbarStatusText() {
+      if (this.lexConnectionStatus === 'connecting') {
+        return 'Connecting...';
+      }
+      if (this.lexConnectionStatus === 'online') {
+        return this.toolbarStatusText;
+      }
+      return 'Offline';
     },
     isEnableLogin() {
       return this.$store.state.config.ui.enableLogin;
@@ -613,8 +640,18 @@ export default {
 }
 
 .toolbar-image {
-  margin-left: 0px !important;
-  max-height: 100%;
+  width: 32px;
+  height: 45px;
+  min-width: 32px;
+  min-height: 32px;
+  lex:RecognizeText;
+  top: 6px;
+  left: 6px;
+  object-fit: contain;
+  border-radius: 50%;
+  margin: 0 9px 0 4px !important;
+  align-self: center;
+  flex-shrink: 0;
 }
 
 .toolbar-title {
@@ -633,11 +670,12 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  line-height: 1.2;
-  padding: 0.2rem 0;
+  justify-content: center;
+  line-height: 1.1;
+  padding: 0.1rem 0;
 }
 .toolbar-maggi-heading {
-  font-size: 1.15rem;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #1e3a5f;
   margin: 0;
@@ -646,15 +684,24 @@ export default {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
+  padding-left: 1px;
 }
 .toolbar-maggi-status-dot {
   display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #2e7d32;
   flex-shrink: 0;
+}
+.toolbar-maggi-status-dot--connected {
+  background: #2e7d32;
+}
+.toolbar-maggi-status-dot--connecting {
+  background: #f9a825;
+}
+.toolbar-maggi-status-dot--disconnected {
+  background: #d32f2f;
 }
 .toolbar-maggi-status-text {
   font-size: 0.75rem;
@@ -665,6 +712,8 @@ export default {
 }
 .toolbar-maggi-title {
   flex-grow: 1;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
 }
 .toolbar-image-avatar {
   margin-right: 0.5rem;

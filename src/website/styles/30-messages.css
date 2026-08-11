@@ -1,0 +1,145 @@
+/* ============================================================
+   30 — MESSAGE BUBBLES  (the core MS look)
+   ============================================================ */
+
+/* Bot bubble: dark navy, white text, speech tail bottom-left */
+.message-bot .message-bubble,
+.message-type-bot .message-bubble {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+}
+.message-bot .message-text,
+.message-type-bot .message-text,
+.message-bot .message-bubble p,
+.message-type-bot .message-bubble p {
+  color: #fff !important;
+}
+
+/* User bubble: MS blue gradient, white text, speech tail bottom-right */
+.message-human .message-bubble {
+  background: var(--ms-user-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-right-radius: var(--ms-bubble-tail) !important;
+}
+.message-human .message-text,
+.message-human .message-bubble p {
+  color: #fff !important;
+}
+.message-human .message-bubble a {
+  color: #fff !important;
+  text-decoration: underline;
+}
+/* Bot-bubble links: MDES chat link blue */
+.message-bot .message-bubble a,
+.message-type-bot .message-bubble a {
+  color: var(--ms-link-blue) !important;
+}
+
+/* Bubbles size to their content (live MDES: short messages stay on one
+   line). As flex items ours default to `flex: 0 1 auto` and get shrunk
+   below max-content, wrapping short texts — forbid the shrink. */
+#lex-web .message-human .message-bubble,
+#lex-web .message-bot .message-bubble,
+#lex-web .message-type-bot .message-bubble {
+  flex: 0 0 auto !important;
+}
+
+/* Message rows span the full list width like Kore's <li>s (upstream sets
+   them to width:fit-content, which makes every nested Vuetify basis-0
+   column shrink-wrap; the bubble's max-width:90% then resolves against a
+   collapsed ancestor and wraps short texts onto two lines). Full-width
+   rows restore correct %-resolution AND left/right alignment. */
+#lex-web .message-list .message {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Kore bubbles have NO border/shadow — remove Vuetify's subtle bubble shadow
+   (it reads as an extra border on both sent and response messages). */
+#lex-web .message-bubble,
+#lex-web .message-bubble:hover,
+#lex-web .message-bubble:focus,
+#lex-web .message-bubble.focusable:focus {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.message-bubble p {
+  margin-bottom: 8px;
+}
+.message-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---- Message pop-in animation (keyframes captured verbatim from the
+        live MDES chat: slide in from the side with a subtle 1.03
+        overshoot, settled by 20% of a 2s timeline) ---- */
+@keyframes ms-message-left {
+  0%  { transform: translate3d(-15%, 5%, 0) scaleZ(1); visibility: visible; }
+  5%  { transform: translateZ(0) scale3d(1.01, 1.01, 1); }
+  10% { transform: translate3d(0, -2px, 0) scale3d(1.03, 1.03, 1); }
+  15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
+  20% { transform: translateZ(0) scaleZ(1); }
+}
+@keyframes ms-message-right {
+  0%  { transform: translate3d(15%, 5%, 0) scaleZ(1); visibility: visible; }
+  5%  { transform: translateZ(0) scale3d(1.01, 1.01, 1); }
+  10% { transform: translate3d(0, -2px, 0) scale3d(1.03, 1.03, 1); }
+  15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
+  20% { transform: translateZ(0) scaleZ(1); }
+}
+.message-bot .message-bubble,
+.message-type-bot .message-bubble {
+  animation: ms-message-left 2s ease-in-out;
+}
+.message-human .message-bubble {
+  animation: ms-message-right 2s ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .message-bot .message-bubble,
+  .message-type-bot .message-bubble,
+  .message-human .message-bubble {
+    animation: none !important;
+  }
+}
+
+/* ---- Conversation anchored to the BOTTOM of the chat area (live MDES:
+        ul.chat-container is pinned bottom; empty space sits above).
+        Standard chat pattern: flex column container + margin-top:auto
+        on the list — avoids the justify-content:flex-end overflow bug. ---- */
+#lex-web .message-list-container {
+  display: flex !important;
+  flex-direction: column !important;
+}
+/* The list itself is a Vuetify fill-height flex column, so anchor the
+   messages INSIDE it: height auto (grows with content, so the parent
+   scrolls normally) + min-height 100% + justify-end pushes the
+   conversation down when it is short — no flex-end-overflow bug because
+   the scrolling element is the parent container, not this list. */
+#lex-web .message-list {
+  /* the legacy "layout column fill-height" classes are Vuetify-2 grid
+     names that do nothing in Vuetify 3 — the list is display:block
+     without this explicit flex column */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-end !important;
+  height: auto !important;
+  min-height: 100%;
+  width: 100%;
+}
+
+/* ---- Per-message bot avatar: 34px, bottom-aligned to the message
+        (live MDES .profile-photo: 34x34, absolute bottom 0) ---- */
+#lex-web .message-bot .avatar,
+#lex-web .message-type-bot .avatar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  align-self: flex-end !important;
+  margin-bottom: 2px;
+}
