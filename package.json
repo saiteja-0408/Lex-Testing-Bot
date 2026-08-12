@@ -31,6 +31,8 @@
     "build:lib-dev": "cd lex-web-ui && npm run build:lib-dev",
     "build:lib-prod": "cd lex-web-ui && npm run build:lib-prod",
     "build-dist": "cd lex-web-ui && npm run build-dist",
+    "sync-assets": "node build/copy-assets.js",
+    "build-all": "npm run build-dist && npm run sync-assets",
     "build-prod": "cross-env NODE_ENV=production vite build",
     "build-dev": "cross-env NODE_ENV=development vite build",
     "dev": "cd lex-web-ui && npm run serve",

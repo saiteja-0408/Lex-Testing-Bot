@@ -9,6 +9,9 @@ This document explains the customization work done on top of the original `aws-s
 
 It also serves as a migration guide to replicate the same experience in a fresh fork.
 
+**Extended narrative (flows, FAQ, troubleshooting, and README-aligned §10–20):** see [RIGHT_PANEL_CUSTOMIZATION_GUIDE.md](RIGHT_PANEL_CUSTOMIZATION_GUIDE.md) — especially sections **10–20**, which mirror this README and add upstream playbook links and 3-state toolbar notes.
+
+---
 
 1) Page + runtime config
 src/website/right-panel.html
