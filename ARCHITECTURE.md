@@ -86,7 +86,14 @@ npm run build-all
 `onboardingDisclaimerHeading/Message` (`\n\n` = paragraph break),
 `onboardingStartButtonText`, `onboardingButtonColor`, `onboardingPrimaryColor`,
 `onboardingAgentAvatarUrl`, `onboardingRememberCompletion`,
-`minButtonColor`, `showToolbarStatus`, `toolbarStatusText`.
+`minButtonColor`, `showToolbarStatus`, `toolbarStatusText`,
+`showFeedbackButtons` (false hides the thumbs up/down even when the
+feedback intents are configured).
+
+Also used (upstream knob, MDES-styled by this fork):
+`shouldDisplayResponseCardTitle: true` — ImageResponseCard titles render
+styled as a regular bot bubble (`40-buttons.css`), so the card's `title`
+IS the message text (see docs/BOT-RESPONSES.md Shape 2).
 
 ## Token bridge (theme ↔ components)
 

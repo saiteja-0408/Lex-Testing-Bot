@@ -343,6 +343,11 @@ export default {
       return this.$store.state.config.ui.messageMenu;
     },
     showDialogFeedback() {
+      // Boolean kill-switch: ui.showFeedbackButtons=false hides the thumbs
+      // regardless of the feedback intents configured below.
+      if (this.$store.state.config.ui.showFeedbackButtons === false) {
+        return false;
+      }
       if (this.$store.state.config.ui.positiveFeedbackIntent.length > 2
       && this.$store.state.config.ui.negativeFeedbackIntent.length > 2) {
         return true;

@@ -262,6 +262,9 @@ const configDefault = {
     // shows a thumbs up and thumbs down button which can be clicked
     positiveFeedbackIntent: '',
     negativeFeedbackIntent: '',
+    // master on/off for the thumbs buttons: false hides them even when
+    // the feedback intents above are configured
+    showFeedbackButtons: true,
 
     // shows a help button on the toolbar when true
     helpIntent: '',

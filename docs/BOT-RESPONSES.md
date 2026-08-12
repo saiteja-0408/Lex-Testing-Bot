@@ -30,22 +30,25 @@ Lex response ─▶ lib/message-normalizer   (ALL payload conversions — one fi
 
 ## Shape 2 — Sentence + a few buttons (1–3)
 
-Two messages: prose in PlainText, buttons in an ImageResponseCard.
+One ImageResponseCard: the message text goes in `title`, which the UI
+renders styled exactly like a regular bot bubble (navy, wrapping, no
+truncation), with the button pills underneath.
 
 ```json
 "messages": [
-  { "contentType": "PlainText",
-    "content": "Please check your user ID and password. If you forgot your password, I can help." },
   { "contentType": "ImageResponseCard",
     "imageResponseCard": {
-      "title": "options",
+      "title": "Please check your user ID and password. If you forgot your password, I can help.",
       "buttons": [ { "text": "Forgot password", "value": "Forgot password" } ] } }
 ]
 ```
 
-- Lex requires `title`; the UI hides it (`shouldDisplayResponseCardTitle:
-  false`), so use a short stub — **never put the message text in the
-  title** (250-char hard limit; invisible in this UI).
+- **Titles are VISIBLE** (`shouldDisplayResponseCardTitle: true`) — the
+  title IS the message. Never send stub titles like "options"; they will
+  show on screen.
+- `title` has a **250-character Lex hard limit**. Longer prose? Send a
+  PlainText message first (Shape 1) and keep the card title short — both
+  render as bubbles, so it reads as two messages.
 
 ## Shape 3 — Sentence + many buttons (4+, one block, never split)
 

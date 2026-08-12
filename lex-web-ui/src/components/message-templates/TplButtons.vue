@@ -52,8 +52,10 @@ export default {
   padding: 2px 11px;
   cursor: pointer;
 }
+/* Hover verified on live MDES: solid header-blue fill, white text */
 .ms-tpl-btn:hover {
-  background: #f2f8ff;
+  background: var(--ms-header-accent, #1c3e64);
+  color: #fff;
 }
 .ms-tpl-btn:focus-visible {
   outline: 2px solid var(--ms-btn-outline, #539FF2);

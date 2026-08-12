@@ -399,6 +399,24 @@
   padding: 1px 13px !important;
 }
 
+/* Pill hover — VERIFIED on the live MDES chat (Aug 2026):
+     .buttonTmplContentChild:hover { background: #1c3e64; color: #fff }
+   Solid header-blue fill, white text, border and radius unchanged,
+   no transition. Same treatment on all three pill surfaces. */
+#lex-web .ms-tpl-btn:hover,
+#lex-web .response-card .v-btn:hover,
+#lex-web .message-bubble .v-btn:hover,
+.lex-default-quick-replies .lex-quick-reply-btn:hover {
+  background: var(--ms-header-accent) !important;   /* #1c3e64 */
+  color: #fff !important;
+}
+/* Vuetify paints its own translucent hover overlay on v-btn — remove it
+   so the navy fill shows exactly, not navy + a grey wash. */
+#lex-web .response-card .v-btn:hover .v-btn__overlay,
+.lex-default-quick-replies .lex-quick-reply-btn:hover .v-btn__overlay {
+  opacity: 0 !important;
+}
+
 /* Default quick-reply strip (above input) — same pill look */
 .lex-default-quick-replies {
   background: var(--ms-body-bg) !important;
