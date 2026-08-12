@@ -69,10 +69,13 @@
 }
 
 /* Response-card button rows (ImageResponseCard pills) get the SAME
-   alignment as template pills: pill left = bubble left + 2 (live MDES). */
+   alignment as template pills: pill left = bubble left + 2 (live MDES).
+   Card carriers are separate messages, so inter-message margins (16px)
+   already apply — 4px more nets the Kore 20px bubble→pill rhythm
+   (li margin-bottom 10 + pill margin-top 10 on the live site). */
 #lex-web .response-card {
   justify-content: flex-start !important;
-  margin: 10px 0 0 0 !important;
+  margin: 4px 0 0 0 !important;
   padding-left: 54px;              /* row origin 8 + v-btn offset 4 → pill left 66 */
   padding-right: 12px;
 }

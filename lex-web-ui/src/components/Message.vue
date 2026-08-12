@@ -3,12 +3,16 @@
     <!-- contains message and response card -->
     <v-col ma-2 class="message-layout">
 
-      <!-- contains message bubble and date -->
-      <v-row d-flex class="message-bubble-date-container">
+      <!-- contains message bubble and date. Skipped for text-less bot
+           messages (card/template carriers): even empty, its Vuetify
+           column paddings leave ~24px of dead space above the pills. -->
+      <v-row d-flex class="message-bubble-date-container" v-if="shouldRenderBubble">
         <v-col class="message-bubble-column">
 
-          <!-- contains message bubble and avatar -->
-          <v-col d-flex class="message-bubble-avatar-container">
+          <!-- contains message bubble and avatar. Skipped entirely for
+               text-less bot messages (card/template carriers) — otherwise
+               the empty avatar row leaves a dead gap above the pills. -->
+          <v-col d-flex class="message-bubble-avatar-container" v-if="shouldRenderBubble">
             <v-row :class="`message-bubble-row-${message.type}`">
               <div
                 v-if="shouldShowAvatarImage"
