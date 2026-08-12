@@ -142,4 +142,7 @@
   min-height: 34px !important;
   align-self: flex-end !important;
   margin-bottom: 2px;
+  /* live MDES: 10px between avatar and bubble (measured; flex gutter
+     eats 4px, so 10px margin nets the 10px visual gap / bubble at 64) */
+  margin-right: 10px;
 }
