@@ -123,7 +123,7 @@
 }
 
 /* Desktop: match the MDES 56px gold FAB launcher */
-@media (min-width: 769px) {
+@media (min-width: 768px) {
   .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
     right:      16px !important;
     bottom:     16px !important;

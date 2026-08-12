@@ -423,7 +423,9 @@ export default {
       return this.$store.state.config.lex.v2BotLocaleId.split(',').length > 1
         || this.$store.state.config.ui.enableLogin
         || this.$store.state.config.ui.saveHistory
-        || this.$store.state.config.ui.shouldRenderSfxButton
+        // local computed, not a config key — as a config lookup it was
+        // always undefined, hiding the menu for SFX-only deployments
+        || this.shouldRenderSfxButton
         || this.$store.state.config.ui.enableLiveChat;
     },
     locales() {
@@ -644,7 +646,6 @@ export default {
   height: 45px;
   min-width: 32px;
   min-height: 32px;
-  lex:RecognizeText;
   top: 6px;
   left: 6px;
   object-fit: contain;
@@ -677,7 +678,7 @@ export default {
 .toolbar-maggi-heading {
   font-size: 1.05rem;
   font-weight: 600;
-  color: #1e3a5f;
+  color: var(--ms-header-accent, #1c3e64);
   margin: 0;
 }
 .toolbar-maggi-status {
@@ -694,19 +695,22 @@ export default {
   border-radius: 50%;
   flex-shrink: 0;
 }
+/* Colors follow the theme tokens (identical literal fallbacks — see the
+   ARCHITECTURE.md token bridge). These used to hold DIFFERENT hex values
+   that the theme silently overrode; keep the two in sync. */
 .toolbar-maggi-status-dot--connected {
-  background: #2e7d32;
+  background: var(--ms-status-online, #48bb78);
 }
 .toolbar-maggi-status-dot--connecting {
-  background: #f9a825;
+  background: var(--ms-status-connecting, #f6c343);
 }
 .toolbar-maggi-status-dot--disconnected {
-  background: #d32f2f;
+  background: var(--ms-status-offline, #e53935);
 }
 .toolbar-maggi-status-text {
   font-size: 0.75rem;
   font-weight: 400;
-  color: #78909c;
+  color: var(--ms-status-grey, #8a959f);
   text-transform: none;
   letter-spacing: 0.02em;
 }

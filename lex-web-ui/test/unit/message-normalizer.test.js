@@ -132,6 +132,26 @@ test('mixed response: every message type normalizes independently', () => {
   assert.ok(messages.slice(0, 3).every((m) => m.isLastMessageInGroup === 'false'));
 });
 
+test('PlainText: literal backslash-n from Lex-console authoring becomes a real newline', () => {
+  // real payload seen from the bot: "You will need the following information:\n* MDES User ID"
+  const out = normalizeLexMessage(
+    { type: 'PlainText', value: 'You will need:\\n* MDES User ID \\n* SSN\\n\\nReady?' },
+    undefined,
+  );
+  assert.equal(out.text, 'You will need:\n* MDES User ID \n* SSN\n\nReady?');
+});
+
+test('CustomPayload JSON is NEVER unescaped (template payloads stay intact)', () => {
+  const tpl = normalizeLexMessage(
+    { type: 'CustomPayload', value: '{"template_type":"button","text":"a\\nb","buttons":[]}' },
+    undefined,
+  );
+  // JSON.parse already turns \n into a real newline inside the parsed text;
+  // the raw payload itself must not be pre-mangled before parsing.
+  assert.equal(tpl.template.templateType, 'button');
+  assert.equal(tpl.text, 'a\nb');
+});
+
 test('normalizeLexMessage: unknown content types fall back to text', () => {
   const out = normalizeLexMessage({ type: 'SSML', value: '<speak>hi</speak>' }, undefined);
   assert.equal(out.text, '<speak>hi</speak>');

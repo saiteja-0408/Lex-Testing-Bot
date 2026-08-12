@@ -65,9 +65,8 @@ export function normalizeCustomPayload(raw, alts) {
     return { text: template.payload.text || '', template, alts };
   }
   // Legacy behavior: any non-template CustomPayload renders as markdown.
-  const nextAlts = alts === undefined ? {} : alts;
-  nextAlts.markdown = raw;
-  return { text: raw, template: undefined, alts: nextAlts };
+  // Copy rather than mutate the caller's alts — this module is pure.
+  return { text: raw, template: undefined, alts: { ...alts, markdown: raw } };
 }
 
 /**
@@ -95,5 +94,10 @@ export function normalizeLexMessage(mes, alts) {
   if (contentType === 'CustomPayload') {
     return normalizeCustomPayload(raw, alts);
   }
-  return { text: raw, template: undefined, alts };
+  // Bot authors typing "\n" in the Lex console produce a LITERAL
+  // backslash-n (the console stores it verbatim), which renders as
+  // visible "\n" text in the bubble. Treat it as the line break the
+  // author clearly meant. Only for plain text — never for payload JSON.
+  const text = typeof raw === 'string' ? raw.replace(/\\n/g, '\n') : raw;
+  return { text, template: undefined, alts };
 }

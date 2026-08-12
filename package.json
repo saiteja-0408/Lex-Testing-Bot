@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/awslabs/aws-lex-web-ui#readme",
   "scripts": {
-    "start": "node server.js",                  
+    "start": "node server.js",
     "serve": "cd lex-web-ui && npm run serve",
     "build": "cd lex-web-ui && npm run build",
     "build:dev": "cd lex-web-ui && npm run build:dev",
@@ -33,8 +33,8 @@
     "build-dist": "cd lex-web-ui && npm run build-dist",
     "sync-assets": "node build/copy-assets.js",
     "build-all": "npm run build-dist && npm run sync-assets",
-    "build-prod": "cross-env NODE_ENV=production vite build",
-    "build-dev": "cross-env NODE_ENV=development vite build",
+    "build-loader-prod": "cross-env NODE_ENV=production vite build",
+    "build-loader-dev": "cross-env NODE_ENV=development vite build",
     "dev": "cd lex-web-ui && npm run serve",
     "serve-loader": "vite",
     "lint": "eslint --format node_modules/eslint-formatter-friendly src/lex-web-ui-loader"

@@ -1,5 +1,5 @@
 <template>
-  <v-row d-flex class="message message-bot messsge-loading" aria-hidden="true">
+  <v-row d-flex class="message message-bot message-loading" aria-hidden="true">
     <!-- contains message and response card -->
     <v-col ma-2 class="message-layout">
 

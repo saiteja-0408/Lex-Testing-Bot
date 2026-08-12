@@ -234,7 +234,6 @@
         class="response-card" d-flex mt-2 mr-2 ml-3>
         <response-card
           :response-card="quickReplyResponseCard"
-          :key="index"
         />
       </v-row>
       <v-row v-if="shouldDisplayResponseCardV2 && !shouldDisplayResponseCard">
@@ -363,9 +362,6 @@ export default {
         this.message.responseCard.genericAttachments instanceof Array
       );
     },
-    // Card-only responses arrive with an empty placeholder text message
-    // (client.js appends it to carry the card) — don't render an empty
-    // navy bubble for those; the card/template rows still show.
     // No navy bubble for text-less bot messages (e.g. the empty placeholder
     // the lex client appends to card-only responses) — the card/template
     // rows below the bubble still render.

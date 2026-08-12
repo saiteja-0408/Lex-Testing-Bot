@@ -3,17 +3,14 @@
    ============================================================ */
 
 /* Bot bubble: dark navy, white text, speech tail bottom-left */
-.message-bot .message-bubble,
-.message-type-bot .message-bubble {
+.message-bot .message-bubble {
   background: var(--ms-bot-bubble-bg) !important;
   color: #fff !important;
   border-radius: var(--ms-bubble-radius) !important;
   border-bottom-left-radius: var(--ms-bubble-tail) !important;
 }
 .message-bot .message-text,
-.message-type-bot .message-text,
-.message-bot .message-bubble p,
-.message-type-bot .message-bubble p {
+.message-bot .message-bubble p {
   color: #fff !important;
 }
 
@@ -33,8 +30,7 @@
   text-decoration: underline;
 }
 /* Bot-bubble links: MDES chat link blue */
-.message-bot .message-bubble a,
-.message-type-bot .message-bubble a {
+.message-bot .message-bubble a {
   color: var(--ms-link-blue) !important;
 }
 
@@ -42,8 +38,7 @@
    line). As flex items ours default to `flex: 0 1 auto` and get shrunk
    below max-content, wrapping short texts — forbid the shrink. */
 #lex-web .message-human .message-bubble,
-#lex-web .message-bot .message-bubble,
-#lex-web .message-type-bot .message-bubble {
+#lex-web .message-bot .message-bubble {
   flex: 0 0 auto !important;
 }
 
@@ -92,8 +87,7 @@
   15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
   20% { transform: translateZ(0) scaleZ(1); }
 }
-.message-bot .message-bubble,
-.message-type-bot .message-bubble {
+.message-bot .message-bubble {
   animation: ms-message-left 2s ease-in-out;
 }
 .message-human .message-bubble {
@@ -101,7 +95,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .message-bot .message-bubble,
-  .message-type-bot .message-bubble,
   .message-human .message-bubble {
     animation: none !important;
   }
@@ -142,8 +135,7 @@
 
 /* ---- Per-message bot avatar: 34px, bottom-aligned to the message
         (live MDES .profile-photo: 34x34, absolute bottom 0) ---- */
-#lex-web .message-bot .avatar,
-#lex-web .message-type-bot .avatar {
+#lex-web .message-bot .avatar {
   width: 34px !important;
   height: 34px !important;
   min-width: 34px !important;

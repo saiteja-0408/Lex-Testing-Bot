@@ -4,7 +4,7 @@
    status dot + grey text, dark-grey controls, 12px top radius, flat w/ border.
    ============================================================ */
 #lex-web .v-toolbar {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: var(--ms-header-accent) !important;
   border-bottom: var(--ms-header-border) !important;
   border-top-left-radius: 12px !important;

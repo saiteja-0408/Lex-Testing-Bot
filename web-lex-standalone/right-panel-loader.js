@@ -62,13 +62,25 @@
   /*
     GET /lex-web-ui-loader-config.json
     → maps to src/config/lex-web-ui-loader-config.json on disk (server.js)
+
+    Guarded fetch: a 10s timeout so a hung endpoint fails loudly instead
+    of leaving the widget silently absent, and a content-type check so a
+    proxy's HTML error page fails with a clear message rather than an
+    opaque JSON SyntaxError.
   */
-  fetch(origin + '/lex-web-ui-loader-config.json')
+  var abort = new AbortController();
+  var configTimeout = setTimeout(function () { abort.abort(); }, 10000);
+  fetch(origin + '/lex-web-ui-loader-config.json', { signal: abort.signal })
     .then(function (response) {
+      clearTimeout(configTimeout);
       if (!response.ok) {
         throw new Error(
           'Failed to load config: ' + response.status + ' ' + response.statusText
         );
+      }
+      var type = response.headers.get('content-type') || '';
+      if (type.indexOf('json') === -1) {
+        throw new Error('Config endpoint returned non-JSON (' + type + ')');
       }
       return response.json();
     })

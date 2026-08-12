@@ -90,8 +90,10 @@ if (fs.existsSync(bundleDir)) {
 console.log('[INFO] Copying website files...')
 
 // Copy website files (HTML, CSS)
+// index.html is the chat iframe's entry page (CSP lives there) — its
+// source is src/website/index.html; the dist copy is generated.
 if (fs.existsSync(websiteDir)) {
-  const websiteFiles = ['custom-chatbot-style.css', 'right-panel.html']
+  const websiteFiles = ['custom-chatbot-style.css', 'right-panel.html', 'index.html']
   websiteFiles.forEach(file => {
     const srcPath = path.join(websiteDir, file)
     const destPath = path.join(distDir, file)
@@ -105,13 +107,23 @@ if (fs.existsSync(websiteDir)) {
 console.log('[INFO] Syncing standalone folder...')
 
 // web-lex-standalone/ is the self-contained deployable — keep its theme CSS
-// in sync automatically (this used to be a manual `cp`, which drifted).
+// AND its loader bundle in sync automatically (both used to be manual
+// `cp`s, which drifted). The loader files only exist in dist/ after a
+// root `npm run build-prod`, so their sync is best-effort.
 if (fs.existsSync(standaloneDir)) {
   const themeSrc = path.join(websiteDir, 'custom-chatbot-style.css')
   if (fs.existsSync(themeSrc)) {
     fs.copyFileSync(themeSrc, path.join(standaloneDir, 'custom-chatbot-style.css'))
     console.log('  ✓ Synced: web-lex-standalone/custom-chatbot-style.css')
   }
+  const loaderFiles = ['lex-web-ui-loader.min.js', 'lex-web-ui-loader.min.css']
+  loaderFiles.forEach((file) => {
+    const loaderSrc = path.join(distDir, file)
+    if (fs.existsSync(loaderSrc)) {
+      fs.copyFileSync(loaderSrc, path.join(standaloneDir, file))
+      console.log(`  ✓ Synced: web-lex-standalone/${file}`)
+    }
+  })
 }
 
 console.log('[INFO] Asset copying complete!')

@@ -583,22 +583,32 @@ export default {
             key: 'previousLexResponse',
             value: response.message
           });
+          // appContext is per-response, not per-message: parse it ONCE,
+          // defensively — sessionAttributes is optional in Lex responses
+          // and appContext is bot-authored JSON that may be malformed.
+          let appContext = {};
+          try {
+            appContext = JSON.parse(
+              (response.sessionAttributes && response.sessionAttributes.appContext) || '{}',
+            ) || {};
+          } catch (e) {
+            console.warn('could not parse sessionAttributes.appContext', e);
+          }
           // check for an array of messages
           if (response.sessionState || (response.message && response.message.includes('{"messages":'))) {
             if (response.message && response.message.includes('{"messages":')) {
               const tmsg = JSON.parse(response.message);
               if (tmsg && Array.isArray(tmsg.messages)) {
                 tmsg.messages.forEach((mes, index) => {
-                  const appContextAlts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
                   // ALL payload conversion (any content type) lives in
                   // lib/message-normalizer — this loop stays dumb.
-                  const norm = normalizeLexMessage(mes, appContextAlts);
+                  const norm = normalizeLexMessage(mes, appContext.altMessages);
                   // Note that Lex V1 only supported a single responseCard. V2 supports multiple response cards.
                   // This code still supports the V1 mechanism. The code below will check for
                   // the existence of a single V1 responseCard added to sessionAttributes.appContext by bots
                   // such as QnABot. This single responseCard will be appended to the last message displayed
                   // in the array of messages presented.
-                  let responseCardObject = JSON.parse(response.sessionAttributes.appContext || '{}').responseCard;
+                  let responseCardObject = appContext.responseCard;
                   if (responseCardObject === undefined) { // prefer appContext over lex.responseCard
                     responseCardObject = context.state.lex.responseCard;
                   }
@@ -620,13 +630,12 @@ export default {
               }
             }
           } else {
-            const appContextAlts = JSON.parse(response.sessionAttributes.appContext || '{}').altMessages;
-            let responseCardObject = JSON.parse(response.sessionAttributes.appContext || '{}').responseCard;
             // ALL payload conversion (any content type) lives in lib/message-normalizer
             const norm = normalizeLexMessage(
               { type: response.messageFormat, value: response.message },
-              appContextAlts,
+              appContext.altMessages,
             );
+            let responseCardObject = appContext.responseCard;
             if (responseCardObject === undefined) {
               responseCardObject = context.state.lex.responseCard;
             }
@@ -891,7 +900,11 @@ export default {
    **********************************************************************/
 
   pushMessage(context, message) {
-    if (context.state.lex.isPostTextRetry === false) {
+    // The retry guard exists only to stop the re-sent HUMAN utterance from
+    // being echoed twice. Bot replies must always render — the flag is still
+    // set when a successful retry's response arrives (it is cleared later in
+    // the chain), and guarding them here silently dropped that reply.
+    if (context.state.lex.isPostTextRetry === false || message.type !== 'human') {
       context.commit('pushMessage', message);
     }
   },

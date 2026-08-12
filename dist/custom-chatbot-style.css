@@ -1,7 +1,7 @@
 /* GENERATED FILE — DO NOT EDIT.
    Source partials: src/website/styles/*.css
    Rebuild with:    node build/copy-assets.js  (or npm run sync-assets)
-   Built from: 00-fonts.css, 05-tokens.css, 10-base.css, 20-header.css, 30-messages.css, 40-buttons.css, 50-input.css, 60-sizing.css, 70-launcher.css */
+   Built from: 00-fonts.css, 05-tokens.css, 10-base.css, 20-header.css, 30-messages.css, 40-buttons.css, 50-input.css, 60-sizing.css */
 
 /* ============================================================
    00 — FONTS
@@ -110,7 +110,7 @@
    status dot + grey text, dark-grey controls, 12px top radius, flat w/ border.
    ============================================================ */
 #lex-web .v-toolbar {
-  background-color: #ffffff !important;
+  background-color: #fff !important;
   color: var(--ms-header-accent) !important;
   border-bottom: var(--ms-header-border) !important;
   border-top-left-radius: 12px !important;
@@ -151,17 +151,14 @@
    ============================================================ */
 
 /* Bot bubble: dark navy, white text, speech tail bottom-left */
-.message-bot .message-bubble,
-.message-type-bot .message-bubble {
+.message-bot .message-bubble {
   background: var(--ms-bot-bubble-bg) !important;
   color: #fff !important;
   border-radius: var(--ms-bubble-radius) !important;
   border-bottom-left-radius: var(--ms-bubble-tail) !important;
 }
 .message-bot .message-text,
-.message-type-bot .message-text,
-.message-bot .message-bubble p,
-.message-type-bot .message-bubble p {
+.message-bot .message-bubble p {
   color: #fff !important;
 }
 
@@ -181,8 +178,7 @@
   text-decoration: underline;
 }
 /* Bot-bubble links: MDES chat link blue */
-.message-bot .message-bubble a,
-.message-type-bot .message-bubble a {
+.message-bot .message-bubble a {
   color: var(--ms-link-blue) !important;
 }
 
@@ -190,8 +186,7 @@
    line). As flex items ours default to `flex: 0 1 auto` and get shrunk
    below max-content, wrapping short texts — forbid the shrink. */
 #lex-web .message-human .message-bubble,
-#lex-web .message-bot .message-bubble,
-#lex-web .message-type-bot .message-bubble {
+#lex-web .message-bot .message-bubble {
   flex: 0 0 auto !important;
 }
 
@@ -240,8 +235,7 @@
   15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
   20% { transform: translateZ(0) scaleZ(1); }
 }
-.message-bot .message-bubble,
-.message-type-bot .message-bubble {
+.message-bot .message-bubble {
   animation: ms-message-left 2s ease-in-out;
 }
 .message-human .message-bubble {
@@ -249,7 +243,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .message-bot .message-bubble,
-  .message-type-bot .message-bubble,
   .message-human .message-bubble {
     animation: none !important;
   }
@@ -290,8 +283,7 @@
 
 /* ---- Per-message bot avatar: 34px, bottom-aligned to the message
         (live MDES .profile-photo: 34x34, absolute bottom 0) ---- */
-#lex-web .message-bot .avatar,
-#lex-web .message-type-bot .avatar {
+#lex-web .message-bot .avatar {
   width: 34px !important;
   height: 34px !important;
   min-width: 34px !important;
@@ -327,7 +319,9 @@
   padding: 1px 13px !important;
   box-shadow: none !important;
 }
-.v-card {
+/* Scoped to card rows only — a bare .v-card also hit OnboardingForm's
+   card and won/lost against its background purely by stylesheet order. */
+#lex-web .response-card .v-card {
   box-shadow: none !important;
   background-color: transparent !important;
 }
@@ -483,19 +477,3 @@
      Kore payloads use \n\n between paragraphs. */
   white-space: pre-line;
 }
-
-/* ============================================================
-   70 — MINIMIZED LAUNCHER  (legacy note)
-   The gold FAB launcher (56px, #FDC245, chatbubbles-outline icon) is
-   implemented INSIDE the app: lex-web-ui/src/components/MinButton.vue
-   (color override: config ui.minButtonColor). The parent page sizes the
-   minimized container in web-lex-standalone/chat-frame.css.
-
-   Kore-reference alternative (yellow #FECA5D) kept for reference:
-   ============================================================ */
-/*
-.lex-web-ui-iframe.lex-web-ui-iframe--minimize .min-button,
-.lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
-  background: var(--ms-launcher-yellow) !important;
-}
-*/

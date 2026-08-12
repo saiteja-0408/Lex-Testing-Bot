@@ -16,7 +16,9 @@
         class="onboarding-close"
         aria-label="Close"
         @click="$emit('close')"
-      >&times;</button>
+      >
+        &times;
+      </button>
 
       <!-- Terms "page navigate": extracted MDES Disclaimer component -->
       <onboarding-disclaimer
@@ -28,87 +30,158 @@
         @close="$emit('close')"
       />
 
-      <div v-else class="onboarding-content">
-          <!-- MS banner: magnolia logo + cornflowerblue welcome + bold subtitle -->
-          <div class="ms-banner">
-            <img
-              v-if="avatarUrl"
-              :src="avatarUrl"
-              class="ms-logo"
-              alt=""
+      <div
+        v-else
+        class="onboarding-content"
+      >
+        <!-- MS banner: magnolia logo + cornflowerblue welcome + bold subtitle -->
+        <div class="ms-banner">
+          <img
+            v-if="avatarUrl"
+            :src="avatarUrl"
+            class="ms-logo"
+            alt=""
+          >
+          <div
+            v-else
+            class="ms-logo ms-logo--fallback"
+          >
+            <v-icon
+              size="64"
+              color="white"
             >
-            <div v-else class="ms-logo ms-logo--fallback">
-              <v-icon size="64" color="white">local_florist</v-icon>
-            </div>
-
-            <h1 id="onboarding-welcome-title" class="onboarding-welcome">
-              {{ welcomeTitle }}
-            </h1>
-            <p class="onboarding-sub">{{ welcomeSubtitle }}</p>
+              local_florist
+            </v-icon>
           </div>
 
-          <!-- MS form: static label-above + plain outlined inputs -->
-          <form class="ms-form" novalidate @submit.prevent="onSubmit">
-            <div class="ms-field">
-              <label for="ob-first-name" class="ms-label">{{ firstNameLabel }}</label>
-              <input
-                id="ob-first-name"
-                v-model="firstName"
-                class="ms-input"
-                type="text"
-                autocomplete="given-name"
-              >
-              <div v-if="errors.firstName" class="ms-error">{{ errors.firstName }}</div>
-            </div>
+          <h1
+            id="onboarding-welcome-title"
+            class="onboarding-welcome"
+          >
+            {{ welcomeTitle }}
+          </h1>
+          <p class="onboarding-sub">
+            {{ welcomeSubtitle }}
+          </p>
+        </div>
 
-            <div class="ms-field">
-              <label for="ob-last-name" class="ms-label">{{ lastNameLabel }}</label>
-              <input
-                id="ob-last-name"
-                v-model="lastName"
-                class="ms-input"
-                type="text"
-                autocomplete="family-name"
-              >
-              <div v-if="errors.lastName" class="ms-error">{{ errors.lastName }}</div>
-            </div>
-
-            <div class="ms-field">
-              <label for="ob-email" class="ms-label">{{ emailLabel }}</label>
-              <input
-                id="ob-email"
-                v-model="email"
-                class="ms-input"
-                type="email"
-                autocomplete="email"
-              >
-            </div>
-
-            <div class="ms-agreement">
-              <label class="ms-check">
-                <input v-model="termsAccepted" type="checkbox">
-                <span>
-                  {{ termsBeforeLink }}
-                  <a
-                    :href="termsUrl"
-                    class="onboarding-terms-link"
-                    @click.prevent.stop="openTermsViewer"
-                  >{{ termsLinkText }}</a>
-                  {{ termsAfterLink }}
-                </span>
-              </label>
-              <div v-if="errors.terms" class="ms-error">{{ errors.terms }}</div>
-            </div>
-
-            <button
-              type="submit"
-              class="onboarding-cta"
-              :style="{ background: ctaColor }"
-              :disabled="submitting"
+        <!-- MS form: static label-above + plain outlined inputs -->
+        <form
+          class="ms-form"
+          novalidate
+          @submit.prevent="onSubmit"
+        >
+          <div class="ms-field">
+            <label
+              for="ob-first-name"
+              class="ms-label"
+            >{{ firstNameLabel }}</label>
+            <input
+              id="ob-first-name"
+              ref="firstNameInput"
+              v-model="firstName"
+              class="ms-input"
+              type="text"
+              autocomplete="given-name"
+              :aria-invalid="errors.firstName ? 'true' : undefined"
+              :aria-describedby="errors.firstName ? 'ob-first-name-error' : undefined"
             >
-              {{ startButtonText }}
-            </button>
-          </form>
+            <div
+              v-if="errors.firstName"
+              id="ob-first-name-error"
+              role="alert"
+              class="ms-error"
+            >
+              {{ errors.firstName }}
+            </div>
+          </div>
+
+          <div class="ms-field">
+            <label
+              for="ob-last-name"
+              class="ms-label"
+            >{{ lastNameLabel }}</label>
+            <input
+              id="ob-last-name"
+              v-model="lastName"
+              class="ms-input"
+              type="text"
+              autocomplete="family-name"
+              :aria-invalid="errors.lastName ? 'true' : undefined"
+              :aria-describedby="errors.lastName ? 'ob-last-name-error' : undefined"
+            >
+            <div
+              v-if="errors.lastName"
+              id="ob-last-name-error"
+              role="alert"
+              class="ms-error"
+            >
+              {{ errors.lastName }}
+            </div>
+          </div>
+
+          <div class="ms-field">
+            <label
+              for="ob-email"
+              class="ms-label"
+            >{{ emailLabel }}</label>
+            <input
+              id="ob-email"
+              v-model="email"
+              class="ms-input"
+              type="email"
+              autocomplete="email"
+              :aria-invalid="errors.email ? 'true' : undefined"
+              :aria-describedby="errors.email ? 'ob-email-error' : undefined"
+            >
+            <div
+              v-if="errors.email"
+              id="ob-email-error"
+              role="alert"
+              class="ms-error"
+            >
+              {{ errors.email }}
+            </div>
+          </div>
+
+          <div class="ms-agreement">
+            <label class="ms-check">
+              <input
+                v-model="termsAccepted"
+                type="checkbox"
+                :aria-invalid="errors.terms ? 'true' : undefined"
+                :aria-describedby="errors.terms ? 'ob-terms-error' : undefined"
+              >
+              <span>
+                {{ termsBeforeLink }}
+                <a
+                  ref="termsLink"
+                  :href="termsUrl"
+                  class="onboarding-terms-link"
+                  @click.prevent.stop="openTermsViewer"
+                >{{ termsLinkText }}</a>
+                {{ termsAfterLink }}
+              </span>
+            </label>
+            <div
+              v-if="errors.terms"
+              id="ob-terms-error"
+              role="alert"
+              class="ms-error"
+            >
+              {{ errors.terms }}
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="onboarding-cta"
+            :style="{ background: ctaColor }"
+            :disabled="submitting"
+          >
+            {{ startButtonText }}
+          </button>
+        </form>
       </div>
     </v-card>
   </div>
@@ -129,8 +202,13 @@ import OnboardingDisclaimer from './OnboardingDisclaimer.vue';
 import { onboardingValue } from '../config/onboardingDefaults';
 
 export default {
-  name: 'onboarding-form',
+  name: 'OnboardingForm',
   components: { OnboardingDisclaimer },
+  props: {
+    // Optional injection point: pass the ui config object to render this
+    // component without a Vuex store (unit tests, reuse outside LexWeb).
+    uiConfig: { type: Object, default: null },
+  },
   emits: ['close', 'complete'],
   data() {
     return {
@@ -140,12 +218,12 @@ export default {
       termsAccepted: false,
       submitting: false,
       showTermsViewer: false,
-      errors: { firstName: '', lastName: '', terms: '' },
+      errors: { firstName: '', lastName: '', email: '', terms: '' },
     };
   },
   computed: {
     c() {
-      return this.$store.state.config.ui;
+      return this.uiConfig || this.$store.state.config.ui;
     },
     // All fallback copy/colors live in config/onboardingDefaults.js —
     // change defaults there, not here.
@@ -174,6 +252,19 @@ export default {
       return `${this.disclaimerHeading}\n\n${this.disclaimerMessage}`;
     },
   },
+  watch: {
+    // Clear each field's error as soon as the user fixes it, instead of
+    // leaving a stale message up until the next submit attempt.
+    firstName(value) { if (value.trim()) this.errors.firstName = ''; },
+    lastName(value) { if (value.trim()) this.errors.lastName = ''; },
+    email() { this.errors.email = ''; },
+    termsAccepted(checked) { if (checked) this.errors.terms = ''; },
+  },
+  mounted() {
+    // role="dialog": move focus into the dialog so keyboard/screen-reader
+    // users land on the first field, not on the page behind it.
+    this.$nextTick(() => this.$refs.firstNameInput?.focus());
+  },
   methods: {
     /** Config value with fallback from ONBOARDING_DEFAULTS (pure helper). */
     cfg(key) {
@@ -184,9 +275,13 @@ export default {
     },
     closeTermsViewer() {
       this.showTermsViewer = false;
+      // Return focus to the link that opened the disclaimer — the whole
+      // view was swapped out, so focus would otherwise fall to <body>.
+      this.$nextTick(() => this.$refs.termsLink?.focus());
     },
     onSubmit() {
-      this.errors = { firstName: '', lastName: '', terms: '' };
+      if (this.submitting) return; // double-submit guard (Enter + click)
+      this.errors = { firstName: '', lastName: '', email: '', terms: '' };
       let valid = true;
       if (!this.firstName.trim()) {
         this.errors.firstName = 'This field is required';
@@ -196,23 +291,28 @@ export default {
         this.errors.lastName = 'This field is required';
         valid = false;
       }
+      // Email is optional, but if one is provided it must look like one.
+      const email = this.email.trim();
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        this.errors.email = 'Please enter a valid email address';
+        valid = false;
+      }
       if (!this.termsAccepted) {
         this.errors.terms = 'You must accept the terms to continue';
         valid = false;
       }
       if (!valid) return;
 
+      // Stays true for the component's lifetime: the parent unmounts this
+      // form on 'complete', so re-enabling would only re-open the
+      // double-submit window it exists to close.
       this.submitting = true;
-      try {
-        this.$emit('complete', {
-          firstName: this.firstName.trim(),
-          lastName: this.lastName.trim(),
-          email: this.email.trim(),
-          termsAccepted: this.termsAccepted,
-        });
-      } finally {
-        this.submitting = false;
-      }
+      this.$emit('complete', {
+        firstName: this.firstName.trim(),
+        lastName: this.lastName.trim(),
+        email,
+        termsAccepted: this.termsAccepted,
+      });
     },
   },
 };
@@ -286,6 +386,13 @@ export default {
 }
 .onboarding-close:hover {
   color: #bdbdbd;
+}
+/* Keyboard affordance only — the resting #d3d3d3 is an exact MDES value,
+   so contrast help is limited to focus (visible ring + darker glyph). */
+.onboarding-close:focus-visible {
+  outline: 2px solid var(--ms-cta-blue, #09538b);
+  outline-offset: 2px;
+  color: var(--ms-control-grey, #5a6b7a);
 }
 
 /* Banner */
@@ -380,8 +487,13 @@ export default {
   cursor: pointer;
   font-weight: 500;
 }
-.onboarding-terms-link:hover {
+.onboarding-terms-link:hover,
+.onboarding-terms-link:focus-visible {
   text-decoration: underline;
+}
+.onboarding-terms-link:focus-visible {
+  outline: 2px solid var(--ms-cta-blue, #09538b);
+  outline-offset: 1px;
 }
 
 /* Submit (MS #09538b) */

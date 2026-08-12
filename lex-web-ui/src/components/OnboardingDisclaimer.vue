@@ -4,12 +4,17 @@
     <div class="disclaimer-header">
       <!-- Back button: "‹ botName" — returns to the onboarding form -->
       <button
+        ref="backButton"
         type="button"
         class="disclaimer-back"
         aria-label="Back to form"
         @click="$emit('back')"
       >
-        <svg class="disclaimer-back-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <svg
+          class="disclaimer-back-icon"
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
           <path d="M15 18l-6-6 6-6" />
         </svg>
         <span>{{ botName }}</span>
@@ -20,8 +25,12 @@
         class="disclaimer-close"
         aria-label="Close"
         @click="$emit('close')"
-      >&times;</button>
-      <h2 class="disclaimer-title">{{ title }}</h2>
+      >
+        &times;
+      </button>
+      <h2 class="disclaimer-title">
+        {{ title }}
+      </h2>
     </div>
     <div class="disclaimer-body">
       <div class="disclaimer-message">
@@ -44,8 +53,7 @@
  *                    'close' — close the whole chat widget
  */
 export default {
-  name: 'onboarding-disclaimer',
-  emits: ['back', 'close'],
+  name: 'OnboardingDisclaimer',
   props: {
     /** Bot display name shown next to the back chevron (Kore go-back-button). */
     botName: { type: String, default: '' },
@@ -53,6 +61,12 @@ export default {
     title: { type: String, default: 'Disclaimer' },
     /** Full message text; "\n\n" renders as paragraph breaks (pre-line). */
     message: { type: String, default: '' },
+  },
+  emits: ['back', 'close'],
+  mounted() {
+    // This view replaces the form wholesale, so the element that had focus
+    // (the terms link) is gone — land keyboard users on the back button.
+    this.$nextTick(() => this.$refs.backButton?.focus());
   },
 };
 </script>
@@ -133,6 +147,11 @@ export default {
 }
 .disclaimer-close:hover {
   color: #eee;
+}
+.disclaimer-back:focus-visible,
+.disclaimer-close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 /* Body: pulled up so the message card overlaps the gradient tail (MDES) */
 .disclaimer-body {

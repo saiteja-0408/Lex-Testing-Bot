@@ -22,7 +22,9 @@
   padding: 1px 13px !important;
   box-shadow: none !important;
 }
-.v-card {
+/* Scoped to card rows only — a bare .v-card also hit OnboardingForm's
+   card and won/lost against its background purely by stylesheet order. */
+#lex-web .response-card .v-card {
   box-shadow: none !important;
   background-color: transparent !important;
 }
