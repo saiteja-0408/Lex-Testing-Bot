@@ -523,14 +523,6 @@ if (configFromQuery.ui && configFromQuery.ui.parentOrigin) {
 
 const configFromMerge = mergeConfig(configFromFiles, configFromQuery);
 
-// Debug logging for config
-console.log('🔧 Final config merge:', {
-  hasLexConfig: !!configFromMerge.lex,
-  lexBotId: configFromMerge.lex?.v2BotId || 'NOT SET',
-  region: configFromMerge.region || 'NOT SET',
-  environment: envShortName
-});
-
 export const config = {
   ...configFromMerge,
   urlQueryParams: queryParams,

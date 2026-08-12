@@ -1,0 +1,22 @@
+/* ============================================================
+   50 — INPUT BAR  (white, gray placeholder, MDES footer top shadow)
+   ============================================================ */
+#lex-web .input-container,
+#lex-web .v-toolbar.input-container,
+#lex-web .toolbar-content {
+  background: #fff !important;
+  border-top: none !important;
+  box-shadow: var(--ms-footer-shadow) !important;   /* Kore .kore-chat-footer */
+}
+#lex-web .input-container .v-field,
+#lex-web .v-toolbar .v-text-field {
+  color: #333;
+}
+#lex-web .toolbar-text .v-label,
+#lex-web .toolbar-text input::placeholder {
+  color: var(--ms-placeholder-grey) !important;
+}
+#lex-web .input-container .v-icon,
+#lex-web .v-toolbar .icon-color .v-icon {
+  color: var(--ms-input-icon-grey) !important;
+}
