@@ -1,0 +1,42 @@
+/* ============================================================
+   60 — SIZING & SPACING  (match MS chatWindowMS.css geometry)
+     header 40px · list padding 20px · bubble 14px / padding 12px 15px
+     · bubble max-width 95% · line-height 1.5
+   ============================================================ */
+
+/* Compact header (MS header height: 40px; 44 fits our 2-line title+status) */
+#lex-web .v-toolbar,
+#lex-web .v-toolbar .v-toolbar__content {
+  min-height: var(--ms-header-height) !important;
+  height: var(--ms-header-height) !important;
+}
+
+/* Message list padding (MS .chat-container: 20px) */
+#lex-web .message-list-container {
+  padding: var(--ms-list-padding) !important;
+}
+
+/* Message text: 14px / line-height 1.5 (MS) */
+#lex-web .message-text,
+#lex-web .message-bubble,
+#lex-web .message-bubble p {
+  font-size: var(--ms-bubble-font-size) !important;
+  line-height: var(--ms-bubble-line-height) !important;
+}
+
+/* Bubble geometry: padding 12px 15px, wide max-width (MS: 95%) */
+#lex-web .message-bubble {
+  padding: var(--ms-bubble-padding) !important;
+  max-width: var(--ms-bubble-max-width) !important;
+}
+
+/* Upstream .message-text adds 0.8em inner padding ON TOP of the bubble
+   padding (double padding; live MDES has none — its bubble height is
+   exactly lines*21 + 24). It also shrinks the usable text column, which
+   wrapped short user messages onto two lines. */
+#lex-web .message-text {
+  padding: 0 !important;
+  /* Render \n from Lex (PlainText or template text) as real line breaks;
+     Kore payloads use \n\n between paragraphs. */
+  white-space: pre-line;
+}
