@@ -107,6 +107,14 @@
   }
 }
 
+/* ---- Message rhythm: 12px between messages (MEASURED on live MDES:
+        li bottom 261 → next li top 273). Ours was 24 — Vuetify v-col
+        gives .message-layout 12px top+bottom padding; halve both. ---- */
+#lex-web .message .message-layout {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
 /* ---- Conversation anchored to the BOTTOM of the chat area (live MDES:
         ul.chat-container is pinned bottom; empty space sits above).
         Standard chat pattern: flex column container + margin-top:auto

@@ -26,12 +26,21 @@
   box-shadow: none !important;
   background-color: transparent !important;
 }
-/* Left-align the pill rows under the bot bubble (live MDES) */
+/* Left-align the pill rows under the bot bubble (live MDES).
+   Wrap gap: live rows are 11px apart vertically (btn bottom 392 →
+   next row top 403), 6px horizontally. */
 .v-card-actions,
 .button-row {
+  /* upstream sets display:inline-block — gap is inert there; flex it */
+  display: flex !important;
   justify-content: flex-start !important;
   flex-wrap: wrap !important;
-  gap: 4px 6px;
+  gap: 11px 6px !important;   /* live MDES: rows 11px apart, pills 6px */
+}
+/* Vuetify gives card-action buttons their own margins that fight the
+   flex gap — zero them so the gap values above are the real spacing. */
+#lex-web .response-card .v-btn {
+  margin: 0 !important;
 }
 
 /* Response-card TITLE — upstream hardcodes an alert-style banner
@@ -70,13 +79,13 @@
 
 /* Response-card button rows (ImageResponseCard pills) get the SAME
    alignment as template pills: pill left = bubble left + 2 (live MDES).
-   Card carriers are separate messages, so inter-message margins (16px)
-   already apply — 4px more nets the Kore 20px bubble→pill rhythm
-   (li margin-bottom 10 + pill margin-top 10 on the live site). */
+   Target: 10px prose→pill (MEASURED on live MDES template: heading
+   bottom 357 → button top 367). Inter-message rhythm contributes 12px
+   after the message-layout fix, so pull back 2px here. */
 #lex-web .response-card {
   justify-content: flex-start !important;
-  margin: 4px 0 0 0 !important;
-  padding-left: 54px;              /* row origin 8 + v-btn offset 4 → pill left 66 */
+  margin: 10px 0 0 0 !important;   /* nets 10px prose→pill (measured live) */
+  padding-left: 58px;              /* pill left 66 = bubble + 2 (measured live) */
   padding-right: 12px;
 }
 #lex-web .response-card .v-card-actions {
