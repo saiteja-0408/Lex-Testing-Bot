@@ -1,0 +1,16 @@
+{
+  "type": "template",
+  "AlwaysShowGlobalButton": true,
+  "payload": {
+    "template_type": "button",
+    "text": "Here are some frequently asked questions I can help you with.\n\n You can select the options below or enter your question in the input bar.",
+    "buttons": [
+      { "type": "postback", "title": "Debit card", "payload": "Debit card" },
+      { "type": "postback", "title": "Email status", "payload": "Email status" },
+      { "type": "postback", "title": "Identity verification", "payload": "Identity verification" },
+      { "type": "postback", "title": "Work search", "payload": "Work search" },
+      { "type": "postback", "title": "Unemployment Program", "payload": "Unemployment Program" },
+      { "type": "postback", "title": "Forgot User ID", "payload": "Forgot User ID" }
+    ]
+  }
+}
