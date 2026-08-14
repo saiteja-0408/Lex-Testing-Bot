@@ -6,3 +6,15 @@ py_modules/
 */*/py_modules/
 .kiro/
 .vscode/
+
+# local AI-tool settings — never push
+.claude/
+
+# secrets & archives — never push
+.env
+*.zip
+*.tar
+*.tar.gz
+*.bak
+*.orig
+*.tmp

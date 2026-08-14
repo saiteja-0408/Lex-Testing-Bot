@@ -1,0 +1,16 @@
+{
+  "messages": [
+    { "type": "PlainText",
+      "value": "We found 3 things.\n\nHere's a summary:",
+      "isLastMessageInGroup": "false" },
+    { "type": "CustomPayload",
+      "value": "**Status:** approved. [Details](https://mdes.ms.gov/details)",
+      "isLastMessageInGroup": "false" },
+    { "type": "CustomPayload",
+      "value": "{\"type\":\"template\",\"payload\":{\"template_type\":\"button\",\"text\":\"Pick one\",\"buttons\":[{\"title\":\"A\",\"payload\":\"A\"},{\"title\":\"B\",\"payload\":\"B\"},{\"title\":\"C\",\"payload\":\"C\"},{\"title\":\"D\",\"payload\":\"D\"}]}}",
+      "isLastMessageInGroup": "false" },
+    { "type": "PlainText",
+      "value": "",
+      "isLastMessageInGroup": "true" }
+  ]
+}
