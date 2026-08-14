@@ -1,14 +1,16 @@
 <template>
   <v-row d-flex class="message">
-    <!-- contains message and response card -->
     <v-col ma-2 class="message-layout">
 
-      <!-- contains message bubble and date -->
-      <v-row d-flex class="message-bubble-date-container">
+      <!-- Skipped for text-less bot messages (card/template carriers):
+           even empty, its paddings leave dead space above the pills. -->
+      <v-row d-flex class="message-bubble-date-container" v-if="shouldRenderBubble">
         <v-col class="message-bubble-column">
 
-          <!-- contains message bubble and avatar -->
-          <v-col d-flex class="message-bubble-avatar-container">
+          <!-- contains message bubble and avatar. Skipped entirely for
+               text-less bot messages (card/template carriers) — otherwise
+               the empty avatar row leaves a dead gap above the pills. -->
+          <v-col d-flex class="message-bubble-avatar-container" v-if="shouldRenderBubble">
             <v-row :class="`message-bubble-row-${message.type}`">
               <div
                 v-if="shouldShowAvatarImage"
@@ -19,6 +21,7 @@
               >
               </div>
               <div
+                v-if="shouldRenderBubble"
                 tabindex="0"
                 @focus="onMessageFocus"
                 @blur="onMessageBlur"
@@ -210,6 +213,14 @@
           </v-col>
         </v-col>
       </v-row>
+      <!-- Custom-payload template (Kore-style buttons etc.) — rendered via
+           the message-templates registry; pills sit below the bubble -->
+      <v-row v-if="message.template" class="message-template-row" d-flex>
+        <message-template
+          :template="message.template"
+          v-on:send="onTemplateSend"
+        />
+      </v-row>
       <v-row v-if="shouldDisplayResponseCard" class="response-card" d-flex mt-2 mr-2 ml-3>
         <response-card
           v-for="(card, index) in message.responseCard.genericAttachments"
@@ -221,7 +232,6 @@
         class="response-card" d-flex mt-2 mr-2 ml-3>
         <response-card
           :response-card="quickReplyResponseCard"
-          :key="index"
         />
       </v-row>
       <v-row v-if="shouldDisplayResponseCardV2 && !shouldDisplayResponseCard">
@@ -258,6 +268,7 @@ License for the specific language governing permissions and limitations under th
 */
 import MessageText from './MessageText.vue';
 import ResponseCard from './ResponseCard.vue';
+import MessageTemplate from './message-templates/MessageTemplate.vue';
 
 export default {
   name: 'message',
@@ -265,6 +276,7 @@ export default {
   components: {
     MessageText,
     ResponseCard,
+    MessageTemplate,
   },
   data() {
     return {
@@ -329,6 +341,11 @@ export default {
       return this.$store.state.config.ui.messageMenu;
     },
     showDialogFeedback() {
+      // Boolean kill-switch: ui.showFeedbackButtons=false hides the thumbs
+      // regardless of the feedback intents configured below.
+      if (this.$store.state.config.ui.showFeedbackButtons === false) {
+        return false;
+      }
       if (this.$store.state.config.ui.positiveFeedbackIntent.length > 2
       && this.$store.state.config.ui.negativeFeedbackIntent.length > 2) {
         return true;
@@ -347,6 +364,13 @@ export default {
         'genericAttachments' in this.message.responseCard &&
         this.message.responseCard.genericAttachments instanceof Array
       );
+    },
+    // No navy bubble for text-less bot messages (e.g. the empty placeholder
+    // the lex client appends to card-only responses) — the card/template
+    // rows below the bubble still render.
+    shouldRenderBubble() {
+      if (this.message.type !== 'bot' && this.message.type !== 'agent') return true;
+      return !!(this.message.text && String(this.message.text).trim().length);
     },
     shouldDisplayResponseCardV2() {
       return (
@@ -451,6 +475,11 @@ export default {
       };
       this.$store.dispatch('postTextMessage', message);
     },
+    // Template pill clicked (message-templates registry) → post as user text
+    onTemplateSend({ text }) {
+      if (!text) return;
+      this.resendMessage(text);
+    },
     sendDateTime(dateTime) {
       const message = {
         type: 'human',
@@ -475,11 +504,8 @@ export default {
       }
     },
     playAudio() {
-      // XXX doesn't play in Firefox or Edge
-      /* XXX also tried:
-      const audio = new Audio(this.message.audio);
-      audio.play();
-      */
+      // Queries the existing <audio> element: constructing a new Audio()
+      // does not play in Firefox or Edge.
       const audioElem = this.$el.querySelector('audio');
       if (audioElem) {
         audioElem.play();

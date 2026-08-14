@@ -1,7 +1,7 @@
 {
   "region": "us-east-1",
   "cognito": {
-    "poolId": "us-east-1:b68dbaae-9e23-473f-8b67-172e768bbb69",
+    "poolId": "us-east-1:2c110bb7-7bb2-431c-92a8-f6b79c0c1702",
     "appUserPoolClientId": "114kdhfikmi74o70ghotcs9e1",
     "appUserPoolName": "us-east-1_KmURihHrR",
     "appDomainName": "lexkwebkuikidentitypoolconfigkbgfavuowdhkvl723929011672.auth.us-east-1.amazoncognito.com",
@@ -9,8 +9,8 @@
     "region": "us-east-1"
   },
   "lex": {
-    "v2BotId": "Testing_Bot",
-    "v2BotAliasId": "Testing_Bot",
+    "v2BotId": "OXAFNO6UP2",
+    "v2BotAliasId": "Y8YBRVFI3Q",
     "v2BotLocaleId": "en_US",
     "initialText": "Welcome! I am Testinng BOT, your Unemployment claim assistant.\n\nYou can choose an option or enter your question below.",
     "initialSpeechInstruction": "Ask a question or choose a quick action below.",
@@ -72,7 +72,7 @@
     "forceLogin": false,
     "enableUpload": false,
     "uploadS3BucketName": "",
-    "AllowSuperDangerousHTMLInMessage": true,
+    "AllowSuperDangerousHTMLInMessage": false,
     "shouldDisplayResponseCardTitle": false,
     "saveHistory": false,
     "helpContent": {},
@@ -85,6 +85,6 @@
   "iframe": {
     "iframeOrigin": "http://localhost:8000",
     "shouldLoadIframeMinimized": true,
-    "iframeSrcPath": "/web-lex-standalone/index.html#/?lexWebUiEmbed=true"
+    "iframeSrcPath": "/index.html#/?lexWebUiEmbed=true"
   }
 }

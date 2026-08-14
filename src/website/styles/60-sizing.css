@@ -1,0 +1,31 @@
+/* 60 — Sizing & spacing (Kore chatWindowMS.css geometry). */
+
+#lex-web .v-toolbar,
+#lex-web .v-toolbar .v-toolbar__content {
+  min-height: var(--ms-header-height) !important;
+  height: var(--ms-header-height) !important;
+}
+
+#lex-web .message-list-container {
+  padding: var(--ms-list-padding) !important;
+}
+
+#lex-web .message-text,
+#lex-web .message-bubble,
+#lex-web .message-bubble p {
+  font-size: var(--ms-bubble-font-size) !important;
+  line-height: var(--ms-bubble-line-height) !important;
+}
+
+#lex-web .message-bubble {
+  padding: var(--ms-bubble-padding) !important;
+  max-width: var(--ms-bubble-max-width) !important;
+}
+
+/* Upstream .message-text adds 0.8em padding on top of the bubble's
+   (double padding; live MDES has none). pre-line renders \n from Lex
+   as real line breaks. */
+#lex-web .message-text {
+  padding: 0 !important;
+  white-space: pre-line;
+}
