@@ -222,17 +222,21 @@
   display: flex !important;
   flex-direction: column !important;
 }
-/* The list's legacy "layout column fill-height" classes are Vuetify-2
-   names that do nothing in Vuetify 3, so make the flex column explicit.
-   height:auto keeps the parent (not the list) as the scroller, avoiding
-   the flex-end overflow bug. */
+/* The list IS the scroller (overflow-y:auto in MessageList.vue), so it
+   must never use justify-content:flex-end — overflowing content above
+   the viewport becomes unreachable (can't scroll up). Bottom-anchor via
+   margin-top:auto on the first message instead: it collapses to 0 once
+   content overflows, restoring normal scrolling. The legacy "fill-height"
+   classes are dead Vuetify-2 names, so the flex column is explicit. */
 #lex-web .message-list {
   display: flex !important;
   flex-direction: column !important;
-  justify-content: flex-end !important;
-  height: auto !important;
-  min-height: 100%;
+  flex: 1 1 auto;
+  min-height: 0;   /* allow the flex item to shrink so overflow-y engages */
   width: 100%;
+}
+#lex-web .message-list > .message:first-child {
+  margin-top: auto !important;
 }
 
 /* Bot avatar: 34px, bottom-aligned, 10px gap to bubble (measured live). */
