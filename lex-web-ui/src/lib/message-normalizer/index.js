@@ -1,37 +1,15 @@
 /**
- * ============================================================
- * MESSAGE NORMALIZER — all Lex→UI response conversions live HERE.
- * ============================================================
- * Single source of truth for turning raw Lex payload strings into the
- * canonical message model the UI renders. Nothing else in the app may
- * parse bot payloads (see ARCHITECTURE.md and docs/BOT-RESPONSES.md).
+ * Message normalizer — ALL Lex payload conversions live here (see
+ * docs/BOT-RESPONSES.md). Returns the canonical message model
+ * { text, template?, alts? } consumed by Message.vue.
  *
- * Canonical message model (fields consumed by Message.vue):
- *   {
- *     text:     string        // what the navy bubble shows ('' = no bubble text)
- *     template: {             // present only for recognized JSON templates —
- *       templateType: string  //   rendered by components/message-templates/registry
- *       payload: object
- *     } | undefined
- *     alts:     { markdown } | undefined   // legacy markdown rendering path
- *   }
- *
- * Degradation ladder (never throws):
- *   1. Parseable JSON with template_type  → template  (registry renders)
- *   2. Anything else in a CustomPayload   → markdown  (marked renders)
- *   3. PlainText                          → text      (bubble renders; \n honored)
- *
- * PURE FUNCTIONS ONLY: no store, no components, no side effects — this
- * module is unit-tested with plain Node (test/unit/message-normalizer.test.js).
+ * Degradation ladder, never throws: template JSON -> markdown -> text.
+ * Pure functions only — tested via test/unit/message-normalizer.test.js.
  */
 
 /**
- * Parse a CustomPayload string into a template descriptor.
- *
- * Accepts BOTH shapes so bot authors can paste Kore.ai payloads verbatim:
- *   1. Kore envelope:  { "type": "template", "payload": { "template_type": "button", ... } }
- *   2. Bare payload:   { "template_type": "button", ... }
- *
+ * Parse a CustomPayload string into a template descriptor, accepting the
+ * Kore envelope ({"type":"template","payload":{...}}) or a bare payload.
  * Returns { templateType, payload } or null (caller falls back to markdown).
  */
 export function parseMessageTemplate(raw) {
@@ -50,40 +28,21 @@ export function parseMessageTemplate(raw) {
   return { templateType, payload };
 }
 
-/**
- * Normalize one CustomPayload message.
- *
- * @param {string} raw   - the CustomPayload content from Lex
- * @param {object} alts  - existing alt-messages object (may be undefined)
- * @returns {{ text, template, alts }} canonical fields for pushMessage
- */
+/** Normalize one CustomPayload: template if recognized, else markdown. */
 export function normalizeCustomPayload(raw, alts) {
   const template = parseMessageTemplate(raw);
   if (template) {
-    // Template messages show the template's own text in the bubble
-    // instead of the raw JSON payload.
+    // The bubble shows the template's own text, not the raw JSON.
     return { text: template.payload.text || '', template, alts };
   }
-  // Legacy behavior: any non-template CustomPayload renders as markdown.
   // Copy rather than mutate the caller's alts — this module is pure.
   return { text: raw, template: undefined, alts: { ...alts, markdown: raw } };
 }
 
 /**
- * Normalize ONE Lex message of ANY content type (the single dispatch
- * point for mixed multi-message responses). Message shape is the client's
- * v1-format: { type|contentType, value|content, isLastMessageInGroup? }.
- *
- *   CustomPayload → template or markdown (above)
- *   PlainText     → text as-is (\n honored by the theme; URLs auto-link)
- *   anything else → text as-is (forward-compatible fallback, never throws)
- *
- * ImageResponseCards never reach here — the lex client extracts them into
- * responseCardLexV2 before messages are enumerated.
- *
- * @param {object} mes   - one message from the response's messages array
- * @param {object} alts  - existing alt-messages object (may be undefined)
- * @returns {{ text, template, alts }} canonical fields for pushMessage
+ * Normalize one Lex message of any content type (single dispatch point).
+ * ImageResponseCards never reach here — the lex client extracts them
+ * into responseCardLexV2 first.
  */
 export function normalizeLexMessage(mes, alts) {
   if (!mes) return { text: '', template: undefined, alts };
@@ -94,10 +53,8 @@ export function normalizeLexMessage(mes, alts) {
   if (contentType === 'CustomPayload') {
     return normalizeCustomPayload(raw, alts);
   }
-  // Bot authors typing "\n" in the Lex console produce a LITERAL
-  // backslash-n (the console stores it verbatim), which renders as
-  // visible "\n" text in the bubble. Treat it as the line break the
-  // author clearly meant. Only for plain text — never for payload JSON.
+  // A "\n" typed in the Lex console arrives as literal backslash-n; treat
+  // it as the intended line break. Plain text only — never payload JSON.
   const text = typeof raw === 'string' ? raw.replace(/\\n/g, '\n') : raw;
   return { text, template: undefined, alts };
 }

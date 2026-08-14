@@ -189,14 +189,9 @@
 
 <script>
 /**
- * MDES onboarding ("collect user details") form.
- *
- * What it does:      renders the MS welcome form (magnolia banner, fields,
- *                    agreement, submit) and hosts the disclaimer sub-view.
- * What it does NOT:  talk to Lex or persist anything — it emits 'complete'
- *                    with the collected fields and lets LexWeb.vue decide.
- * Called by:         LexWeb.vue. Calls: OnboardingDisclaimer.vue,
- *                    config/onboardingDefaults.js (fallback copy/colors).
+ * MDES onboarding form. Renders the welcome form and hosts the disclaimer
+ * sub-view; emits "complete" with the collected fields — LexWeb.vue decides
+ * what happens next. Fallback copy/colors: config/onboardingDefaults.js.
  */
 import OnboardingDisclaimer from './OnboardingDisclaimer.vue';
 import { onboardingValue } from '../config/onboardingDefaults';
@@ -319,20 +314,8 @@ export default {
 </script>
 
 <style scoped>
-/* ============================================================
-   MS "collect user details" form — matched to the live
-   reemployms.mdes.ms.gov "Sippi" onboarding form:
-     welcome   : 37px cornflowerblue 700 Open Sans
-     subtitle  : bold black 13px
-     field     : static label above (#737373 16px) + plain box
-                 (1px #ccc, 4px radius, white)
-     logo      : navy magnolia AvatarIcon
-     form card : white, curved bottom over grey body
-     submit    : full width #09538b, radius 4px, 15px 700
-   ============================================================ */
-/* Colors reference the shared theme tokens (custom-chatbot-style.css)
-   with identical literal fallbacks, so the component still renders
-   correctly when the theme stylesheet is absent (e.g. dev server). */
+/* Matched to the live MDES onboarding form. Colors use theme tokens with
+   identical literal fallbacks so the component renders without the theme. */
 .onboarding-wrap {
   position: fixed;
   z-index: 2000;

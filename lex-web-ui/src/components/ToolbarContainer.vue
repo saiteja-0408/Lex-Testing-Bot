@@ -1,5 +1,4 @@
 <template>
-  <!-- eslint-disable max-len -->
   <v-toolbar
     elevation="3"
     :color="toolbarColor"
@@ -8,7 +7,6 @@
     :density="density"
     :class="{ minimized: isUiMinimized }"
   >
-  <!-- eslint-enable max-len -->
     <img
       class="toolbar-image"
       v-if="toolbarLogo"

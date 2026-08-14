@@ -5,44 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Employment services portal (demo page)</title>
 
-  <!--
-    lex-web-ui-loader.min.css  — provided by the loader library.
-    Defines .lex-web-ui-iframe (position: fixed, right-side panel) and
-    the .lex-web-ui-iframe--minimize (round floating button) states.
-    chat-frame.css overrides both with our MDES sizing/animation rules.
-  -->
+  <!-- Loader base styles; chat-frame.css overrides the sizing. -->
   <link href="./lex-web-ui-loader.min.css" rel="stylesheet" />
 
-  <!-- Demo host-site styles (replace with your site's own CSS) -->
+  <!-- Demo styles — replace with your site CSS. -->
   <link href="./demo-page.css" rel="stylesheet" />
 
-  <!-- Chat panel frame: MDES right-panel geometry + minimized launcher.
-       This is the reusable part — copy it into any host site. -->
+  <!-- Reusable MDES panel geometry + launcher. -->
   <link href="./chat-frame.css" rel="stylesheet" />
 </head>
 
 <body>
 
-  <!-- ══════════════════════════════════════════════════════════════
-       YOUR SITE CONTENT — replace everything inside .page-content
-       with your real application markup. The chat panel floats on
-       the right independently; it does not affect this layout.
-  ══════════════════════════════════════════════════════════════ -->
+  <!-- Demo site content — replace with your real markup. -->
   <div class="page-shell">
     <div class="page-content">
       <h1>Employment services portal (demo page)</h1>
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════════════════════════════
-       LOADER LIBRARY
-       Exposes window.ChatBotUiLoader = { IframeLoader, FullPageLoader }
-       Served from the same origin by server.js
-  ══════════════════════════════════════════════════════════════ -->
+  <!-- Loader library: exposes window.ChatBotUiLoader -->
   <script src="./lex-web-ui-loader.min.js"></script>
 
-  <!-- Bootstrap: fetches config, patches origins, loads the iframe.
-       Full flow documentation lives inside this file. -->
+  <!-- Bootstrap: fetches config, patches origins, loads the iframe. -->
   <script src="./right-panel-loader.js"></script>
 
 </body>

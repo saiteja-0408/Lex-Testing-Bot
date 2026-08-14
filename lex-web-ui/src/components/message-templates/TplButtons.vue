@@ -14,10 +14,8 @@
 
 <script>
 /**
- * Kore-style "button" template: renders ALL buttons as MDES pills in one
- * wrapping row under the message bubble (never split across cards).
- * Button shape (Kore): { type: 'postback', title: 'Debit card', payload: 'Debit card' }
- * Clicking emits `send` with the payload text; the dispatcher posts it to Lex.
+ * Kore-style "button" template: all buttons as one wrapping pill row.
+ * Clicking emits `send` with the button's payload text.
  */
 export default {
   name: 'tpl-buttons',

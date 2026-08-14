@@ -1,15 +1,12 @@
-/* ============================================================
-   20 — HEADER  (white MDES header: blue title, grey controls, status dot)
-   Matches the live MDES chat header: white bg, #1c3e64 title, avatar left,
-   status dot + grey text, dark-grey controls, 12px top radius, flat w/ border.
-   ============================================================ */
+/* 20 — White MDES header: blue title, grey controls, status dot. */
+
 #lex-web .v-toolbar {
   background-color: #fff !important;
   color: var(--ms-header-accent) !important;
   border-bottom: var(--ms-header-border) !important;
   border-top-left-radius: 12px !important;
   border-top-right-radius: 12px !important;
-  box-shadow: none !important;   /* MDES header is flat */
+  box-shadow: none !important;
 }
 #lex-web .toolbar-maggi-heading {
   color: var(--ms-header-accent) !important;
@@ -26,9 +23,9 @@
   color: var(--ms-header-accent);
 }
 
-/* ---- 3-state connection status dot (offline / connecting / online) ---- */
+/* 3-state connection dot */
 #lex-web .toolbar-maggi-status-dot {
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);   /* subtle ring on white header */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
 }
 #lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connected {
   background: var(--ms-status-online) !important;

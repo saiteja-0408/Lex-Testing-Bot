@@ -1,31 +1,17 @@
-/* ============================================================
-   CHAT FRAME — parent-page overrides for the Lex Web UI iframe
-   ============================================================
-   This is the REUSABLE part: copy this file (plus the loader) into any
-   host site to get the MDES-style right-side chat panel.
+/*
+ * Chat frame — parent-page overrides for the loader's iframe container.
+ * Reusable: copy this file (plus the loader) into any host site.
+ *
+ * Geometry from web-kore-standalone/UI/chatWindowMS.css:
+ *   desktop: 390px x 95vh, right 10 / bottom 15, radius 12
+ *   mobile (<=767px): 5px margins, top 75; no tablet breakpoint
+ */
 
-   The loader injects <div class="lex-web-ui-iframe"> into the DOM.
-   lex-web-ui-loader.min.css gives it `position: fixed` and default
-   sizing; we override all size/position values so the panel matches
-   the Kore .kore-chat-window geometry.
-
-   Class lifecycle (managed by IframeComponentLoader):
-     .lex-web-ui-iframe              → always present after load()
-     .lex-web-ui-iframe--show        → added after ready handshake
-     .lex-web-ui-iframe--minimize    → toggled when user clicks close/open
-
-   Sizing reference: web-kore-standalone/UI/chatWindowMS.css
-     desktop : width 390px, height 95%, right 10px, bottom 15px, radius 12
-     mobile  : (max-width 767px) left/right 5px, top 75px, bottom 5px
-     no tablet breakpoint — desktop rule applies from 768px up.
-   ============================================================ */
-
-/* ── Desktop: fixed right panel ─────────────────────────────── */
 .lex-web-ui-iframe {
   min-width:  390px !important;
   max-width:  390px !important;
   width:      390px !important;
-  height:     95vh !important;        /* Kore .kore-chat-window: height 95% */
+  height:     95vh !important;
   max-height: 95vh !important;
   min-height: 200px !important;
   top:    auto !important;
@@ -34,12 +20,11 @@
   left:   auto !important;
   margin: 0 !important;
 
-  /* Rounded card panel — MDES frame shadow */
   border-radius: 12px !important;
   overflow: hidden;
   box-shadow: 0 0 15px 0 rgb(121, 121, 121) !important;
 
-  /* Start hidden + shifted right, animate in on --show */
+  /* hidden + shifted right until the loader adds --show */
   display: flex !important;
   align-items: stretch;
   justify-content: stretch;
@@ -56,14 +41,12 @@
     min-width   0.45s ease;
 }
 
-/* Panel is visible and interactive */
 .lex-web-ui-iframe.lex-web-ui-iframe--show {
   opacity: 1;
   transform: translate3d(0, 0, 0) scale(1);
   pointer-events: auto;
 }
 
-/* inner <iframe> gets the same border-radius as the container */
 .lex-web-ui-iframe iframe {
   border-radius: 12px !important;
   width: 100% !important;
@@ -71,7 +54,6 @@
   border: none;
 }
 
-/* ── Mobile (Kore @media max-width: 767px) ──────────────────── */
 @media (max-width: 767px) {
   .lex-web-ui-iframe {
     left:       5px !important;
@@ -79,8 +61,8 @@
     top:        75px !important;
     bottom:     5px !important;
     width:      auto !important;
-    /* explicit height (75 top + 5 bottom): the loader forces align-self:center
-       + min-height, so `height:auto` won't stretch top→bottom on its own */
+    /* explicit height: the loader forces align-self:center + min-height,
+       so height:auto would not stretch top-to-bottom */
     height:     calc(100dvh - 80px) !important;
     min-width:  100px !important;
     max-width:  none !important;
@@ -95,13 +77,8 @@
   }
 }
 
-/* ── Minimized state: floating round launcher button ─────────── */
-/*
-  When user clicks the toolbar close/minimize button, the loader adds
-  --minimize to the container, which makes it a small circle pinned
-  bottom-right. MinButton.vue inside the iframe renders the gold
-  MDES FAB (56px, #FDC245, chatbubbles-outline icon) in this circle.
-*/
+/* Minimized: 56px circle pinned bottom-right; MinButton.vue renders the
+   gold MDES FAB inside it. */
 .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
   position:   fixed !important;
   top:        auto !important;
@@ -122,7 +99,6 @@
   overflow: visible;
 }
 
-/* Desktop: match the MDES 56px gold FAB launcher */
 @media (min-width: 768px) {
   .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
     right:      16px !important;
@@ -136,13 +112,11 @@
   }
 }
 
-/* Minimized iframe itself gets round clip */
 .lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
   border-radius: 999px !important;
   background: transparent !important;
 }
 
-/* ── Respect reduced-motion preference ──────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .lex-web-ui-iframe {
     transition: none !important;

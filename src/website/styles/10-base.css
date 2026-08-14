@@ -1,8 +1,5 @@
-/* ============================================================
-   10 — BASE  (app font + chat body background)
-   ============================================================ */
+/* 10 — App font + chat body background. */
 
-/* ---- App font ---- */
 #lex-web,
 #lex-web .message-text,
 #lex-web .message-bubble,
@@ -12,14 +9,12 @@
   font-family: var(--ms-font-stack);
 }
 
-/* ---- Chat body background (MS light blue-grey) ----
-   Paint only the chat viewport, NOT the #lex-web app root. Painting the
-   root leaves a grey square behind the round minimized launcher. */
+/* Paint the viewport, not the #lex-web root — a painted root shows as a
+   grey square behind the round minimized launcher. */
 #lex-web .v-main,
 .message-list-container {
   background-color: var(--ms-body-bg) !important;
 }
-/* App root stays transparent so the minimized launcher is a clean circle */
 #lex-web {
   background-color: transparent !important;
 }

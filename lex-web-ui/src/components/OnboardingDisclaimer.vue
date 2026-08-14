@@ -42,15 +42,8 @@
 
 <script>
 /**
- * MDES Disclaimer page ("Terms and services" navigate target).
- *
- * What it does:      renders the gradient-header disclaimer view matched to
- *                    the live MDES widget (Kore #user-information .disclaimer).
- * What it does NOT:  read config or the store — all content arrives via
- *                    props; navigation is delegated via events.
- * Called by:         OnboardingForm.vue (v-if on its showTermsViewer state).
- * Emits:             'back'  — return to the onboarding form
- *                    'close' — close the whole chat widget
+ * MDES Disclaimer page ("Terms and services" target). Pure presentational:
+ * content arrives via props; navigation is delegated via back/close events.
  */
 export default {
   name: 'OnboardingDisclaimer',
@@ -72,11 +65,7 @@ export default {
 </script>
 
 <style scoped>
-/* ============================================================
-   Disclaimer "page navigate" — matches the MDES disclaimer view:
-     header  : linear-gradient(162deg, #09538b 60%, #f1f1e8), white 700 title
-     message : bordered box (1px groove #6e6e6e, radius 8px, drop shadow), #737373 Open Sans
-   ============================================================ */
+/* Matched to the live MDES disclaimer view (gradient header, bordered message). */
 .disclaimer-view {
   position: fixed;      /* fill the whole panel (card height is auto) */
   inset: 0;

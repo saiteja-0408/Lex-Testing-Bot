@@ -1,12 +1,11 @@
-/* ============================================================
-   50 — INPUT BAR  (white, gray placeholder, MDES footer top shadow)
-   ============================================================ */
+/* 50 — Input bar: white, grey placeholder, MDES footer top shadow. */
+
 #lex-web .input-container,
 #lex-web .v-toolbar.input-container,
 #lex-web .toolbar-content {
   background: #fff !important;
   border-top: none !important;
-  box-shadow: var(--ms-footer-shadow) !important;   /* Kore .kore-chat-footer */
+  box-shadow: var(--ms-footer-shadow) !important;
 }
 #lex-web .input-container .v-field,
 #lex-web .v-toolbar .v-text-field {
@@ -15,6 +14,16 @@
 #lex-web .toolbar-text .v-label,
 #lex-web .toolbar-text input::placeholder {
   color: var(--ms-placeholder-grey) !important;
+  opacity: 1 !important;   /* Vuetify dims placeholders to 0 until focus */
+}
+
+/* MDES input is borderless — no idle or focus underline (the field uses
+   variant="plain"; this also guards against variant regressions). */
+#lex-web .toolbar-text .v-field__outline,
+#lex-web .toolbar-text .v-field__outline::before,
+#lex-web .toolbar-text .v-field__outline::after {
+  border: none !important;
+  display: none !important;
 }
 #lex-web .input-container .v-icon,
 #lex-web .v-toolbar .icon-color .v-icon {

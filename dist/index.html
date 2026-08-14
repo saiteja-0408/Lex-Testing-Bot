@@ -18,32 +18,13 @@
     <!-- empty favicon to avoid 404 -->
     <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />
 
-    <!--
-      Webpack injects the loader css tag here.
-      if you want to include it manually in your app,
-      replace the webpack tag with:
-      <link href="lex-web-ui-loader.min.css" rel="stylesheet">
-    -->
     <link href="./lex-web-ui-loader.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="./custom-chatbot-style.css">
   </head>
   <body>
-    <!--
-      Loader script.
-      Creates a global variable named ChatbotUiLoader.
-
-      Webpack injects the loader script tag here.
-      if you want to include it manually in your app,
-      replace the webpack tag with:
-      <script src="./lex-web-ui-loader.min.js"></script>
-    -->
     <script src="./lex-web-ui-loader.min.js"></script>
 
-    <!--
-      The following script instantiate the full page loader and
-      calls its load function.
-    -->
     <script src="./initiate-loader.js"></script>
   </body>
 </html>

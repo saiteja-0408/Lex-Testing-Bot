@@ -1,10 +1,6 @@
-/* ============================================================
-   DEMO PAGE — styles for the placeholder host-site content only.
-   A real host site replaces this file entirely; the chat panel is
-   styled independently by chat-frame.css.
-   ============================================================ */
+/* Demo host-page styles only — a real site replaces this file. */
 
-/* ── Reset ─────────────────────────────────────────────────── */
+/* Reset */
 *, *::before, *::after { box-sizing: border-box; }
 html, body {
   margin: 0;
@@ -16,7 +12,7 @@ html, body {
   color: #1a202c;
 }
 
-/* ── Page shell (your site content goes here) ───────────────── */
+/* Page shell */
 .page-shell {
   min-height: 100vh;
   background: linear-gradient(180deg, #e3eef8 0%, #f5f7fb 40%, #fff 100%);

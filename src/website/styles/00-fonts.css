@@ -1,11 +1,4 @@
-/* ============================================================
-   00 — FONTS
-   @import MUST stay in the first partial: CSS requires @import
-   to precede all other rules in the final concatenated file.
-
-   Open Sans. freight-sans-pro is an Adobe Typekit (paid) font, listed
-   first in the token font stack so it is used when a Typekit is present,
-   otherwise Open Sans. Remove this @import for a fully offline /
-   no-external-request build (then self-host Open Sans).
-   ============================================================ */
+/* 00 — Fonts. @import must stay in the first partial (CSS requires
+   @import before all rules in the concatenated file). freight-sans-pro
+   is a paid Typekit face; Open Sans is the fallback everyone gets. */
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');

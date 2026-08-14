@@ -1,11 +1,9 @@
 <template>
   <v-row d-flex class="message">
-    <!-- contains message and response card -->
     <v-col ma-2 class="message-layout">
 
-      <!-- contains message bubble and date. Skipped for text-less bot
-           messages (card/template carriers): even empty, its Vuetify
-           column paddings leave ~24px of dead space above the pills. -->
+      <!-- Skipped for text-less bot messages (card/template carriers):
+           even empty, its paddings leave dead space above the pills. -->
       <v-row d-flex class="message-bubble-date-container" v-if="shouldRenderBubble">
         <v-col class="message-bubble-column">
 
@@ -506,11 +504,8 @@ export default {
       }
     },
     playAudio() {
-      // XXX doesn't play in Firefox or Edge
-      /* XXX also tried:
-      const audio = new Audio(this.message.audio);
-      audio.play();
-      */
+      // Queries the existing <audio> element: constructing a new Audio()
+      // does not play in Firefox or Edge.
       const audioElem = this.$el.querySelector('audio');
       if (audioElem) {
         audioElem.play();

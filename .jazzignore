@@ -1,0 +1,45 @@
+# .jazzignore — IBM RTC / Jazz SCM ignore rules for the Lex Web UI repo.
+# Mirrors .gitignore (+ lex-web-ui/.gitignore) so RTC and git agree.
+#
+# IMPORTANT: the top-level /dist folder is DELIBERATELY NOT ignored — it is
+# the committed deployable (bundle + generated CSS) this repo ships. Only
+# lex-web-ui/dist (intermediate vite output) is ignored, via the second
+# .jazzignore inside lex-web-ui/. Do not add {dist} to the recursive list
+# here or the deployable will silently stop being checked in.
+
+# Applies to this folder AND every subfolder
+core.ignore.recursive= \
+  {node_modules} \
+  {py_modules} \
+  {out} \
+  {.DS_Store} \
+  {Thumbs.db} \
+  {desktop.ini} \
+  {.idea} \
+  {.vscode} \
+  {.kiro} \
+  {.gradle} \
+  {*.suo} \
+  {*.ntvs*} \
+  {*.njsproj} \
+  {*.sln} \
+  {*.sw?} \
+  {*.log} \
+  {npm-debug.log*} \
+  {yarn-debug.log*} \
+  {yarn-error.log*} \
+  {pnpm-debug.log*} \
+  {.env} \
+  {.env.local} \
+  {.env.*.local} \
+  {.claude} \
+  {*.zip} \
+  {*.tar} \
+  {*.tar.gz} \
+  {*.bak} \
+  {*.orig} \
+  {*.tmp}
+
+# Applies to the repo root only
+core.ignore= \
+  {.git}
