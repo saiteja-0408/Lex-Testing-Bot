@@ -1,12 +1,12 @@
 {
-  "name": "aws-lex-web-ui",
+  "name": "reusa-lex-ui",
   "version": "0.24.0",
   "type": "module",
   "description": "Sample Amazon Lex Web Interface",
   "main": "lex-web-ui/dist/bundle/lex-web-ui.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/awslabs/aws-lex-web-ui.git"
+    "url": "git+https://github.com/your-org/web-lex-standalone.git"
   },
   "keywords": [
     "aws",
@@ -15,16 +15,18 @@
     "chatbot",
     "web",
     "interface",
-    "ui"
+    "ui",
+    "mdes",
+    "reusa"
   ],
-  "author": "AWS",
+  "author": "MDES ReEmployUSA",
   "license": "SEE LICENSE IN LICENSE",
   "bugs": {
-    "url": "https://github.com/awslabs/aws-lex-web-ui/issues"
+    "url": "https://github.com/your-org/web-lex-standalone/issues"
   },
-  "homepage": "https://github.com/awslabs/aws-lex-web-ui#readme",
+  "homepage": "https://github.com/your-org/web-lex-standalone#readme",
   "scripts": {
-    "start": "node server.js",                  
+    "start": "node server.js",
     "serve": "cd lex-web-ui && npm run serve",
     "build": "cd lex-web-ui && npm run build",
     "build:dev": "cd lex-web-ui && npm run build:dev",
@@ -38,10 +40,11 @@
     "lint": "eslint --format node_modules/eslint-formatter-friendly src/lex-web-ui-loader"
   },
   "dependencies": {
-    "amazon-cognito-auth-js": "^1.2.4",
     "@aws-sdk/client-cognito-identity": "^3.1015.0",
     "@aws-sdk/credential-providers": "^3.1015.0",
+    "amazon-cognito-auth-js": "^1.2.4",
     "core-js": "^3.6.5",
+    "cors": "^2.8.6",
     "jsdom": "^22.0.0",
     "jwt-decode": "^4.0.0",
     "process": "^0.11.10",

@@ -1,56 +1,179 @@
-/* Maggi-style: navy header, light chat area, dark blue bot bubbles, pill quick actions */
+/* GENERATED FILE — DO NOT EDIT.
+   Source partials: src/website/styles/*.css
+   Rebuild with:    node build/copy-assets.js  (or npm run sync-assets)
+   Built from: 00-fonts.css, 05-tokens.css, 10-base.css, 20-header.css, 30-messages.css, 40-buttons.css, 50-input.css, 60-sizing.css, 70-launcher.css */
+
+/* 00 — Fonts. @import must stay in the first partial (CSS requires
+   @import before all rules in the concatenated file). freight-sans-pro
+   is a paid Typekit face; Open Sans is the fallback everyone gets. */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');
+
+/* 05 — Design tokens: single source of truth for the MDES theme.
+   Values come from the Kore reference CSS and the live widget at
+   reemployms.mdes.ms.gov. Change a color/size here, not in partials. */
+:root {
+  /* ---- Brand colors ---- */
+  --ms-header-accent:      #1c3e64;   /* header title blue */
+  --ms-bot-bubble-bg:      #1a3b4c;   /* bot bubble dark navy */
+  --ms-user-bubble-bg:     linear-gradient(90deg, #3a78a0, #295687); /* user gradient (MDES alt: #005487 -> #002B45) */
+  --ms-body-bg:            #eaeef3;   /* chat body rgb(234,238,243) */
+  --ms-launcher-gold:      #FDC245;   /* live MDES FAB (ion-fab-button) */
+  --ms-launcher-yellow:    #FECA5D;   /* Kore reference launcher / minimized bubble */
+  --ms-link-blue:          #2894f1;   /* links in bot bubbles (Kore a color) */
+  --ms-btn-outline:        #539FF2;   /* pill outline — measured on live MDES chat */
+  --ms-btn-text:           #539FF2;   /* pill text — live MDES uses same blue as outline */
+  --ms-pill-radius:        12px;      /* live MDES quick-reply/button pill radius */
+  --ms-control-grey:       #5a6b7a;   /* header control icons */
+  --ms-status-grey:        #8a959f;   /* status text (Kore secondary font color) */
+  --ms-placeholder-grey:   #aaa;      /* input placeholder (Kore .chatInputBoxPlaceholder) */
+  --ms-input-icon-grey:    #78909c;   /* input bar icons (send/mic) */
+
+  /* ---- Onboarding / disclaimer (consumed by components via
+          var(--ms-x, fallback) — see ARCHITECTURE.md token bridge) ---- */
+  --ms-cta-blue:           #09538b;   /* submit button / disclaimer gradient start */
+  --ms-terms-link:         #0192ff;   /* "Terms and services" readmore link */
+  --ms-label-grey:         #737373;   /* field labels / disclaimer text */
+  --ms-input-border:       #cccccc;
+  --ms-error-red:          #e53935;
+  --ms-disclaimer-gradient: linear-gradient(162deg, #09538b 60%, #f1f1e8);
+
+  /* ---- Status dot (3-state connection indicator) ---- */
+  --ms-status-online:      #48bb78;
+  --ms-status-connecting:  #f6c343;
+  --ms-status-offline:     #e53935;
+
+  /* ---- Effects ---- */
+  --ms-footer-shadow:      0 0 20px 0 #cccccc;         /* Kore .kore-chat-footer */
+  --ms-header-border:      1px solid rgba(0, 0, 0, 0.08);
+
+  /* ---- Typography ---- */
+  --ms-font-stack: "freight-sans-pro", "Open Sans", "Segoe UI", system-ui, sans-serif;
+  --ms-bubble-font-size:   14px;      /* Kore .messageBubble */
+  --ms-bubble-line-height: 1.5;
+
+  /* ---- Geometry (Kore chatWindowMS.css) ---- */
+  --ms-bubble-radius:      12px;
+  --ms-bubble-tail:        2px;       /* speech-tail corner (bot: bottom-left, user: bottom-right) */
+  --ms-bubble-padding:     12px 15px;
+  --ms-bubble-max-width:   90%;       /* Kore: 95% */
+  --ms-header-height:      44px;      /* Kore: 40px; 44 fits our 2-line title+status */
+  --ms-list-padding:       20px;      /* Kore ul.chat-container */
+}
+
+/* 10 — App font + chat body background. */
 
 #lex-web,
+#lex-web .message-text,
+#lex-web .message-bubble,
+#lex-web .v-toolbar,
+#lex-web input,
+#lex-web .lex-quick-reply-btn {
+  font-family: var(--ms-font-stack);
+}
+
+/* Paint the viewport, not the #lex-web root — a painted root shows as a
+   grey square behind the round minimized launcher. */
 #lex-web .v-main,
 .message-list-container {
-  background-color: #e8eef5 !important;
+  background-color: var(--ms-body-bg) !important;
+}
+#lex-web {
+  background-color: transparent !important;
 }
 
-/* ---- Navy toolbar, white text (reference header) ---- */
+/* 20 — White MDES header: blue title, grey controls, status dot. */
+
 #lex-web .v-toolbar {
-  background-color: #1e3a5f !important;
-  color: #fff !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
-}
-#lex-web .v-toolbar .v-btn {
-  color: #fff !important;
-}
-#lex-web .v-toolbar .v-icon {
-  color: #fff !important;
+  background-color: #fff !important;
+  color: var(--ms-header-accent) !important;
+  border-bottom: var(--ms-header-border) !important;
+  border-top-left-radius: 12px !important;
+  border-top-right-radius: 12px !important;
+  box-shadow: none !important;
 }
 #lex-web .toolbar-maggi-heading {
-  color: #fff !important;
+  color: var(--ms-header-accent) !important;
+  font-weight: 600 !important;
+}
+#lex-web .v-toolbar .v-btn,
+#lex-web .v-toolbar .v-icon {
+  color: var(--ms-control-grey) !important;
 }
 #lex-web .toolbar-maggi-status-text {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-#lex-web .toolbar-maggi-status-dot {
-  background: #48bb78 !important;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+  color: var(--ms-status-grey) !important;
 }
 #lex-web .v-toolbar .v-toolbar__content {
-  color: #fff;
+  color: var(--ms-header-accent);
 }
 
-/* Bot messages: dark blue bubble, white text */
-.message-bot .message-bubble,
-.message-type-bot .message-bubble {
-  background-color: #1e3a5f !important;
+/* 3-state connection dot */
+#lex-web .toolbar-maggi-status-dot {
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connected {
+  background: var(--ms-status-online) !important;
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--connecting {
+  background: var(--ms-status-connecting) !important;
+}
+#lex-web .toolbar-maggi-status-dot.toolbar-maggi-status-dot--disconnected {
+  background: var(--ms-status-offline) !important;
+}
+
+/* 30 — Message bubbles (the core MS look). */
+
+.message-bot .message-bubble {
+  background: var(--ms-bot-bubble-bg) !important;
   color: #fff !important;
-  border-radius: 12px !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
 }
-
 .message-bot .message-text,
-.message-type-bot .message-text,
-.message-bot .message-bubble p,
-.message-type-bot .message-bubble p {
+.message-bot .message-bubble p {
   color: #fff !important;
 }
 
-/* User messages */
 .message-human .message-bubble {
-  background-color: #e3f2fd !important;
-  color: #0d47a1 !important;
+  background: var(--ms-user-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-right-radius: var(--ms-bubble-tail) !important;
+}
+.message-human .message-text,
+.message-human .message-bubble p {
+  color: #fff !important;
+}
+.message-human .message-bubble a {
+  color: #fff !important;
+  text-decoration: underline;
+}
+.message-bot .message-bubble a {
+  color: var(--ms-link-blue) !important;
+}
+
+/* Flex items shrink below max-content and wrap short texts — forbid it. */
+#lex-web .message-human .message-bubble,
+#lex-web .message-bot .message-bubble {
+  flex: 0 0 auto !important;
+}
+
+/* Upstream rows are width:fit-content; the bubble's max-width:90% then
+   resolves against a collapsed ancestor and wraps short texts. Full-width
+   rows also restore left/right alignment. */
+#lex-web .message-list .message {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Kore bubbles have no border/shadow — Vuetify's subtle box-shadow reads
+   as an extra border. */
+#lex-web .message-bubble,
+#lex-web .message-bubble:hover,
+#lex-web .message-bubble:focus,
+#lex-web .message-bubble.focusable:focus {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
 }
 
 .message-bubble p {
@@ -60,38 +183,198 @@
   margin-bottom: 0;
 }
 
-/* Lex response card / inline buttons: pill, outlined */
+/* Pop-in animation, keyframes captured from the live MDES chat. */
+@keyframes ms-message-left {
+  0%  { transform: translate3d(-15%, 5%, 0) scaleZ(1); visibility: visible; }
+  5%  { transform: translateZ(0) scale3d(1.01, 1.01, 1); }
+  10% { transform: translate3d(0, -2px, 0) scale3d(1.03, 1.03, 1); }
+  15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
+  20% { transform: translateZ(0) scaleZ(1); }
+}
+@keyframes ms-message-right {
+  0%  { transform: translate3d(15%, 5%, 0) scaleZ(1); visibility: visible; }
+  5%  { transform: translateZ(0) scale3d(1.01, 1.01, 1); }
+  10% { transform: translate3d(0, -2px, 0) scale3d(1.03, 1.03, 1); }
+  15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
+  20% { transform: translateZ(0) scaleZ(1); }
+}
+.message-bot .message-bubble {
+  animation: ms-message-left 2s ease-in-out;
+}
+.message-human .message-bubble {
+  animation: ms-message-right 2s ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .message-bot .message-bubble,
+  .message-human .message-bubble {
+    animation: none !important;
+  }
+}
+
+/* 12px between messages (measured live); Vuetify's v-col padding gave 24. */
+#lex-web .message .message-layout {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+/* Conversation anchored to the bottom of the chat area (live MDES). */
+#lex-web .message-list-container {
+  display: flex !important;
+  flex-direction: column !important;
+}
+/* The list IS the scroller (overflow-y:auto in MessageList.vue), so it
+   must never use justify-content:flex-end — overflowing content above
+   the viewport becomes unreachable (can't scroll up). Bottom-anchor via
+   margin-top:auto on the first message instead: it collapses to 0 once
+   content overflows, restoring normal scrolling. The legacy "fill-height"
+   classes are dead Vuetify-2 names, so the flex column is explicit. */
+#lex-web .message-list {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto;
+  min-height: 0;   /* allow the flex item to shrink so overflow-y engages */
+  width: 100%;
+}
+#lex-web .message-list > .message:first-child {
+  margin-top: auto !important;
+}
+
+/* Bot avatar: 34px, bottom-aligned, 10px gap to bubble (measured live). */
+#lex-web .message-bot .avatar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  align-self: flex-end !important;
+  margin-bottom: 2px;
+  margin-right: 10px;
+}
+
+/* 40 — Response-card buttons + quick replies.
+   Pill values measured on the live MDES chat: 25px tall, 14px text,
+   radius 12, pill left = bubble left + 2, 6px between pills. */
+
 .v-card-actions .v-btn,
 .button-row .v-btn,
 .message-bubble .v-btn {
   text-transform: none !important;
-  border: 1px solid #64b5f6 !important;
-  color: #1565c0 !important;
+  border: 1px solid var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
   background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+  letter-spacing: normal !important;
+  height: 25px !important;
+  min-height: 25px !important;
+  padding: 1px 13px !important;
+  box-shadow: none !important;
 }
 
-.v-card {
+/* Card rows only — a bare .v-card also hit OnboardingForm's card. */
+#lex-web .response-card .v-card {
   box-shadow: none !important;
   background-color: transparent !important;
 }
 
-/* Default quick-reply strip (above input) */
-.lex-default-quick-replies {
-  background: #e8eef5 !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+/* Pill rows: left-aligned, wrapping; 11px/6px gaps measured live.
+   Upstream is display:inline-block, where gap is inert — flex it. */
+.v-card-actions,
+.button-row {
+  display: flex !important;
+  justify-content: flex-start !important;
+  flex-wrap: wrap !important;
+  gap: 11px 6px !important;
 }
-.lex-default-quick-replies .lex-quick-reply-btn {
-  border-color: #64b5f6 !important;
-  color: #1565c0 !important;
-  background: #fff !important;
+/* Vuetify button margins would fight the flex gap. */
+#lex-web .response-card .v-btn {
+  margin: 0 !important;
 }
 
-/* White input bar, gray placeholder */
+/* Card TITLE styled as a bot bubble (upstream default is a pink
+   single-line banner with ellipsis truncation). */
+#lex-web .response-card .v-card-title {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+  padding: var(--ms-bubble-padding) !important;
+  display: block !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: 90%;
+  margin-bottom: 6px;
+}
+#lex-web .response-card .v-card-title .text-h5 {
+  font-size: var(--ms-bubble-font-size) !important;
+  font-weight: 400 !important;
+  line-height: var(--ms-bubble-line-height) !important;
+  letter-spacing: normal !important;
+  font-family: var(--ms-font-stack) !important;
+  color: #fff !important;
+}
+
+/* Template pills row: pill left 66 = bubble + 2, 10px below the bubble
+   (measured live). */
+#lex-web .message-template-row {
+  margin: 10px 0 0 0 !important;
+  padding-left: 46px;
+  padding-right: 12px;
+}
+
+/* Card pill rows: same alignment (row origin differs, hence 58px). */
+#lex-web .response-card {
+  justify-content: flex-start !important;
+  margin: 10px 0 0 0 !important;
+  padding-left: 58px;
+  padding-right: 12px;
+}
+#lex-web .response-card .v-card-actions {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+#lex-web .ms-tpl-btn {
+  height: 25px !important;
+  line-height: 21px !important;
+  padding: 1px 13px !important;
+}
+
+/* Hover measured live: solid #1c3e64 fill + white text, no transition.
+   The overlay rule stops Vuetify adding a grey wash on top. */
+#lex-web .ms-tpl-btn:hover,
+#lex-web .response-card .v-btn:hover,
+#lex-web .message-bubble .v-btn:hover,
+.lex-default-quick-replies .lex-quick-reply-btn:hover {
+  background: var(--ms-header-accent) !important;
+  color: #fff !important;
+}
+#lex-web .response-card .v-btn:hover .v-btn__overlay,
+.lex-default-quick-replies .lex-quick-reply-btn:hover .v-btn__overlay {
+  opacity: 0 !important;
+}
+
+/* Bottom quick-reply strip — same pill look */
+.lex-default-quick-replies {
+  background: var(--ms-body-bg) !important;
+  border-top: var(--ms-header-border) !important;
+}
+.lex-default-quick-replies .lex-quick-reply-btn {
+  border-color: var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+}
+
+/* 50 — Input bar: white, grey placeholder, MDES footer top shadow. */
+
 #lex-web .input-container,
 #lex-web .v-toolbar.input-container,
 #lex-web .toolbar-content {
   background: #fff !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-top: none !important;
+  box-shadow: var(--ms-footer-shadow) !important;
 }
 #lex-web .input-container .v-field,
 #lex-web .v-toolbar .v-text-field {
@@ -99,9 +382,67 @@
 }
 #lex-web .toolbar-text .v-label,
 #lex-web .toolbar-text input::placeholder {
-  color: #9e9e9e !important;
+  color: var(--ms-placeholder-grey) !important;
+  opacity: 1 !important;   /* Vuetify dims placeholders to 0 until focus */
+}
+
+/* MDES input is borderless — no idle or focus underline (the field uses
+   variant="plain"; this also guards against variant regressions). */
+#lex-web .toolbar-text .v-field__outline,
+#lex-web .toolbar-text .v-field__outline::before,
+#lex-web .toolbar-text .v-field__outline::after {
+  border: none !important;
+  display: none !important;
 }
 #lex-web .input-container .v-icon,
 #lex-web .v-toolbar .icon-color .v-icon {
-  color: #78909c !important;
+  color: var(--ms-input-icon-grey) !important;
 }
+
+/* 60 — Sizing & spacing (Kore chatWindowMS.css geometry). */
+
+#lex-web .v-toolbar,
+#lex-web .v-toolbar .v-toolbar__content {
+  min-height: var(--ms-header-height) !important;
+  height: var(--ms-header-height) !important;
+}
+
+#lex-web .message-list-container {
+  padding: var(--ms-list-padding) !important;
+}
+
+#lex-web .message-text,
+#lex-web .message-bubble,
+#lex-web .message-bubble p {
+  font-size: var(--ms-bubble-font-size) !important;
+  line-height: var(--ms-bubble-line-height) !important;
+}
+
+#lex-web .message-bubble {
+  padding: var(--ms-bubble-padding) !important;
+  max-width: var(--ms-bubble-max-width) !important;
+}
+
+/* Upstream .message-text adds 0.8em padding on top of the bubble's
+   (double padding; live MDES has none). pre-line renders \n from Lex
+   as real line breaks. */
+#lex-web .message-text {
+  padding: 0 !important;
+  white-space: pre-line;
+}
+
+/* ============================================================
+   70 — MINIMIZED LAUNCHER  (legacy note)
+   The gold FAB launcher (56px, #FDC245, chatbubbles-outline icon) is
+   implemented INSIDE the app: lex-web-ui/src/components/MinButton.vue
+   (color override: config ui.minButtonColor). The parent page sizes the
+   minimized container in web-lex-standalone/chat-frame.css.
+
+   Kore-reference alternative (yellow #FECA5D) kept for reference:
+   ============================================================ */
+/*
+.lex-web-ui-iframe.lex-web-ui-iframe--minimize .min-button,
+.lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
+  background: var(--ms-launcher-yellow) !important;
+}
+*/

@@ -30447,16 +30447,29 @@ ${toHex(hashedRequest)}`;
      * Shows the iframe
      */
     showIframe() {
-      return Promise.resolve().then(() => {
-        if (this.config.iframe.shouldLoadIframeMinimized) {
-          this.api.toggleMinimizeUi();
-          localStorage.setItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`, "true");
-        } else if (localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) && localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) === "true") {
-          this.api.toggleMinimizeUi();
-        } else if (localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) && localStorage.getItem(`${this.config.cognito.appUserPoolClientId}lastUiIsMinimized`) === "false") {
-          this.api.ping();
+      const clientId = this.config.cognito && this.config.cognito.appUserPoolClientId;
+      const minKey = clientId ? `${clientId}lastUiIsMinimized` : null;
+      if (minKey) localStorage.removeItem(minKey);
+      return this.api.ping();
+    }
+    showPanel() {
+      try {
+        if (!this.containerElement.classList.contains(`${this.containerClass}--show`)) {
+          this.containerElement.classList.add(`${this.containerClass}--show`);
         }
-      }).then(() => this.toggleShowUiClass());
+        this.containerElement.classList.remove(`${this.containerClass}--minimize`);
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(new Error(`failed to show panel: ${err}`));
+      }
+    }
+    hidePanel() {
+      try {
+        this.containerElement.classList.remove(`${this.containerClass}--show`);
+        return Promise.resolve();
+      } catch (err) {
+        return Promise.reject(new Error(`failed to hide panel: ${err}`));
+      }
     }
     /**
      * Event based API handler
@@ -30482,7 +30495,9 @@ ${toHex(hashedRequest)}`;
         postText: (message, messageType) => this.sendMessageToIframe({ event: "postText", message, messageType }),
         deleteSession: () => this.sendMessageToIframe({ event: "deleteSession" }),
         startNewSession: () => this.sendMessageToIframe({ event: "startNewSession" }),
-        setSessionAttribute: (key, value) => this.sendMessageToIframe({ event: "setSessionAttribute", key, value })
+        setSessionAttribute: (key, value) => this.sendMessageToIframe({ event: "setSessionAttribute", key, value }),
+        showPanel: () => this.showPanel(),
+        hidePanel: () => this.hidePanel()
       };
       return Promise.resolve().then(() => {
         document.addEventListener(

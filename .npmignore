@@ -1,5 +1,35 @@
-build
-config
-img
-lex-web-ui
+# ── Build tooling (not needed by consumers) ───────────────────────────────
+build/
 Makefile
+vite.config.js
+postcss.config.js
+.eslintrc.js
+
+# ── Source code (compiled into dist/ at build time) ───────────────────────
+src/
+lex-web-ui/
+
+# ── Documentation (consumers use how-to/ in the repo, not npm package) ───
+how-to/
+*.md
+!README.md
+
+# ── IDE and VCS metadata ──────────────────────────────────────────────────
+.idea/
+.settings/
+.project
+.jazzignore
+.gitattributes
+.git/
+
+# ── Legacy directories (already deleted, listed for safety) ──────────────
+config/
+docs/
+img/
+example-css/
+templates/
+
+# ── Test and dev artifacts ────────────────────────────────────────────────
+node_modules/
+lex-web-ui/node_modules/
+lex-web-ui/test/

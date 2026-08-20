@@ -98,7 +98,15 @@ export default {
           out = marked.parse(this.message.alts.markdown);
         }
       }
-      if (out) out = this.prependBotScreenReader(out);
+      if (out) {
+        // Markdown links must open in a NEW tab: without target the click
+        // navigates INSIDE the chat iframe and replaces the whole widget.
+        out = out.replace(
+          /<a href=/g,
+          '<a target="_blank" rel="noopener noreferrer" href=',
+        );
+        out = this.prependBotScreenReader(out);
+      }
       return out;
     },
     shouldRenderAsHtml() {
@@ -154,7 +162,23 @@ export default {
       ];
 
       let origMessageEncoded = this.encodeAsHtml(messageText)
-      return linkReplacers
+      // Map authored [label](url) links even when the bot sends PlainText —
+      // any response shape renders clickable links. Placeholders keep the
+      // bare-URL replacer below from re-wrapping the href and corrupting
+      // the anchor.
+      const mdAnchors = [];
+      origMessageEncoded = origMessageEncoded.replace(
+        /\[([^\]\n]{1,200})\]\((https?:[^\s)]+)\)/g,
+        (match, label, url) => {
+          mdAnchors.push(
+            `<a target="_blank" rel="noopener noreferrer" href="${encodeURI(url)}">${label}</a>`,
+          );
+          return `%%MDLINK${mdAnchors.length - 1}%%`;
+        },
+      );
+      const restoreMdAnchors = (html) =>
+        html.replace(/%%MDLINK(\d+)%%/g, (m, i) => mdAnchors[Number(i)]);
+      return restoreMdAnchors(linkReplacers
         .reduce(
           (message, replacer) =>
             // splits the message into an array containing content chunks
@@ -176,7 +200,7 @@ export default {
                 '',
               ),
           origMessageEncoded,
-        );
+        ));
     },
     // used for stripping SSML (and other) tags from bot responses
     stripTagsFromMessage(messageText) {

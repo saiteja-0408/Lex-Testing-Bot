@@ -5,7 +5,6 @@
     :class="{ 'lex-with-quick': hasDefaultQuickReplies }"
   >
     <min-button
-      :toolbar-color="toolbarColor"
       :is-ui-minimized="isUiMinimized"
       @toggleMinimizeUi="toggleMinimizeUi"
     />
