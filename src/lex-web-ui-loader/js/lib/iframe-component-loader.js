@@ -596,18 +596,20 @@ export class IframeComponentLoader {
         });
       },
 
-      // sent when minimize button is pressed within the iframe component
+      // sent when the toolbar X/close button is pressed inside the iframe.
+      // Instead of minimizing (which would show MinButton), we hide the panel
+      // completely — the Angular FAB is the only launcher.
       toggleMinimizeUi(evt) {
-        this.toggleMinimizeUiClass()
+        this.hidePanel()
           .then(() => (
             evt.ports[0].postMessage({ event: 'resolve', type: evt.data.event })
           ))
           .catch((error) => {
-            console.error('failed to toggleMinimizeUi', error);
+            console.error('failed to hidePanel on toggleMinimizeUi', error);
             evt.ports[0].postMessage({
               event: 'reject',
               type: evt.data.event,
-              error: 'failed to toggleMinimizeUi',
+              error: 'failed to hidePanel on toggleMinimizeUi',
             });
           });
       },

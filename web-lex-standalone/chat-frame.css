@@ -77,44 +77,10 @@
   }
 }
 
-/* Minimized: 56px circle pinned bottom-right; MinButton.vue renders the
-   gold MDES FAB inside it. */
+/* --minimize state is never used — Angular FAB is the only launcher.
+   Hide the entire container if it somehow gets the class. */
 .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
-  position:   fixed !important;
-  top:        auto !important;
-  left:       auto !important;
-  right:      12px !important;
-  bottom:     12px !important;
-  width:      56px !important;
-  height:     56px !important;
-  min-width:  56px !important;
-  max-width:  56px !important;
-  min-height: 56px !important;
-  max-height: 56px !important;
-  border-radius: 999px !important;
-  margin: 0 !important;
-  transform: none !important;
-  box-shadow: none !important;
-  background: transparent !important;
-  overflow: visible;
-}
-
-@media (min-width: 768px) {
-  .lex-web-ui-iframe.lex-web-ui-iframe--minimize {
-    right:      16px !important;
-    bottom:     16px !important;
-    width:      56px !important;
-    height:     56px !important;
-    min-width:  56px !important;
-    max-width:  56px !important;
-    min-height: 56px !important;
-    max-height: 56px !important;
-  }
-}
-
-.lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
-  border-radius: 999px !important;
-  background: transparent !important;
+  display: none !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
