@@ -13,7 +13,6 @@ const host = process.env.HOST || '127.0.0.1';
 const publicPath = '/';
 
 const botConfigDir = path.join(__dirname, 'bot-config');
-const standaloneDir = path.join(__dirname, 'web-lex-standalone');
 const distDir = path.join(__dirname, 'dist');
 const configDir = path.join(__dirname, 'src/config');
 const app = express();
@@ -26,9 +25,6 @@ app.use(cors({ origin: corsOrigin }));
 
 // Avatar and icon images.
 app.use('/bot-config', express.static(botConfigDir));
-
-// Legacy mount. Nothing requests this path; remove with the folder.
-app.use('/web-lex-standalone', express.static(standaloneDir));
 
 
 app.use(publicPath, express.static(distDir));

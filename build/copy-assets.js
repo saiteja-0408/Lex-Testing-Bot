@@ -18,7 +18,6 @@ const depsDir = path.join(rootDir, 'src', 'dependencies')
 const bundleDir = path.join(rootDir, 'lex-web-ui', 'dist', 'bundle')
 const websiteDir = path.join(rootDir, 'src', 'website')
 const stylesDir = path.join(websiteDir, 'styles')
-const standaloneDir = path.join(rootDir, 'web-lex-standalone')
 
 // Ensure dist directory exists
 if (!fs.existsSync(distDir)) {
@@ -98,29 +97,6 @@ if (fs.existsSync(websiteDir)) {
     if (fs.existsSync(srcPath)) {
       fs.copyFileSync(srcPath, destPath)
       console.log(`  ✓ Copied: ${file}`)
-    }
-  })
-}
-
-console.log('[INFO] Syncing standalone folder...')
-
-// Legacy mirror. Remove once claimant-webapp's angular.json styles[] reads
-// these from dist/ instead of web-lex-standalone/.
-if (fs.existsSync(standaloneDir)) {
-  const websiteMirrors = ['custom-chatbot-style.css', 'chat-frame.css']
-  websiteMirrors.forEach((file) => {
-    const src = path.join(websiteDir, file)
-    if (fs.existsSync(src)) {
-      fs.copyFileSync(src, path.join(standaloneDir, file))
-      console.log(`  ✓ Synced: web-lex-standalone/${file}`)
-    }
-  })
-  const loaderFiles = ['lex-web-ui-loader.min.js', 'lex-web-ui-loader.min.css']
-  loaderFiles.forEach((file) => {
-    const loaderSrc = path.join(distDir, file)
-    if (fs.existsSync(loaderSrc)) {
-      fs.copyFileSync(loaderSrc, path.join(standaloneDir, file))
-      console.log(`  ✓ Synced: web-lex-standalone/${file}`)
     }
   })
 }
