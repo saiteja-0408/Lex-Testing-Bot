@@ -1,0 +1,116 @@
+/* 40 — Response-card buttons + quick replies.
+   Pill values measured on the live MDES chat: 25px tall, 14px text,
+   radius 12, pill left = bubble left + 2, 6px between pills. */
+
+.v-card-actions .v-btn,
+.button-row .v-btn,
+.message-bubble .v-btn {
+  text-transform: none !important;
+  border: 1px solid var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+  letter-spacing: normal !important;
+  height: 25px !important;
+  min-height: 25px !important;
+  padding: 1px 13px !important;
+  box-shadow: none !important;
+}
+
+/* Card rows only — a bare .v-card also hit OnboardingForm's card. */
+#lex-web .response-card .v-card {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+
+/* Pill rows: left-aligned, wrapping; 11px/6px gaps measured live.
+   Upstream is display:inline-block, where gap is inert — flex it. */
+.v-card-actions,
+.button-row {
+  display: flex !important;
+  justify-content: flex-start !important;
+  flex-wrap: wrap !important;
+  gap: 11px 6px !important;
+}
+/* Vuetify button margins would fight the flex gap. */
+#lex-web .response-card .v-btn {
+  margin: 0 !important;
+}
+
+/* Card TITLE styled as a bot bubble (upstream default is a pink
+   single-line banner with ellipsis truncation). */
+#lex-web .response-card .v-card-title {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+  padding: var(--ms-bubble-padding) !important;
+  display: block !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  max-width: 90%;
+  margin-bottom: 6px;
+}
+#lex-web .response-card .v-card-title .text-h5 {
+  font-size: var(--ms-bubble-font-size) !important;
+  font-weight: 400 !important;
+  line-height: var(--ms-bubble-line-height) !important;
+  letter-spacing: normal !important;
+  font-family: var(--ms-font-stack) !important;
+  color: #fff !important;
+}
+
+/* Template pills row: pill left 66 = bubble + 2, 10px below the bubble
+   (measured live). */
+#lex-web .message-template-row {
+  margin: 10px 0 0 0 !important;
+  padding-left: 46px;
+  padding-right: 12px;
+}
+
+/* Card pill rows: same alignment (row origin differs, hence 58px). */
+#lex-web .response-card {
+  justify-content: flex-start !important;
+  margin: 10px 0 0 0 !important;
+  padding-left: 58px;
+  padding-right: 12px;
+}
+#lex-web .response-card .v-card-actions {
+  padding: 0 !important;
+  min-height: 0 !important;
+}
+
+#lex-web .ms-tpl-btn {
+  height: 25px !important;
+  line-height: 21px !important;
+  padding: 1px 13px !important;
+}
+
+/* Hover measured live: solid #1c3e64 fill + white text, no transition.
+   The overlay rule stops Vuetify adding a grey wash on top. */
+#lex-web .ms-tpl-btn:hover,
+#lex-web .response-card .v-btn:hover,
+#lex-web .message-bubble .v-btn:hover,
+.lex-default-quick-replies .lex-quick-reply-btn:hover {
+  background: var(--ms-header-accent) !important;
+  color: #fff !important;
+}
+#lex-web .response-card .v-btn:hover .v-btn__overlay,
+.lex-default-quick-replies .lex-quick-reply-btn:hover .v-btn__overlay {
+  opacity: 0 !important;
+}
+
+/* Bottom quick-reply strip — same pill look */
+.lex-default-quick-replies {
+  background: var(--ms-body-bg) !important;
+  border-top: var(--ms-header-border) !important;
+}
+.lex-default-quick-replies .lex-quick-reply-btn {
+  border-color: var(--ms-btn-outline) !important;
+  color: var(--ms-btn-text) !important;
+  background: #fff !important;
+  border-radius: var(--ms-pill-radius) !important;
+  font-size: var(--ms-bubble-font-size) !important;
+}

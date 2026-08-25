@@ -1,0 +1,129 @@
+/* 30 — Message bubbles (the core MS look). */
+
+.message-bot .message-bubble {
+  background: var(--ms-bot-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-left-radius: var(--ms-bubble-tail) !important;
+}
+.message-bot .message-text,
+.message-bot .message-bubble p {
+  color: #fff !important;
+}
+
+.message-human .message-bubble {
+  background: var(--ms-user-bubble-bg) !important;
+  color: #fff !important;
+  border-radius: var(--ms-bubble-radius) !important;
+  border-bottom-right-radius: var(--ms-bubble-tail) !important;
+}
+.message-human .message-text,
+.message-human .message-bubble p {
+  color: #fff !important;
+}
+.message-human .message-bubble a {
+  color: #fff !important;
+  text-decoration: underline;
+}
+.message-bot .message-bubble a {
+  color: var(--ms-link-blue) !important;
+}
+
+/* Flex items shrink below max-content and wrap short texts — forbid it. */
+#lex-web .message-human .message-bubble,
+#lex-web .message-bot .message-bubble {
+  flex: 0 0 auto !important;
+}
+
+/* Upstream rows are width:fit-content; the bubble's max-width:90% then
+   resolves against a collapsed ancestor and wraps short texts. Full-width
+   rows also restore left/right alignment. */
+#lex-web .message-list .message {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Kore bubbles have no border/shadow — Vuetify's subtle box-shadow reads
+   as an extra border. */
+#lex-web .message-bubble,
+#lex-web .message-bubble:hover,
+#lex-web .message-bubble:focus,
+#lex-web .message-bubble.focusable:focus {
+  box-shadow: none !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.message-bubble p {
+  margin-bottom: 8px;
+}
+.message-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+/* Pop-in animation, keyframes captured from the live MDES chat. */
+@keyframes ms-message-left {
+  0%  { transform: translate3d(-15%, 5%, 0) scaleZ(1); visibility: visible; }
+  5%  { transform: translateZ(0) scale3d(1.01, 1.01, 1); }
+  10% { transform: translate3d(0, -2px, 0) scale3d(1.03, 1.03, 1); }
+  15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
+  20% { transform: translateZ(0) scaleZ(1); }
+}
+@keyframes ms-message-right {
+  0%  { transform: translate3d(15%, 5%, 0) scaleZ(1); visibility: visible; }
+  5%  { transform: translateZ(0) scale3d(1.01, 1.01, 1); }
+  10% { transform: translate3d(0, -2px, 0) scale3d(1.03, 1.03, 1); }
+  15% { transform: translate3d(0, 1px, 0) scaleZ(1); }
+  20% { transform: translateZ(0) scaleZ(1); }
+}
+.message-bot .message-bubble {
+  animation: ms-message-left 2s ease-in-out;
+}
+.message-human .message-bubble {
+  animation: ms-message-right 2s ease-in-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .message-bot .message-bubble,
+  .message-human .message-bubble {
+    animation: none !important;
+  }
+}
+
+/* 12px between messages (measured live); Vuetify's v-col padding gave 24. */
+#lex-web .message .message-layout {
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+
+/* Conversation anchored to the bottom of the chat area (live MDES). */
+#lex-web .message-list-container {
+  display: flex !important;
+  flex-direction: column !important;
+}
+/* The list IS the scroller (overflow-y:auto in MessageList.vue), so it
+   must never use justify-content:flex-end — overflowing content above
+   the viewport becomes unreachable (can't scroll up). Bottom-anchor via
+   margin-top:auto on the first message instead: it collapses to 0 once
+   content overflows, restoring normal scrolling. The legacy "fill-height"
+   classes are dead Vuetify-2 names, so the flex column is explicit. */
+#lex-web .message-list {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto;
+  min-height: 0;   /* allow the flex item to shrink so overflow-y engages */
+  width: 100%;
+}
+#lex-web .message-list > .message:first-child {
+  margin-top: auto !important;
+}
+
+/* Bot avatar: 34px, bottom-aligned, 10px gap to bubble (measured live). */
+#lex-web .message-bot .avatar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  align-self: flex-end !important;
+  margin-bottom: 2px;
+  margin-right: 10px;
+}

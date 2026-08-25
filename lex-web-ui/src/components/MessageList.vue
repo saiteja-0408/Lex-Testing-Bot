@@ -3,14 +3,15 @@
     aria-live="polite"
     class="layout message-list column fill-height"
   >
-    <message
-      ref="messages"
-      v-for="message in messages"
-      :message="message"
-      :key="message.id"
-      :class="`message-${message.type}`"
-      @scrollDown="scrollDown"
-    ></message>
+    <template v-for="message in messages" :key="message.id">
+      <message
+        ref="messages"
+        v-if="message.type !== 'hidden'"
+        :message="message"
+        :class="`message-${message.type}`"
+        @scrollDown="scrollDown"
+      ></message>
+    </template>
     <MessageLoading
       v-if="loading"
     ></MessageLoading>
@@ -70,7 +71,7 @@ export default {
         if (this.$el.lastElementChild) {
           const lastMessageHeight = this.$el.lastElementChild.getBoundingClientRect().height
           const isLastMessageLoading =
-            this.$el.lastElementChild.classList.contains('messsge-loading')
+            this.$el.lastElementChild.classList.contains('message-loading')
           if (isLastMessageLoading) {
             this.$el.scrollTop = this.$el.scrollHeight;
           } else {

@@ -188,7 +188,11 @@ export default class {
         }
         return res;
     } catch (err) {
-      console.log(err)
+      // Re-throw so the store's .catch sees the REAL error: swallowing it
+      // here resolved undefined, which crashed downstream with a misleading
+      // "cannot read sessionAttributes" and defeated retry classification.
+      console.error(err);
+      throw err;
     }
   }
   async postContent(
