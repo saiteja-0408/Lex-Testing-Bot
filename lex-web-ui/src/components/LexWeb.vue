@@ -4,11 +4,6 @@
     v-bind:ui-minimized="isUiMinimized"
     :class="{ 'lex-with-quick': hasDefaultQuickReplies }"
   >
-    <min-button
-      :toolbar-color="toolbarColor"
-      :is-ui-minimized="isUiMinimized"
-      @toggleMinimizeUi="toggleMinimizeUi"
-    />
     <onboarding-form
       v-if="showOnboarding"
       @complete="onOnboardingComplete"
@@ -79,7 +74,6 @@ License for the specific language governing permissions and limitations under th
 
 /* eslint no-console: ["error", { allow: ["warn", "error", "info"] }] */
 
-import MinButton from '@/components/MinButton.vue';
 import OnboardingForm from '@/components/OnboardingForm.vue';
 import DefaultQuickReplies from '@/components/DefaultQuickReplies.vue';
 import ToolbarContainer from '@/components/ToolbarContainer.vue';
@@ -99,7 +93,6 @@ export default {
     };
   },
   components: {
-    MinButton,
     OnboardingForm,
     DefaultQuickReplies,
     ToolbarContainer,
@@ -344,7 +337,12 @@ export default {
       }
     },
     toggleMinimizeUi() {
-      return this.$store.dispatch('toggleIsUiMinimized');
+      // The parent owns visibility. Setting isUiMinimized here would hide every
+      // child with no in-iframe launcher left to restore them.
+      return this.$store.dispatch(
+        'sendMessageToParentWindow',
+        { event: 'toggleMinimizeUi' },
+      );
     },
     loginConfirmed(evt) {
       this.$store.commit('setIsLoggedIn', true);

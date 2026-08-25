@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 /**
- * Copy assets script - replaces dist/Makefile functionality
- * Copies dependencies and bundle files to dist directory after Vite build
+ * Promotes the Vite build into dist/ and regenerates the theme stylesheet.
+ * Run after `npm run build-dist`.
  */
 
 import fs from 'fs'
@@ -17,10 +17,38 @@ const distDir = path.join(rootDir, 'dist')
 const depsDir = path.join(rootDir, 'src', 'dependencies')
 const bundleDir = path.join(rootDir, 'lex-web-ui', 'dist', 'bundle')
 const websiteDir = path.join(rootDir, 'src', 'website')
+const stylesDir = path.join(websiteDir, 'styles')
+const standaloneDir = path.join(rootDir, 'web-lex-standalone')
 
 // Ensure dist directory exists
 if (!fs.existsSync(distDir)) {
   fs.mkdirSync(distDir, { recursive: true })
+}
+
+console.log('[INFO] Building theme CSS from partials...')
+
+// Build custom-chatbot-style.css by concatenating src/website/styles/*.css
+// in filename order (00-fonts first — CSS @import must precede all rules).
+// The generated file is the ONLY copy anyone should serve; edit the partials.
+if (fs.existsSync(stylesDir)) {
+  const partials = fs
+    .readdirSync(stylesDir)
+    .filter((f) => f.endsWith('.css'))
+    .sort()
+  const banner =
+    '/* GENERATED FILE — DO NOT EDIT.\n' +
+    '   Source partials: src/website/styles/*.css\n' +
+    '   Rebuild with:    node build/copy-assets.js  (or npm run sync-assets)\n' +
+    `   Built from: ${partials.join(', ')} */\n\n`
+  const css =
+    banner +
+    partials
+      .map((f) => fs.readFileSync(path.join(stylesDir, f), 'utf8').trim())
+      .join('\n\n')
+  fs.writeFileSync(path.join(websiteDir, 'custom-chatbot-style.css'), `${css}\n`)
+  console.log(`  ✓ Built custom-chatbot-style.css from ${partials.length} partials`)
+} else {
+  console.log('  ⚠ styles/ directory not found — using existing custom-chatbot-style.css')
 }
 
 console.log('[INFO] Copying dependencies...')
@@ -61,15 +89,38 @@ if (fs.existsSync(bundleDir)) {
 
 console.log('[INFO] Copying website files...')
 
-// Copy website files (HTML, CSS)
+// index.html is the iframe's entry page and carries the CSP.
 if (fs.existsSync(websiteDir)) {
-  const websiteFiles = ['custom-chatbot-style.css', 'right-panel.html']
+  const websiteFiles = ['custom-chatbot-style.css', 'index.html', 'chat-frame.css']
   websiteFiles.forEach(file => {
     const srcPath = path.join(websiteDir, file)
     const destPath = path.join(distDir, file)
     if (fs.existsSync(srcPath)) {
       fs.copyFileSync(srcPath, destPath)
       console.log(`  ✓ Copied: ${file}`)
+    }
+  })
+}
+
+console.log('[INFO] Syncing standalone folder...')
+
+// Legacy mirror. Remove once claimant-webapp's angular.json styles[] reads
+// these from dist/ instead of web-lex-standalone/.
+if (fs.existsSync(standaloneDir)) {
+  const websiteMirrors = ['custom-chatbot-style.css', 'chat-frame.css']
+  websiteMirrors.forEach((file) => {
+    const src = path.join(websiteDir, file)
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(standaloneDir, file))
+      console.log(`  ✓ Synced: web-lex-standalone/${file}`)
+    }
+  })
+  const loaderFiles = ['lex-web-ui-loader.min.js', 'lex-web-ui-loader.min.css']
+  loaderFiles.forEach((file) => {
+    const loaderSrc = path.join(distDir, file)
+    if (fs.existsSync(loaderSrc)) {
+      fs.copyFileSync(loaderSrc, path.join(standaloneDir, file))
+      console.log(`  ✓ Synced: web-lex-standalone/${file}`)
     }
   })
 }

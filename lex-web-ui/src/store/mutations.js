@@ -317,7 +317,10 @@ export default {
 
     // region for lexRuntimeClient and cognito pool are required to be the same.
     // Use cognito pool-id to adjust the region identified in the config.
-    state.config.region = config.cognito.poolId.split(':')[0] || 'us-east-1';
+    // Guarded: this config can arrive via postMessage from the parent page,
+    // and a payload without cognito must not crash the mutation.
+    state.config.region = (config.cognito && config.cognito.poolId
+      ? config.cognito.poolId.split(':')[0] : '') || 'us-east-1';
 
     // security: do not accept dynamic parentOrigin
     const parentOrigin = (

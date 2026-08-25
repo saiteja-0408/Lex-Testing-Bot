@@ -262,6 +262,9 @@ const configDefault = {
     // shows a thumbs up and thumbs down button which can be clicked
     positiveFeedbackIntent: '',
     negativeFeedbackIntent: '',
+    // master on/off for the thumbs buttons: false hides them even when
+    // the feedback intents above are configured
+    showFeedbackButtons: true,
 
     // shows a help button on the toolbar when true
     helpIntent: '',
@@ -522,14 +525,6 @@ if (configFromQuery.ui && configFromQuery.ui.parentOrigin) {
 }
 
 const configFromMerge = mergeConfig(configFromFiles, configFromQuery);
-
-// Debug logging for config
-console.log('🔧 Final config merge:', {
-  hasLexConfig: !!configFromMerge.lex,
-  lexBotId: configFromMerge.lex?.v2BotId || 'NOT SET',
-  region: configFromMerge.region || 'NOT SET',
-  environment: envShortName
-});
 
 export const config = {
   ...configFromMerge,
