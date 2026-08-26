@@ -1,41 +1,10 @@
+<!-- MinButton intentionally empty.
+     The Angular <ion-fab> button is the sole launcher for the chat panel.
+     showPanel() / hidePanel() on the IframeLoader API are called directly
+     from the Angular FAB click handler in chatbot.service.ts.
+     This component must remain registered (LexWeb.vue uses it) but renders nothing. -->
 <template>
-  <v-container fluid class="pa-0 min-button-container">
-    <v-row justify="end">
-      <v-col cols="auto">
-        <v-fab-transition>
-          <v-btn
-            rounded="xl" 
-            size="x-large"
-            elevation="0"
-            v-if="minButtonContent"
-            v-show="isUiMinimized"
-            v-bind:color="toolbarColor"
-            v-on:click.stop="toggleMinimize"
-            v-on="tooltipEventHandlers"
-            aria-label="show chat window"
-            class="min-button min-button-content"
-            prepend-icon="chat"
-          >
-            {{minButtonContent}}   
-          </v-btn>
-          <!-- seperate button for button with text vs w/o -->
-          <v-btn
-            v-else
-            icon="chat"
-            size="x-large"
-            elevation="0"
-            v-show="isUiMinimized"
-            v-bind:color="toolbarColor"
-            v-on:click.stop="toggleMinimize"
-            v-on="tooltipEventHandlers"
-            aria-label="show chat window"
-            class="min-button"
-          >
-          </v-btn>
-        </v-fab-transition>
-      </v-col>
-    </v-row>
-  </v-container>
+  <span style="display:none"></span>
 </template>
 
 <script>
@@ -52,39 +21,26 @@ BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, express or implied. See the
 License for the specific language governing permissions and limitations under the License.
 */
 export default {
-  name: 'min-button',
-  data() {
-    return {
-      shouldShowTooltip: false,
-      tooltipEventHandlers: {
-        mouseenter: this.onInputButtonHoverEnter,
-        mouseleave: this.onInputButtonHoverLeave,
-        touchstart: this.onInputButtonHoverEnter,
-        touchend: this.onInputButtonHoverLeave,
-        touchcancel: this.onInputButtonHoverLeave,
-      },
-    };
+  name: 'MinButton',
+  props: {
+    isUiMinimized: { type: Boolean, default: false },
   },
-  props: ['toolbarColor', 'isUiMinimized'],
+  emits: ['toggleMinimizeUi'],
   computed: {
-    toolTipMinimize() {
-      return (this.isUiMinimized) ? 'maximize' : 'minimize';
-    },
     minButtonContent() {
       const n = this.$store.state.config.ui.minButtonContent.length;
       return (n > 1) ? this.$store.state.config.ui.minButtonContent : false;
     },
+    // MDES gold launcher colour. Priority: config ui.minButtonColor →
+    // theme token --ms-launcher-gold → literal fallback (#FDC245).
+    minButtonColor() {
+      return this.$store.state.config.ui.minButtonColor
+        || 'var(--ms-launcher-gold, #FDC245)';
+    },
   },
   methods: {
-    onInputButtonHoverEnter() {
-      this.shouldShowTooltip = true;
-    },
-    onInputButtonHoverLeave() {
-      this.shouldShowTooltip = false;
-    },
     toggleMinimize() {
       if (this.$store.state.isRunningEmbedded) {
-        this.onInputButtonHoverLeave();
         this.$emit('toggleMinimizeUi');
       }
     },
@@ -102,7 +58,49 @@ export default {
     margin: 0 !important;
     padding: 0 !important;
   }
-  .min-button {
-    box-shadow: none !important;
+  /* MDES gold FAB launcher: 56px circle, MD elevation, white outline icon.
+     Double class (.min-button.min-button-fab) so the box-shadow beats
+     Vuetify's .elevation-0 (same 1-class specificity, also !important). */
+  .min-button.min-button-fab {
+    width: 56px !important;
+    height: 56px !important;
+    min-width: 56px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    color: #fff !important;
+    box-shadow:
+      0 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0 6px 10px 0 rgba(0, 0, 0, 0.14),
+      0 1px 18px 0 rgba(0, 0, 0, 0.12) !important;
+  }
+  .min-button.min-button-content {
+    color: #fff !important;
+    box-shadow:
+      0 3px 5px -1px rgba(0, 0, 0, 0.2),
+      0 6px 10px 0 rgba(0, 0, 0, 0.14),
+      0 1px 18px 0 rgba(0, 0, 0, 0.12) !important;
+  }
+  .min-button-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .min-button-icon svg {
+    width: 26px;
+    height: 26px;
+    display: block;
+  }
+  /* Ionicons outline style: no fill, white stroke */
+  .min-button-icon svg path {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 32px;
+  }
+  .min-button-content .min-button-icon {
+    margin-right: 8px;
+  }
+  .min-button-content .min-button-icon svg {
+    width: 22px;
+    height: 22px;
   }
 </style>

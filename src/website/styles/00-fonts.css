@@ -1,0 +1,4 @@
+/* 00 — Fonts. @import must stay in the first partial (CSS requires
+   @import before all rules in the concatenated file). freight-sans-pro
+   is a paid Typekit face; Open Sans is the fallback everyone gets. */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap');

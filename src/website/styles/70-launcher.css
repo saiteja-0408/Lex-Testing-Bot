@@ -1,0 +1,15 @@
+/* ============================================================
+   70 — MINIMIZED LAUNCHER  (legacy note)
+   The gold FAB launcher (56px, #FDC245, chatbubbles-outline icon) is
+   implemented INSIDE the app: lex-web-ui/src/components/MinButton.vue
+   (color override: config ui.minButtonColor). The parent page sizes the
+   minimized container in web-lex-standalone/chat-frame.css.
+
+   Kore-reference alternative (yellow #FECA5D) kept for reference:
+   ============================================================ */
+/*
+.lex-web-ui-iframe.lex-web-ui-iframe--minimize .min-button,
+.lex-web-ui-iframe.lex-web-ui-iframe--minimize iframe {
+  background: var(--ms-launcher-yellow) !important;
+}
+*/

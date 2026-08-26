@@ -109,6 +109,14 @@ export default defineConfig({
     minify: buildConfig.isProd,
     cssCodeSplit: false,
     rollupOptions: {
+      // AWS SDK v3 uses internal sub-path imports (e.g. @smithy/core/schema)
+      // that Rollup cannot resolve when bundling for the browser.
+      // These packages are loaded at runtime by the loader via Cognito credentials —
+      // externalising them keeps them out of the bundle entirely.
+      external: [
+        /^@aws-sdk\//,
+        /^@smithy\//,
+      ],
       output: {
         // Ensure the global variable is properly set
         exports: 'named',

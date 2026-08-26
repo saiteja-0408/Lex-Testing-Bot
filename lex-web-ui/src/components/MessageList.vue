@@ -70,7 +70,7 @@ export default {
         if (this.$el.lastElementChild) {
           const lastMessageHeight = this.$el.lastElementChild.getBoundingClientRect().height
           const isLastMessageLoading =
-            this.$el.lastElementChild.classList.contains('messsge-loading')
+            this.$el.lastElementChild.classList.contains('message-loading')
           if (isLastMessageLoading) {
             this.$el.scrollTop = this.$el.scrollHeight;
           } else {

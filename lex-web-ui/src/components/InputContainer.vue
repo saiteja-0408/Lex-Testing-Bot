@@ -6,8 +6,12 @@
       <!--
         using v-show instead of v-if to make recorder-status transition work
       -->
+      <!-- placeholder (not label): the hint must disappear while typing,
+           matching the live MDES input; plain variant = no underline -->
       <v-text-field
-        :label="textInputPlaceholder"
+        :placeholder="textInputPlaceholder"
+        :aria-label="textInputPlaceholder"
+        persistent-placeholder
         v-show="shouldShowTextInput"
         :disabled="isLexProcessing"
         v-model="textInput"
@@ -21,7 +25,7 @@
         maxlength="1024"
         hide-details
         density="compact"
-        variant="underlined"
+        variant="plain"
         class="toolbar-text"
       >
     </v-text-field>

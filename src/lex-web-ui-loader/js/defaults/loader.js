@@ -52,16 +52,6 @@ export const options = {
 };
 
 /**
- * Default full page specific loader options
- */
-export const optionsFullPage = {
-  ...options,
-
-  // DOM element ID where the chatbot UI will be mounted
-  elementId: 'lex-web-ui-fullpage',
-};
-
-/**
  * Default iframe specific loader options
  */
 export const optionsIframe = {

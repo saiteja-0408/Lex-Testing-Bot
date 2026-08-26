@@ -23,17 +23,15 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 
 import { configBase } from './defaults/lex-web-ui';
-import { optionsIframe, optionsFullPage } from './defaults/loader';
-import { dependenciesIframe, dependenciesFullPage } from './defaults/dependencies';
+import { optionsIframe } from './defaults/loader';
+import { dependenciesIframe } from './defaults/dependencies';
 
 // import from lib
 import { DependencyLoader } from './lib/dependency-loader';
 import { ConfigLoader } from './lib/config-loader';
 import { IframeComponentLoader } from './lib/iframe-component-loader';
-import { FullPageComponentLoader } from './lib/fullpage-component-loader';
 
 // import CSS
-import '../css/lex-web-ui-fullpage.css';
 import '../css/lex-web-ui-iframe.css';
 
 /**
@@ -99,39 +97,7 @@ class Loader {
 }
 
 /**
- * Class used to to dynamically load the chatbot ui in a full page including its
- * dependencies and config
- */
-export class FullPageLoader extends Loader {
-  /**
-   * @param {object} options - options controlling how the dependencies and
-   *   component config are loaded
-   */
-  constructor(options = {}) {
-    super({ ...optionsFullPage, ...options });
-
-    this.config = configBase;
-
-    // run-time dependencies
-    this.depLoader = new DependencyLoader({
-      shouldLoadMinDeps: this.options.shouldLoadMinDeps,
-      dependencies: dependenciesFullPage,
-      baseUrl: this.options.baseUrl,
-    });
-
-    this.compLoader = new FullPageComponentLoader({
-      elementId: this.options.elementId,
-      config: this.config,
-    });
-  }
-
-  load(configParam = {}) {
-    return super.load(configParam);
-  }
-}
-
-/**
- * Class used to to dynamically load the chatbot ui in an iframe
+ * Class used to dynamically load the chatbot ui in an iframe
  */
 export class IframeLoader extends Loader {
   /**
@@ -191,7 +157,6 @@ export class IframeLoader extends Loader {
  * chatbot loader library entry point
  */
 export const ChatBotUiLoader = {
-  FullPageLoader,
   IframeLoader,
 };
 

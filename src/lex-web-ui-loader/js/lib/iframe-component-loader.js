@@ -596,18 +596,20 @@ export class IframeComponentLoader {
         });
       },
 
-      // sent when minimize button is pressed within the iframe component
+      // sent when the toolbar X/close button is pressed inside the iframe.
+      // Instead of minimizing (which would show MinButton), we hide the panel
+      // completely — the Angular FAB is the only launcher.
       toggleMinimizeUi(evt) {
-        this.toggleMinimizeUiClass()
+        this.hidePanel()
           .then(() => (
             evt.ports[0].postMessage({ event: 'resolve', type: evt.data.event })
           ))
           .catch((error) => {
-            console.error('failed to toggleMinimizeUi', error);
+            console.error('failed to hidePanel on toggleMinimizeUi', error);
             evt.ports[0].postMessage({
               event: 'reject',
               type: evt.data.event,
-              error: 'failed to toggleMinimizeUi',
+              error: 'failed to hidePanel on toggleMinimizeUi',
             });
           });
       },
@@ -738,24 +740,45 @@ export class IframeComponentLoader {
   }
 
   /**
-   * Shows the iframe
+   * Shows the iframe — called once by loader.load() after the iframe is ready.
+   * Does NOT add --show here. The host page controls visibility via showPanel().
+   * This keeps the iframe hidden on load so the Angular FAB is the only trigger.
    */
   showIframe() {
     const clientId = this.config.cognito && this.config.cognito.appUserPoolClientId;
     const minKey = clientId ? `${clientId}lastUiIsMinimized` : null;
-    return Promise.resolve()
-      .then(() => {
-        if (this.config.iframe.shouldLoadIframeMinimized) {
-          this.api.toggleMinimizeUi();
-          if (minKey) localStorage.setItem(minKey, 'true');
-        } else if (minKey && localStorage.getItem(minKey) === 'true') {
-          this.api.toggleMinimizeUi();
-        } else if (minKey && localStorage.getItem(minKey) === 'false') {
-          this.api.ping();
-        }
-      })
-      // display UI
-      .then(() => this.toggleShowUiClass());
+    if (minKey) localStorage.removeItem(minKey);
+    return this.api.ping();   // initialise the iframe comms without showing the panel
+  }
+
+  /**
+   * Shows the chat panel (adds --show).
+   * Called by the host page Angular FAB button via loader.api.showPanel().
+   */
+  showPanel() {
+    try {
+      if (!this.containerElement.classList.contains(`${this.containerClass}--show`)) {
+        this.containerElement.classList.add(`${this.containerClass}--show`);
+      }
+      // ensure not minimized
+      this.containerElement.classList.remove(`${this.containerClass}--minimize`);
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(new Error(`failed to show panel: ${err}`));
+    }
+  }
+
+  /**
+   * Hides the chat panel (removes --show).
+   * Called when the user closes the chat.
+   */
+  hidePanel() {
+    try {
+      this.containerElement.classList.remove(`${this.containerClass}--show`);
+      return Promise.resolve();
+    } catch (err) {
+      return Promise.reject(new Error(`failed to hide panel: ${err}`));
+    }
   }
 
   /**
@@ -799,6 +822,10 @@ export class IframeComponentLoader {
       setSessionAttribute: (key, value) => (
           this.sendMessageToIframe({ event: 'setSessionAttribute', key: key, value: value })
       ),
+      // Host-page controls: show/hide the panel without a MinButton FAB.
+      // Call these from the Angular app's own chatbot FAB button.
+      showPanel: () => this.showPanel(),
+      hidePanel: () => this.hidePanel(),
     };
 
     return Promise.resolve()
