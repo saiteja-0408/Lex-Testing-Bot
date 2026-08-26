@@ -1,0 +1,44 @@
+reusa-lex-ui — deployment properties
+====================================
+Define these in UCD. Compare web-kore-standalone/yamls/ucd-define.txt, which
+needs only one property; Lex needs three because the widget runs cross-origin.
+
+
+@PARENT_ORIGIN@   =  origin of the Angular claimant app
+                     ST : https://reemployms-test.mdes.ms.gov
+
+  Two jobs. Written into ui.parentOrigin in the runtime config, and returned by
+  nginx as Access-Control-Allow-Origin. Must match the origin the claimant app
+  is actually served from, exactly - scheme, host and port.
+
+  Wrong value: the browser blocks the config fetch, and the loader treats a
+  non-200 as fatal, so nothing renders at all.
+
+
+@IFRAME_ORIGIN@   =  origin of THIS service
+                     ST : https://chatbot-lex-test.mdes.ms.gov
+
+  Written into iframe.iframeOrigin. MUST be a bare origin - scheme://host[:port]
+  and nothing more.
+
+  iframe-component-loader.js:315 compares this with === against the browser's
+  evt.origin, which never contains a path. Append one and every postMessage is
+  silently rejected: the panel opens, the chat never answers, and no error is
+  logged. The entrypoint script refuses to start if it sees a path here.
+
+
+@ASSET_BASE@      =  URL prefix the avatar images resolve from
+                     ""  when served at the web root
+                     "/lexui" when served under a path prefix
+
+  The committed config references /bot-config/AvatarIcon.png, which is
+  root-relative. Under a path prefix that resolves to the wrong place and the
+  avatar 404s. Leave empty unless @URL_PATH@ is also set.
+
+
+Build-time placeholders (substituted in Dockerfile / nginx.conf, not UCD)
+------------------------------------------------------------------------
+@SERVICE_NAME@   service and ECR repository name        e.g. lexwebui-service
+@SERVICE_PORT@   port nginx listens on                  Kore uses 9017
+@URL_PATH@       path prefix, or empty for the root     Kore uses /koreui
+@ECR_REGISTRY@   ECR host                               131619033260.dkr.ecr.us-east-2.amazonaws.com

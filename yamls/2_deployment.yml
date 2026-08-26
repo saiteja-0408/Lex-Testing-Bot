@@ -1,0 +1,89 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# reusa-lex-ui — Kubernetes Deployment
+# Modelled on web-kore-standalone/yamls/2_deployment.yml (chatwebsdk-service).
+# Placeholders in @UPPER_SNAKE@ are filled by the deploy pipeline.
+# ─────────────────────────────────────────────────────────────────────────────
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║ OPEN QUESTIONS                                                            ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║ Q1  @IFRAME_ORIGIN@  Bare origin only — scheme://host[:port], no path.
+# ║ Q2  @PARENT_ORIGIN@  Angular claimant app origin.
+# ║ Q3  @ASSET_BASE@     Empty at the web root; "/lexui" under a prefix.
+# ║ Q4  @SERVICE_NAME@   Kore = chatwebsdk-service.
+# ║ Q5  @SERVICE_PORT@   Kore = 9017.
+# ║ Q6  @ECR_REGISTRY@   Kore = 131619033260.dkr.ecr.us-east-2.amazonaws.com
+# ║ Q7  @SHARED_YML_CONFIG_ENV@ / _STATE@ / _NAMESPACE@ / @YML_CONFIG_APP_VERSION@
+# ║     Copied verbatim from Kore's deployment. Confirm the pipeline still
+# ║     fills these under the same names.
+# ║
+# ║ NOTE: probes and resource limits are additions, not Kore parity — Kore's
+# ║ deployment declares neither. Adjust the limits if your cluster has
+# ║ conventions I have not matched.
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    name: @SERVICE_NAME@
+    env: @SHARED_YML_CONFIG_ENV@       #nonprod
+    state: @SHARED_YML_CONFIG_STATE@   #ms, shared
+  name: @SERVICE_NAME@
+  namespace: @SHARED_YML_CONFIG_NAMESPACE@   #shared-nonprod
+spec:
+  replicas: 1
+  minReadySeconds: 45
+  selector:
+    matchLabels:
+      app: @SERVICE_NAME@
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: @SERVICE_NAME@
+    spec:
+      containers:
+        - image: @ECR_REGISTRY@/@SERVICE_NAME@:@YML_CONFIG_APP_VERSION@
+          imagePullPolicy: Always
+          name: @SERVICE_NAME@
+          env:
+            # Origin of the Angular claimant app. Used for the postMessage
+            # source check and for the CORS header nginx returns.
+            - name: PARENT_ORIGIN
+              value: @PARENT_ORIGIN@          #https://reemployms-test.mdes.ms.gov
+
+            # Origin of THIS service. Must be a bare origin - scheme://host[:port]
+            # with no path. iframe-component-loader.js compares it with === against
+            # the browser's evt.origin; a path silently breaks every postMessage.
+            - name: IFRAME_ORIGIN
+              value: @IFRAME_ORIGIN@          #https://chatbot-lex-test.mdes.ms.gov
+
+            # URL prefix the avatar images resolve from. Empty when served at the
+            # web root; "/lexui" when served under a path prefix.
+            - name: ASSET_BASE
+              value: @ASSET_BASE@             #"" or /lexui
+          ports:
+            - name: liveness-port
+              containerPort: @SERVICE_PORT@
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: liveness-port
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: liveness-port
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi

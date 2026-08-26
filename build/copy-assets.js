@@ -101,4 +101,25 @@ if (fs.existsSync(websiteDir)) {
   })
 }
 
+// The loader requests these from the web root at runtime. Keeping them in
+// dist/ makes it self-contained, so any static host serves the chat — the
+// :8000 server, nginx in a container, or the Angular app's own build output.
+console.log('[INFO] Copying runtime config and images...')
+
+const configSrc = path.join(rootDir, 'src', 'config', 'lex-web-ui-loader-config.json')
+if (fs.existsSync(configSrc)) {
+  fs.copyFileSync(configSrc, path.join(distDir, 'lex-web-ui-loader-config.json'))
+  console.log('  ✓ Copied: lex-web-ui-loader-config.json')
+} else {
+  console.log('  ⚠ src/config/lex-web-ui-loader-config.json not found')
+}
+
+const botConfigSrc = path.join(rootDir, 'bot-config')
+if (fs.existsSync(botConfigSrc)) {
+  fs.cpSync(botConfigSrc, path.join(distDir, 'bot-config'), { recursive: true })
+  console.log('  ✓ Copied: bot-config/')
+} else {
+  console.log('  ⚠ bot-config/ not found')
+}
+
 console.log('[INFO] Asset copying complete!')

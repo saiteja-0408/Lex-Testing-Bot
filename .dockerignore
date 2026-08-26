@@ -1,0 +1,27 @@
+# Build context hygiene. node_modules is the big one - it is platform-specific
+# (a macOS install carries the wrong rollup binary for a linux build) and the
+# Dockerfile installs its own.
+node_modules/
+lex-web-ui/node_modules/
+.git/
+.gitignore
+.gitattributes
+
+# Build staging and outputs - regenerated inside the image
+lex-web-ui/dist/
+dist/
+
+# Deployment artifacts - not needed inside the image
+Dockerfile
+.dockerignore
+yamls/
+build.xml
+
+# Editor and OS noise
+.idea/
+.vscode/
+.DS_Store
+*.log
+npm-debug.log*
+*.zip
+*.tar*

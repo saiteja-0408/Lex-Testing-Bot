@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!--
+  reusa-lex-ui — CI packaging
+  Mirrors web-kore-standalone/build.xml. Same ECR registry, region and KMS key;
+  only service.name differs. The `copy` target Kore uses to stage DBChangeRequest
+  is omitted - this service has no database.
+-->
+<!--
+  ============================ OPEN QUESTIONS ============================
+  Q4  @SERVICE_NAME@   Kore = "chatwebsdk-service". Lex = "lexwebui-service"?
+
+  Q6  @ECR_REGISTRY@   Carried over from Kore verbatim:
+                         131619033260.dkr.ecr.us-east-2.amazonaws.com
+                       Region us-east-2, KMS key e111c7eb-6ea1-4692-b406-4af8c56bc560.
+                       Same registry and key for Lex, or a separate one?
+
+  Q7  Is this still UrbanCode Deploy? Kore has build.xml + yamls/ucd-define.txt,
+      which is what I matched. If the pipeline has moved on, tell me what to
+      target instead — this file is the piece most likely to be wrong.
+  =======================================================================
+-->
+<project name="ReEmployUSA Lex WebUI App" basedir="." default="dockerTagsPush">
+	<property name="service.name" value="@SERVICE_NAME@" />
+	<property name="ecr.registry" value="@ECR_REGISTRY@" />
+	<property name="aws.region"   value="us-east-2" />
+	<property name="kms.key"      value="e111c7eb-6ea1-4692-b406-4af8c56bc560" />
+	<property environment="env" />
+
+	<echo message="${env.PATH}"></echo>
+
+	<macrodef name="dockerBuildPush">
+		<attribute name="aws.executable" />
+		<sequential>
+			<exec executable="@{aws.executable}" failifexecutionfails="true" output="password.txt" logerror="true" description="Get Temp Login Password for AWS">
+				<arg value="ecr" />
+				<arg value="get-login-password" />
+				<arg value="--region" />
+				<arg value="${aws.region}" />
+			</exec>
+
+			<loadfile property="password" srcFile="password.txt" />
+
+			<exec executable="@{aws.executable}" failifexecutionfails="false" logerror="true" description="Create ECR Repository">
+				<arg value="ecr" />
+				<arg value="create-repository" />
+				<arg value="--repository-name" />
+				<arg value="${service.name}" />
+				<arg value="--region" />
+				<arg value="${aws.region}" />
+				<arg value="--image-tag-mutability" />
+				<arg value="IMMUTABLE" />
+				<arg value="--image-scanning-configuration" />
+				<arg value="scanOnPush=true" />
+				<arg value="--encryption-configuration" />
+				<arg value="encryptionType=KMS,kmsKey=${kms.key}" />
+			</exec>
+
+			<exec executable="docker" failifexecutionfails="true" output="auth_msg.txt" logerror="true" description="Login to AWS">
+				<arg value="login" />
+				<arg value="--username" />
+				<arg value="AWS" />
+				<arg value="--password" />
+				<arg value="${password}" />
+				<arg value="${ecr.registry}" />
+			</exec>
+
+			<exec executable="docker" dir="." failonerror="true" description="Build the Lex Web UI image">
+				<arg value="build" />
+				<arg value="-t" />
+				<arg value="${ecr.registry}/${service.name}:${buildLabel}" />
+				<arg value="." />
+			</exec>
+
+			<exec executable="docker" dir="." failonerror="true" description="Push image into ECR">
+				<arg value="image" />
+				<arg value="push" />
+				<arg value="${ecr.registry}/${service.name}:${buildLabel}" />
+			</exec>
+		</sequential>
+	</macrodef>
+
+	<target name="info" description="Print Build Info">
+		<echo message="Service ${service.name} is built with build version : ${buildLabel}"></echo>
+	</target>
+
+	<target name="dockerTagsPush" depends="info" description="Build and push the image from Windows agents">
+		<dockerBuildPush aws.executable="aws" />
+	</target>
+
+	<target name="dockerTagsPushLinux" depends="info" description="Build and push the image from Linux agents">
+		<dockerBuildPush aws.executable="/usr/local/bin/aws" />
+	</target>
+</project>
